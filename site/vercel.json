@@ -1,1 +1,1 @@
-{"buildCommand":"echo build","outputDirectory":".","headers":[{"source":"/data.json","headers":[{"key":"Cache-Control","value":"public, max-age=300"}]}]}
+{"buildCommand":"echo build","outputDirectory":".","functions":{"api/data.js":{"includeFiles":"api/_full/**","memory":1024}},"headers":[{"source":"/data.json","headers":[{"key":"Cache-Control","value":"public, max-age=300"}]}],"redirects":[{"source":"/api/_full/:path*","destination":"/","permanent":false}]}

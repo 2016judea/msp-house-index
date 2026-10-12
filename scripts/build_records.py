@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Every public record we hold on each ranked listing's parcel, in plain words.
 
-    python scripts/build_records.py     # reads data/index.parquet + bricks closed_system.duckdb, writes site/records.json
+    python scripts/build_records.py     # reads data/index.parquet + bricks closed_system.duckdb, writes private/records.json
 
 One entry per listing: `tags` (two to four short labels for the row) and `items`
 (dated lines, newest first). Joined on parcel (county:pin), never on address.
@@ -194,5 +194,5 @@ for v in out.values():
         if i["text"] not in seen:
             seen.add(i["text"]); items.append(i)
     v["items"] = items
-(ROOT / "site/records.json").write_text(json.dumps(out, separators=(",", ":")))
+(ROOT / "private/records.json").write_text(json.dumps(out, separators=(",", ":")))
 print(len(out), "listings with records;", sum(len(v["items"]) for v in out.values()), "lines")

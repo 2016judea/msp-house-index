@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """What homes on the same block sold for: the "this street" check beside the comps.
 
-    python scripts/build_block.py   # after build_index.py; adds block_* fields to site/data.json
+    python scripts/build_block.py   # after build_index.py; adds block_* fields to private/data.json
 
 The block is the listing's own street, same city, same hundred (3600-3699 Van Buren St NE),
 from the county parcel file (data/county.duckdb). Counted are dwellings other than this
@@ -32,7 +32,7 @@ group by 1
 DIRS = {"Ne": "NE", "Nw": "NW", "Se": "SE", "Sw": "SW", "N": "N", "S": "S", "E": "E", "W": "W"}
 name = lambda st: " ".join(DIRS.get(w, w) for w in st.title().split())
 blk = {r[0]: {"block_med": round(r[1]), "block_n": r[2], "block_name": (f"{r[5] * 100}s " if r[5] else "1–99 ") + name(r[4])} for r in rows}
-p = ROOT / "site/data.json"
+p = ROOT / "private/data.json"
 d = json.loads(p.read_text())
 for r in d["rows"]:
     r.update(blk.get(r["property_id"], {}))

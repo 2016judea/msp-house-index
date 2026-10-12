@@ -317,3 +317,28 @@ Of 7,262 ranked listings; 6,987 get a file. Every layer is `open-public-record` 
 | busiest road ≤100 m | 721 | MnDOT AADT, latest year per count location. The point is the counted segment's midpoint, so this under-finds roads; stated on the line |
 
 Payload: 8.6 MB across 6,987 files, median 461 B, max 4.9 KB; one file is fetched per opened row.
+
+## Gated per-listing data (added 2026-10-11, the $100 paywall)
+
+**Free:** `site/` holds the 10 homes furthest below value (the page's default sort,
+`under()` in `site/index.html`, mirrored in `scripts/build_public.py`) and every file
+those 10 need. **Paid:** everything else, read only by `site/api/data.js`.
+
+| where | what |
+|---|---|
+| `private/` (gitignored) | the full set every build step writes: `data.json`, `evidence.json`, `records.json`, `tl/`, `map/`, and any new layer |
+| `scripts/build_public.py` (last step of `make build` and `make map`) | copies the top 10's slice into `site/` and packs the rest into `private/bundle/` |
+| `private/bundle/` → `api/_full/` (by `scripts/deploy.py`) | `rows.json.gz` (all rows), `detail.json.gz` (`{pid: {ev, rec, tl, <layer>…}}`), `map/<0-63>.json.gz` (cells), `passes.json` (comp labels) |
+| `GET /api/data` + `x-password` | all rows; `?id=<pid>` one home's detail; `?cell=<x_y>` one map cell |
+
+**Adding a per-listing layer** (neighbourhood is next): write it to `private/` only, either
+`private/<name>.json` keyed by property_id (add `<name>` to `PER_LISTING`) or
+`private/<name>/<property_id>.json` (add to `PER_LISTING_DIRS`). On the page, read it with
+`layer("<name>", property_id)`: the public file for the top 10, the gated route once unlocked,
+`null` when the home has none. Never write a layer into `site/` directly: it would ship every
+listing free.
+
+**Passwords** are stateless, `XXXX-XXXX-XXXX` = a 5-character nonce + 7 of HMAC-SHA256 under
+`ACCESS_SECRET`. Two kinds: *paid* (minted at checkout, valid once Stripe shows its session paid)
+and *comp* (`scripts/issue_password.py "<label>"`, valid with no session; label logged on unlock).
+The public repo's history before this date still holds the full set.

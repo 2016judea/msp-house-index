@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The block map: every lot within ~150 m of each ranked listing, with what the county appraises it at.
 
-    python scripts/build_map.py   # after build_index.py; writes site/map/<cell>.json, adds `m` to site/data.json
+    python scripts/build_map.py   # after build_index.py; writes private/map/<cell>.json, adds `m` to private/data.json (build_public.py gates both)
 
 Lots come from data/county.duckdb (MetroGIS parcels, all 7 counties, UTM 15N metres). They are
 cut into 400 m cells; a listing loads the cells its 150 m box touches, so neighbouring listings
@@ -25,7 +25,7 @@ from pathlib import Path
 import duckdb
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "site/map"
+OUT = ROOT / "private/map"
 BRICKS = Path.home() / "Desktop/bricks/data/closed_system.duckdb"
 R, CELL = 150, 400  # metres: frame half-width around a listing, cell size
 
@@ -153,7 +153,7 @@ for key, ps in cells.items():
 
 # Each ranked row: its frame's cells and its own lot.
 lr = {r[0]: r[1:] for r in c.execute("select property_id, x, y from L").fetchall()}
-p = ROOT / "site/data.json"
+p = ROOT / "private/data.json"
 d = json.loads(p.read_text())
 n_map = 0
 for r in d["rows"]:

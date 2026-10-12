@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Deploy site/ to Vercel over the REST API (no CLI). Needs VERCEL_TOKEN.
+site/ is the public top 10 plus api/; private/bundle/ (the paid set) goes up as api/_full/,
+bundled with /api/data and redirected away from any public URL (site/vercel.json).
 Enables Web Analytics on the project and prints the production aliases."""
 import hashlib, json, os, sys, time
 from concurrent.futures import ThreadPoolExecutor
@@ -14,7 +16,11 @@ H = {"Authorization": f"Bearer {os.environ['VERCEL_TOKEN']}"}
 API = "https://api.vercel.com"
 
 # ~10k files since the block map (site/map/): upload 16 at a time, each sent once per content hash.
-def upload(p):
+BUNDLE = Path(__file__).resolve().parent.parent / "private" / "bundle"
+
+
+def upload(item):
+    p, rel = item
     b = p.read_bytes()
     sha = hashlib.sha1(b).hexdigest()
     for _ in range(4):
@@ -27,12 +33,14 @@ def upload(p):
         time.sleep(2)
     else:
         sys.exit(f"upload failed: {p}")
-    return {"file": str(p.relative_to(SITE)), "sha": sha, "size": len(b)}
+    return {"file": rel, "sha": sha, "size": len(b)}
 
 
 S = requests.Session()
 S.mount("https://", requests.adapters.HTTPAdapter(pool_maxsize=16))
-paths = [p for p in sorted(SITE.rglob("*")) if p.is_file() and not p.name.startswith(".")]
+assert (BUNDLE / "rows.json.gz").exists(), "run make build: private/bundle/ is what the paywall serves"
+paths = [(p, str(p.relative_to(SITE))) for p in sorted(SITE.rglob("*")) if p.is_file() and not p.name.startswith(".") and "_full" not in p.parts]
+paths += [(p, "api/_full/" + str(p.relative_to(BUNDLE))) for p in sorted(BUNDLE.rglob("*")) if p.is_file()]
 with ThreadPoolExecutor(16) as ex:
     files = list(ex.map(upload, paths))
 print(f"uploaded {len(files)} files")

@@ -12,3 +12,10 @@ data/*.log
 # outreach: personal contact details stay local
 outreach/ledger.csv
 outreach/drafts/
+
+# The paid set: only the top 10 ship in site/ (scripts/build_public.py)
+private/
+site/api/_full/
+data/index.csv
+data/index.parquet
+.env

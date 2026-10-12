@@ -3,7 +3,7 @@
 sale, every listing event, every permit. The page draws the chart and writes the story
 from these with templates; nothing here is written by a model.
 
-    python scripts/build_timeline.py   # after build_index.py; writes site/tl/<00-99>.json
+    python scripts/build_timeline.py   # after build_index.py; writes private/tl/<00-99>.json
 
 Sources (all joined on the county parcel, never on address):
   assess   bricks parcel_snapshot: MetroGIS 2021-current, Minneapolis assessor 2017-2025,
@@ -146,8 +146,8 @@ for t in T.values():
     t["sales"].sort(key=lambda s: s["d"])
     t["list"].sort(key=lambda e: e["d"])
 
-out = ROOT / "site/tl"
-out.mkdir(exist_ok=True)
+out = ROOT / "private/tl"
+out.mkdir(parents=True, exist_ok=True)
 shards = {}
 for pid, t in T.items():
     shards.setdefault(pid[-2:], {})[pid] = t

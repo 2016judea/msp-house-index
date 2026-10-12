@@ -6,7 +6,8 @@ Inputs  data/listings_raw.jsonl, data/details.jsonl, data/sold_raw.jsonl,
         data/county.duckdb (scripts/build_county.py), data/mpls_permits.jsonl,
         bricks closed_system.duckdb (St Paul permits, Mpls cases, St Paul vacant
         buildings; read-only) and bricks data/deed_risk_parcels.csv.
-Outputs data/index.parquet, data/index.csv, site/data.json
+Outputs data/index.parquet, data/index.csv, private/data.json + private/evidence.json (the full
+set, gitignored); scripts/build_public.py writes the public top 10 into site/
 
 No number here comes from a model. Every figure is a join or arithmetic on one,
 and the columns that carry it are in the output beside it.
@@ -358,7 +359,7 @@ def main():
     con.execute("create table OUT as select * from read_json_auto(?)", [str(_dump(out, "out"))])
     con.execute(f"copy OUT to '{D / 'index.parquet'}' (format parquet)")
     con.execute(f"copy (select * exclude (permits, cases) from OUT order by rank nulls last) to '{D / 'index.csv'}' (header)")
-    site = ROOT / "site"
+    site = ROOT / "private"  # the full set; build_public.py gates what ships in site/
     site.mkdir(exist_ok=True)
     keep = ["rank", "property_id", "url", "address", "city", "zip", "county", "type_group", "beds", "baths", "sqft", "year_built", "ask", "original_ask",
             "dom", "n_cuts", "cut_pct", "pending", "score", "est_cal", "est_comp", "est_deed", "est_avm", "agree", "why", "exclusion",
