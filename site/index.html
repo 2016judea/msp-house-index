@@ -80,6 +80,14 @@ h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .story .eg .n{text-align:right}
 .story .ev{color:var(--evink)}
 .story p{margin:0;color:var(--mute);font-size:12.5px;line-height:1.4}
+/* Formulas sit one tap away: facts stay visible, the arithmetic behind an (i). Hover on desktop, tap on a phone. */
+.story .blk{position:relative}
+.lrow{display:flex;align-items:center;gap:6px}
+.info{flex:none;width:24px;height:24px;margin:-4px 0;padding:0;border:0;border-radius:50%;background:none;color:var(--mute);font:15px/24px var(--sans);cursor:pointer}
+.info:hover,.info[aria-expanded="true"]{color:var(--ink);background:var(--card)}
+.ipop{display:none;flex-direction:column;gap:6px;margin-top:2px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:6px;max-width:100%}
+.ipop.on{display:flex}
+@media (hover:hover){.ipop{position:absolute;left:10px;right:0;top:22px;z-index:6;max-width:420px;box-shadow:0 4px 14px rgba(0,0,0,.12)}.ihost:hover>.ipop,.ihost:focus-within>.ipop{display:flex}}
 .story ul{margin:0;padding-left:16px}
 .trail{font-size:13.5px;color:var(--warn)}
 .rec{display:flex;flex-direction:column;gap:4px;border-left:3px solid var(--warn);padding-left:10px}
@@ -218,21 +226,24 @@ const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","C
 // Colour tells the story: blue = their price, sand = what the records say, green = what we think it's worth, amber = worth a closer look.
 const ROLE={ask:"price",est_cal:"ev",est_comp:"ev",est_deed:"ev",block_med:"ev",under:"val",agree:"val",tier:"risk",drop:"risk",n_cuts:"risk"};
 const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,block_med:k,under:v=>v==null?"–":v+"%",agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
+let infoN=0;
+const info=(lbl,html)=>{const id="ip"+(++infoN);return `<span class="lrow"><span class="lbl">${lbl}</span><button type="button" class="info" aria-expanded="false" aria-controls="${id}" aria-label="How this is worked out">ⓘ</button></span><div class="ipop" id="${id}" role="note">${html}</div>`};
 function story(d){
  const pct=x=>(x>0?"+":x<0?"−":"")+Math.abs(Math.round(x*100))+"%";
  const tiered=!!d.asis_ratio,dn=d.discounts_named||[],m=mid(d);
  const have=[["County",d.est_cal],["Comps",d.est_comp],["Last sale",d.est_deed]];
  const miss=have.filter(x=>!x[1]).map(x=>x[0]);
  // Worth: which estimates it was computed from, and which were missing.
- const w=`<div class="blk val"><span class="lbl">${tiered?"Worth as-is":"Worth about"} ${k(worth(d))}</span>
-  <p>The middle of ${have.filter(x=>x[1]).map(x=>`${x[0]} ${k(x[1])}`).join(", ")}${have.filter(x=>x[1]).length==2?" (the average of the two)":""} is ${k(m)}.${tiered?` That is what it would be worth fixed up. Houses in this condition sold for ${Math.round(d.asis_ratio*100)}% of their fixed-up price (${d.asis_n} flips we measured), so ${k(m)} × ${d.asis_ratio.toFixed(2)} = ${k(d.worth)}.`:""}${miss.length?` No ${miss.join(" or ").toLowerCase()} estimate for this home.`:""}${d.est_avm?` Realtor.com's own estimate (${k(d.est_avm)}) counts in the score and Agree, not in this middle.`:""}</p></div>`;
+ const hv=have.filter(x=>x[1]);
+ const wf=`<p>Worth about is the middle of the estimates${hv.length==2?" (with two, the average of the two)":""}: ${k(m)}.</p>${tiered?`<p>That is what it would be worth fixed up. Houses in this condition sold for ${Math.round(d.asis_ratio*100)}% of their fixed-up price (${d.asis_n} flips we measured), so ${k(m)} × ${d.asis_ratio.toFixed(2)} = ${k(d.worth)}.</p>`:""}${d.est_avm?`<p>Realtor.com's own estimate (${k(d.est_avm)}) counts in the score and Agree, not in this middle.</p>`:""}`;
+ const w=`<div class="blk val ihost">${info(`${tiered?"Worth as-is":"Worth about"} ${k(worth(d))}`,wf)}
+  <p>${hv.map(x=>`${x[0]} ${k(x[1])}`).join(" · ")}${tiered?` · fixed up ${k(m)}`:""}.${miss.length?` No ${miss.join(" or ").toLowerCase()} estimate for this home.`:""}</p></div>`;
  // Agree: every estimate that went into it, its value, and how far it sits from the middle.
- const ag=d.agree==null?"":`<div class="blk val"><span class="lbl">Agree ${Math.round(d.agree*100)}%</span>
+ const ag=d.agree==null?"":`<div class="blk val ihost">${info(`Agree ${Math.round(d.agree*100)}%`,`<p>Agree is 100% minus the spread (standard deviation) of how far the ask sits below each estimate${tiered?" as-is":""}. A spread of 25 points or more scores 0%.</p><p>Rank #${d.rank} sorts by score ${d.score.toFixed(2)}: the average of those gaps, with a missing estimate counted as no gap (out of 3), minus half the spread.</p>`)}
   <div class="eg"><span class="h">Estimate</span><span class="h n">Value</span><span class="h n">vs middle</span><span class="h n">Ask is${tiered?" (as-is)":""}</span>${dn.map(x=>`<span>${esc(x.name)}</span><span class="n ev">${k(x.arv)}</span><span class="n">${pct(x.arv/m-1)}</span><span class="n">${Math.abs(Math.round(x.disc*100))}% ${x.disc<0?"above":"below"}</span>`).join("")}</div>
-  <p>Agree is 100% minus the spread (standard deviation) of how far the ask sits below each estimate${tiered?" as-is":""}. A spread of 25 points or more scores 0%.</p>
-  <p>Rank #${d.rank} sorts by score ${d.score.toFixed(2)}: the average of those gaps, with a missing estimate counted as no gap (out of 3), minus half the spread.</p></div>`;
- const cond=tiered?`<div class="blk risk"><span class="lbl">${TIER[d.tier]}</span><ul>${(d.tier_facts||[]).map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
-  <p>${d.tier=="condemned"?"No condemned house in the records was bought and resold, so this uses the heavy-rehab ratio. ":""}${d.repair_est?`Repair cost: flips like this filed permits for a median $${Math.round(d.repair_ppsf)}/sqft (${d.repair_n} homes) × ${d.sqft.toLocaleString()} sqft = ${k(d.repair_est)}. Permits run low: those same flips resold for $${Math.round(d.spread_ppsf)}/sqft more than they cost.`:""}</p></div>`:"";
+</div>`;
+ const cf=`${d.tier=="condemned"?"<p>No condemned house in the records was bought and resold, so this uses the heavy-rehab ratio.</p>":""}${d.repair_est?`<p>Repair cost: flips like this filed permits for a median $${Math.round(d.repair_ppsf)}/sqft (${d.repair_n} homes) × ${d.sqft.toLocaleString()} sqft = ${k(d.repair_est)}. Permits run low: those same flips resold for $${Math.round(d.spread_ppsf)}/sqft more than they cost.</p>`:""}`;
+ const cond=tiered?`<div class="blk risk ihost">${cf?info(TIER[d.tier],cf):`<span class="lbl">${TIER[d.tier]}</span>`}<ul>${(d.tier_facts||[]).map(f=>`<li>${esc(f)}</li>`).join("")}</ul></div>`:"";
  const ld=d.list_date?new Date(d.list_date+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):null;
  const lst=`<div class="blk price"><span class="lbl">The listing</span><p>${ld?`Listed ${ld}, ${d.dom} days ago. `:""}${d.original_ask&&d.original_ask!=d.ask?`First asked ${k(d.original_ask)}; ${d.n_cuts} price cut${d.n_cuts==1?"":"s"} to ${k(d.ask)}, down ${Math.abs(drop(d))}%.`:"No price cuts."} ${[d.beds&&d.beds+" bd",d.baths&&d.baths+" ba",d.sqft&&d.sqft.toLocaleString()+" sqft",d.year_built&&"built "+d.year_built].filter(Boolean).join(" · ")}.</p></div>`;
  return `<div class="story">${w}${ag}${cond}</div>`}
@@ -392,6 +403,7 @@ function screener(){
  V.querySelectorAll("tr.row").forEach(tr=>{const go=()=>{const id=tr.dataset.r;open1=open1==id?null:id;if(open1)window.va("event",{name:"expand",data:{id}});screener()};tr.onclick=go;tr.onkeydown=e=>{if(e.key=="Enter")go()}});
  V.querySelectorAll("thead tr,tr.row,tfoot tr").forEach(tr=>[...tr.children].forEach((td,i)=>{const r=ROLE[COLS[i]?.[0]];if(r)td.classList.add("r-"+r)}));
  $("#more")?.addEventListener("click",()=>{limit+=150;screener()});
+ V.querySelectorAll(".info").forEach(b=>{b.onclick=e=>{e.stopPropagation();const p=document.getElementById(b.getAttribute("aria-controls")),on=b.getAttribute("aria-expanded")!="true";b.setAttribute("aria-expanded",on);p.classList.toggle("on",on)}});
  requestAnimationFrame(drawTL);
 }
 function apply(){
