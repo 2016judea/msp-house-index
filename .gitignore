@@ -19,3 +19,6 @@ site/api/_full/
 data/index.csv
 data/index.parquet
 .env
+
+# batch 2 (sale batch): addresses and drafts stay local
+outreach/batch2/
