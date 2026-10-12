@@ -40,6 +40,13 @@ live, Saint Paul through 2025-06-30), Minneapolis vacant-building and nuisance
 cases, Saint Paul's vacant building list, the deed-theft exposure list, and
 distress words in the listing text.
 
+**Condition.** All three opinions are after-repair values. A home the records or
+its listing say needs work (vacant lists, vacant-building cases, unfixed housing
+violations, "major rehab", "fire damage"…) gets a tier, and its value becomes
+**worth as-is = middle estimate × the as-is ratio**, measured from recorded flips:
+the same house bought and resold within 2 years (`scripts/build_condition.py`,
+`data/condition.json`, method in `DATA_MODEL.md`).
+
 No number comes from a model. Every figure is a join or arithmetic on one.
 
 ## Run it

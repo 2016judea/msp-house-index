@@ -9,6 +9,7 @@ fetch:
 county:
 	$(PY) scripts/build_county.py
 build:
+	$(PY) scripts/build_condition.py
 	$(PY) scripts/build_index.py
 	$(PY) scripts/build_block.py
 	$(PY) scripts/build_records.py

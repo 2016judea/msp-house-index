@@ -36,6 +36,17 @@ MULTIPARCEL = re.compile(r"\b(two|2|three|3|multiple) (?:separate )?(?:parcels|p
 RESTRICTED = re.compile(r"land trust|\bCLT\b|income[- ](?:restrict|limit|qualif|eligib)|affordab\w+ (?:covenant|program|requirement)|resale restrict|\bAMI\b|area median income", re.I)
 SENIOR = re.compile(r"\b(55\+|55 and (?:over|older)|age[- ]restricted|senior (?:living|community|co-?op))", re.I)
 COOP = re.compile(r"\b(co-?op|cooperative|share loan|underlying mortgage|shares? of stock)\b", re.I)
+# Condition, from the listing's own words. Each phrase here was checked against how it
+# reads in real Twin Cities listings (2026-10-11): bare "as is" also matches "enjoy it as
+# is" and "as is downtown Hopkins", "gutted" is usually "gutted and remodeled", and
+# "shell" is new-construction condo talk, so those only count in the forms below.
+COND_TXT = {
+    "condemned": re.compile(r"\b(condemned|uninhabitable|not habitable|category 3 vacant)\b", re.I),
+    "heavy": re.compile(r"\b((?:complete|full|major|total|extensive) (?:rehab\w*|renovation needed)|gutted to the studs|(?:totally |completely )?gutted(?: inside)?(?![\s\S]{0,40}(?:remodel|rebuil|redone|updated|expanded|cleaned|and |& ))|"
+                       r"fire[- ]damage[d]?|freeze damage|water damage|foundation (?:issues|problems)|not financeable|code compliance|category 2 vacant|(?:major|significant) repairs)\b", re.I),
+    "light": re.compile(r"(\bas-is\b|\b(?:sold|selling|offered|listed|sale|purchase)\s+(?:in\s+)?[\"'“]?as is\b|\bas is[\"'”]? condition|\btlc\b|\bfixer\b|\bhandyman\b|\binvestor special\b|"
+                       r"\bneeds (?:a lot of |some )?work\b|\bcash (?:offers )?only\b|\bcash or rehab\b|\brehab loan\b|\bmold\b|\bprice reflects (?:the )?(?:work|condition|as-is)|will not make any repairs)", re.I),
+}
 AUCTION = re.compile(r"\b(auction|starting bid|opening bid|bid deadline|highest and best)\b", re.I)
 
 
@@ -111,6 +122,7 @@ def load_listings():
             rdc_avm=round(statistics.mean(e["estimate"] for e in est)) if est else None,
             rdc_avm_n=len(est),
             has_detail=bool(det),
+            cond_text={t: sorted({m.group(0).strip().lower() for m in rx.finditer(text)}) for t, rx in COND_TXT.items()},
             distress=", ".join(sorted({m.lower() for m in DISTRESS.findall(text)})) or None,
             teardown_text=bool(TEARDOWN.search(text)), multiparcel_text=bool(MULTIPARCEL.search(text)), auction_text=bool(AUCTION.search(text)),
             restricted_text=bool(RESTRICTED.search(text)), senior_text=bool(SENIOR.search(text)),
@@ -300,12 +312,12 @@ def main():
     """)
     con.execute(f"""
     create table cases as
-    select split_part(parcel_key, ':', 2) as pin, json_extract_string(attrs, 'Case_Type') as ctype, json_extract_string(attrs, 'Violation_Case_Number') as num, min(epoch_ms(try_cast(json_extract_string(attrs, 'Completed_Date') as bigint)))::date as opened
+    select split_part(parcel_key, ':', 2) as pin, json_extract_string(attrs, 'Case_Type') as ctype, max(json_extract_string(attrs, 'Case_Group')) as cgroup, json_extract_string(attrs, 'Violation_Case_Number') as num, min(epoch_ms(try_cast(json_extract_string(attrs, 'Completed_Date') as bigint)))::date as opened
     from cs.record where layer = 'mpls_caseviolations' and json_extract_string(attrs, 'Case_Type') in ('VBR', 'Nuisance')
       and try_cast(json_extract_string(attrs, 'Completed_Date') as bigint) >= 1672531200000
     group by all
     """)
-    con.execute("create table vacant as select split_part(parcel_key, ':', 2) as pin, json_extract_string(attrs, 'VACANT_AS_OF') as vac_asof, json_extract_string(attrs, 'VB_CATEGORY') cat from cs.record where layer = 'stp_vacant_buildings'")
+    con.execute("create table vacant as select split_part(parcel_key, ':', 2) as pin, json_extract_string(attrs, 'VACANT_AS_OF') as vac_asof, json_extract_string(attrs, 'VB_CATEGORY') as vac_cat from cs.record where layer = 'stp_vacant_buildings'")
     con.execute(f"create table deedrisk as select * from read_csv_auto('{BRICKS / 'deed_risk_parcels.csv'}', types={{'pin': 'VARCHAR'}})")
 
     rows = _records(con, """
@@ -314,14 +326,26 @@ def main():
            i.r as idx_then, n.r as idx_now,
            (select list({'num': num, 'what': what, 'work': work, 'status': status, 'issued': issued, 'completed': completed, 'value': value, 'ptype': ptype} order by issued desc)
               from permits pm where pm.county = j.county and pm.pin = j.pin) as permits,
-           (select list({'type': ctype, 'num': num, 'opened': opened}) from cases c where j.county = 'hennepin' and c.pin = j.pin) as cases,
+           (select list({'type': ctype, 'group': cgroup, 'num': num, 'opened': opened}) from cases c where j.county = 'hennepin' and c.pin = j.pin) as cases,
            (select any_value(vac_asof) from vacant v where j.county = 'ramsey' and v.pin = j.pin) as vacant_asof,
+           (select any_value(vac_cat) from vacant v where j.county = 'ramsey' and v.pin = j.pin) as vacant_cat,
            (select any_value(exposure_flags) from deedrisk d where d.county = j.county and d.pin = j.pin) as deed_risk_flags
     from J j left join cal using (property_id) left join comp2 comp using (property_id)
     left join idx i on i.county = j.county and i.is_condo = j.county_condo and i.yr = year(j.deed_date)
     left join idx_now n on n.county = j.county and n.is_condo = j.county_condo
     """)
 
+    # Minneapolis housing-code violations cited and still not fixed (Resolved_Date empty,
+    # not abated, cancelled or transferred), per parcel. Nuisance (grass, trash) is not condition.
+    open_viol = {}
+    for line in open(D / "mpls_violations.jsonl"):
+        v = json.loads(line)
+        if v.get("Case_Type") in ("HIS", "FIS", "VBR") and not v.get("Resolved_Date") and (v.get("Status_Violation") or "").strip() not in ("Abate", "Cancel", "Transfer"):
+            open_viol.setdefault(v["APN"], []).append((v.get("Violation_Code_Description") or "").strip())
+    for r in rows:
+        r["open_violations"] = open_viol.get(r["pin"], []) if r["county"] == "hennepin" else []
+    global COND
+    COND = json.loads((D / "condition.json").read_text())
     out = [score(r) for r in rows]
     out.sort(key=lambda r: (r["rank_ok"], r["score"] if r["score"] is not None else -9), reverse=True)
     rank = 0
@@ -338,11 +362,12 @@ def main():
     site.mkdir(exist_ok=True)
     keep = ["rank", "property_id", "url", "address", "city", "zip", "county", "type_group", "beds", "baths", "sqft", "year_built", "ask", "original_ask",
             "dom", "n_cuts", "cut_pct", "pending", "score", "est_cal", "est_comp", "est_deed", "est_avm", "agree", "why", "exclusion",
-            "evidence", "signals", "photo", "distressed", "hoa"]
+            "evidence", "signals", "photo", "distressed", "hoa", "list_date", "tier", "tier_facts", "asis_ratio", "asis_n", "arv", "worth",
+            "repair_ppsf", "repair_n", "repair_est", "spread_ppsf", "discounts_named", "n_estimates"]
     ranked = [{k: r.get(k) for k in keep if r.get(k) not in (None, [], "", False)} for r in out if r["rank_ok"]]
     # The list paints from data.json; evidence.json (the expanded view) loads after.
     heavy = ("evidence", "photo", "url")
-    (site / "data.json").write_text(json.dumps({"built": TODAY.isoformat(), "total_listings": len(out),
+    (site / "data.json").write_text(json.dumps({"built": TODAY.isoformat(), "total_listings": len(out), "condition": COND,
                                                 "rows": [{k: v for k, v in r.items() if k not in heavy} for r in ranked]},
                                                separators=(",", ":"), default=str))
     (site / "evidence.json").write_text(json.dumps({r["property_id"]: [r.get(k) for k in heavy] for r in ranked},
@@ -385,8 +410,23 @@ def score(r):
                 est_deed = None
     r["est_cal"], r["est_comp"], r["est_deed"] = est_cal, est_comp, est_deed
     r["est_avm"] = r.get("rdc_avm")
-    ests = [e for e in (est_cal, est_comp, est_deed, r.get("rdc_avm")) if e]
+    # --- condition: every estimate above is an after-repair value (ARV) ---
+    tier, facts = condition(r)
+    r["tier"], r["tier_facts"] = tier, facts
+    t = COND["tiers"].get(tier) if tier != "none" else None
+    ratio = t["ratio"] if t else 1.0
+    r["asis_ratio"], r["asis_n"] = (ratio, t["n"]) if t else (None, None)
+    arvs = [e for e in (est_cal, est_comp, est_deed) if e]
+    r["arv"] = round(statistics.median(arvs)) if arvs else None
+    r["worth"] = round(r["arv"] * ratio) if r["arv"] else None
+    if t:
+        rp = COND["tiers"]["heavy" if tier == "condemned" else tier]
+        r["repair_ppsf"], r["repair_n"], r["spread_ppsf"] = rp["repair_ppsf"], rp["repair_n"], rp["spread_ppsf"]
+        r["repair_est"] = round(rp["repair_ppsf"] * r["sqft"]) if r.get("sqft") else None
+    named = [(n, e) for n, e in (("County", est_cal), ("Comps", est_comp), ("Last sale", est_deed), ("Realtor.com", r.get("rdc_avm"))) if e]
+    ests = [e * ratio for _, e in named]
     disc = [1 - ask / e for e in ests] if ask else []
+    r["discounts_named"] = [{"name": n, "arv": e, "asis": round(e * ratio), "disc": round(1 - ask / (e * ratio), 3)} for n, e in named] if ask else []
     r["n_estimates"] = len(ests)
     if len(disc) >= 2:
         # Missing opinions count as zero discount, out of three; disagreement is
@@ -478,6 +518,17 @@ def score(r):
     if est_deed:
         ev.append(f"Last deed: {money(r['deed_price'])} in {str(r['deed_date'])[:7]}, × {r['idx_now']/r['idx_then']:.2f} "
                   f"{county.title()} price change since (sale÷EMV {r['idx_then']:.2f} then, {r['idx_now']:.2f} now) = {money(est_deed)}")
+    if r.get("asis_ratio") and r.get("arv"):
+        tt = COND["tiers"]["heavy" if r["tier"] == "condemned" else r["tier"]]
+        src = (f"{tt['stp_n']} Saint Paul flips with ${COND['light_max_ppsf']}+/sqft of permitted work and {tt['mpls_n']} Minneapolis houses bought with a vacant-building case open"
+               if r["tier"] != "light" else f"{tt['stp_n']} Saint Paul flips with permitted work under ${COND['light_max_ppsf']}/sqft")
+        ev.append(f"Condition {r['tier']}: " + "; ".join(r["tier_facts"]) + ".")
+        ev.append(f"Worth as-is: the estimates above are after-repair values. Their middle, {money(r['arv'])}, × {r['asis_ratio']:.2f} = {money(r['worth'])}. "
+                  f"{r['asis_ratio']:.2f} is the median buy price ÷ resale price of {r['asis_n']} houses sold and resold within 3-24 months for more ({src})"
+                  + (". No condemned house in the records was flipped, so this uses the heavy ratio" if r["tier"] == "condemned" else "") + ".")
+        if r.get("repair_est"):
+            ev.append(f"Repair cost: those flips filed permits worth a median ${r['repair_ppsf']:.0f}/sqft (n={r['repair_n']}, Saint Paul) × {r['sqft']:,} sqft = {money(r['repair_est'])}. "
+                      f"Owners under-declare permit values: the same flips resold for ${r['spread_ppsf']:.0f}/sqft more than they were bought for.")
     if r.get("rdc_avm"):
         ev.append(f"Realtor.com estimate (avg of {r['rdc_avm_n']}): {money(r['rdc_avm'])}")
     if r.get("hoa"):
@@ -489,6 +540,8 @@ def score(r):
     r["evidence"] = ev
 
     parts = [f"asking {money(ask)}"]
+    if r.get("asis_ratio") and r.get("worth"):
+        parts.append(f"needs {'heavy' if r['tier'] != 'light' else 'light'} work ({r['tier_facts'][0].lower()}): worth ~{money(r['worth'])} as-is, {money(r['arv'])} fixed up")
     if est_comp:
         parts.append(f"{r['comp_n']} {'units in this building' if r.get('same_building') else 'similar homes nearby'} sold for ~{money(est_comp)}")
     if est_cal:
@@ -515,6 +568,29 @@ def score(r):
         parts.append(f"listing says {r['distress'].split(', ')[0]}")
     r["why"] = "; ".join(parts)
     return r
+
+
+def condition(r):
+    """Tier (none / light / heavy / condemned) and the facts that set it, worst first."""
+    facts = {"condemned": [], "heavy": [], "light": []}
+    cat = str(r.get("vacant_cat") or "")
+    if cat:
+        facts[{"3": "condemned", "2": "heavy"}.get(cat, "light")].append(
+            f"Saint Paul vacant building list, category {cat}" + (f", vacant since {r['vacant_asof']}" if r.get("vacant_asof") else ""))
+    for c in r.get("cases") or []:
+        if c["type"] == "VBR":
+            cond = c.get("group") == "CVBR"
+            facts["condemned" if cond else "heavy"].append(f"Minneapolis {'condemned ' if cond else ''}vacant building case {c['num']}, opened {c['opened']}")
+    ov = r.get("open_violations") or []
+    if len(ov) >= 3:
+        facts["light"].append(f"{len(ov)} Minneapolis housing violations cited and not fixed")
+    for t, phrases in (r.get("cond_text") or {}).items():
+        for ph in phrases:
+            facts[t].append(f'Listing says "{ph}"')
+    for t in ("condemned", "heavy", "light"):
+        if facts[t]:
+            return t, facts[t] + [f for u in ("condemned", "heavy", "light") if u != t for f in facts[u]]
+    return "none", []
 
 
 def _d(x):

@@ -1,0 +1,52 @@
+{
+ "built": "2026-10-11",
+ "light_max_ppsf": 30,
+ "tiers": {
+  "light": {
+   "stp_n": 308,
+   "stp_ratio": 0.747,
+   "stp_iqr": [
+    0.558,
+    0.883
+   ],
+   "repair_ppsf": 4.1,
+   "repair_n": 308,
+   "spread_ppsf": 56.4,
+   "repair_median": 5164,
+   "ratio": 0.747,
+   "n": 308
+  },
+  "heavy": {
+   "stp_n": 81,
+   "stp_ratio": 0.443,
+   "stp_iqr": [
+    0.338,
+    0.55
+   ],
+   "repair_ppsf": 51.2,
+   "repair_n": 81,
+   "spread_ppsf": 139.8,
+   "repair_median": 67900,
+   "mpls_n": 32,
+   "mpls_ratio": 0.486,
+   "ratio": 0.455,
+   "n": 113
+  },
+  "condemned": {
+   "n": 0,
+   "ratio": 0.455,
+   "borrowed": true
+  }
+ },
+ "no_permit_pairs": {
+  "n": 420,
+  "ratio": 0.826
+ },
+ "vacant_sales": {
+  "n": 224,
+  "ratio_to_emv": 0.949,
+  "all_n": 25378,
+  "all_ratio_to_emv": 1.02,
+  "relative": 0.93
+ }
+}

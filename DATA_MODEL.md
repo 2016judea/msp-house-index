@@ -135,3 +135,59 @@ Listing ──1:1── Property ──1:N── Parcel (normally 1; >1 = multi-
 local ratio, comps) fills for ≥88% of listings. The unfilled fields (portal AVMs,
 suburban permits, condition) are signals, and their absence is stated on the row
 rather than imputed.
+
+---
+
+## Condition: what is it worth *as it stands*? (added 2026-10-11, written before probing)
+
+Every value above is an **after-repair value** (ARV): comps are ordinary homes that
+sold, and the county values a habitable house. For a gutted or condemned house the
+gap between ask and ARV is mostly the rehab, not a bargain. The ideal record adds:
+
+### ConditionTier — *how much work does it need?*
+
+| field | question it answers |
+|---|---|
+| tier (none / light / heavy / condemned) | how far from move-in is it |
+| tier_facts[] (record or listing phrase, date, source) | which facts set the tier, so a person can check them |
+| open_violations_n | how many cited defects are still unfixed |
+
+### ConditionDiscount (per area × tier) — *what does the market pay for a house in this state?*
+
+| field | question |
+|---|---|
+| asis_ratio = median(buy price ÷ resale price) over flip pairs | what fraction of ARV a house needing work actually sells for |
+| n_pairs, window, area | how much evidence, from where |
+| vacant_sale_ratio = median(sale ÷ ARV) for parcels sold while on a vacant list / case | a second, independent measure |
+
+### RepairCost (per tier) — *what does the work cost?*
+
+| field | question |
+|---|---|
+| permit_value_sum per parcel, in the window after vacancy or purchase | what the owners told the city the work cost |
+| $/sqft median by tier, n | scales to this house |
+| flip spread (resale − buy) | cross-check: permit valuations run low |
+
+### ValueEstimate additions
+
+| field | question |
+|---|---|
+| arv (the current "worth about") | what it's worth fixed up |
+| worth_as_is = arv × asis_ratio(tier) | what it's worth today, the number the ranking should use |
+
+### Reality check for condition (2026-10-11, `scripts/build_condition.py` → `data/condition.json`)
+
+| field | filled | source / note |
+|---|---|---|
+| tier | 167 of 7,262 ranked rows (141 light, 25 heavy, 1 condemned) | StP vacant category (1 light, 2 heavy, 3 condemned); Mpls VBR case (heavy), CVBR (condemned); ≥3 unfixed Mpls housing violations (light); listing phrases, each checked against real listings (bare "as is", "gutted", "shell" are mostly false positives and only count in narrow forms) |
+| asis_ratio, heavy | 0.455, n=113 | 81 Saint Paul flips with ≥$30/sqft of permitted work between buy and resale (0.443) + 32 Minneapolis houses bought within 3 years of a VBR case (0.486) |
+| asis_ratio, light | 0.747, n=308 | Saint Paul flips with permitted work under $30/sqft. Flips with no permit at all: 0.826, n=420 (not used) |
+| asis_ratio, condemned | **unfilled** (0 pairs) | borrows heavy, and the row says so |
+| asis_ratio by area | **Saint Paul + Minneapolis only** | suburban cities publish no permits with values here, so the two-city ratio is applied metro-wide |
+| repair $/sqft | heavy $51 (n=81), light $4 (n=308) | Saint Paul `stp_permits` EST_VALUE_OF_WORK, all trades. Cross-check: the same flips resold for $140/sqft (heavy) and $56/sqft (light) more than they were bought for, so permits run 2-3x low. **Minneapolis permits carry no valuation** |
+| vacant-sale second source | n=224, sale÷EMV 0.95 vs 1.02 for all Mpls sales | weak: the county already marks vacant houses down, so it understates the discount; reported, not used |
+
+**Choice: worth as-is = ARV × asis_ratio, not ARV − repair cost.** The ratio is what buyers
+actually paid, in 113 recorded transactions, and it carries holding cost, risk and margin.
+Repair cost from permits is under-declared by a factor of 2-3 (the spread check above), so
+subtracting it would overstate the as-is value. It is shown as a card, never subtracted.
