@@ -11,10 +11,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
 /* Ported verbatim from the approved prototype (artifact FaN7kAgze46gQ8LW2BgKDs, Screener tab, 2026-10-11). */
-:root{--bg:#f2f3f1;--card:#fff;--ink:#16191a;--mute:#646b6e;--line:#dcdfdd;--soft:#eef0ee;--accent:#245a86;--good:#17784a;--goodbg:#e1f1e8;--bad:#b2402c;--badbg:#f8e6e1;--warn:#93600a;--warnbg:#faefd9;
+:root{--bg:#f2f3f1;--card:#fff;--ink:#16191a;--mute:#646b6e;--line:#dcdfdd;--soft:#eef0ee;--accent:#245a86;--good:#17784a;--goodbg:#e1f1e8;--bad:#b2402c;--badbg:#f8e6e1;--warn:#93600a;--warnbg:#faefd9;--askbg:#e3edf6;--evbg:#f3efe6;--evline:#dcd3c0;--evink:#5b4a2b;
 --sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--cond:"IBM Plex Sans Condensed","Arial Narrow",sans-serif}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111414;--card:#1a1e1f;--ink:#e7ebec;--mute:#949c9f;--line:#2b3133;--soft:#202627;--accent:#7cb0dc;--good:#5cc590;--goodbg:#15302a;--bad:#ec8a74;--badbg:#3a1f19;--warn:#e3aa52;--warnbg:#382a12;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#111414;--card:#1a1e1f;--ink:#e7ebec;--mute:#949c9f;--line:#2b3133;--soft:#202627;--accent:#7cb0dc;--good:#5cc590;--goodbg:#15302a;--bad:#ec8a74;--badbg:#3a1f19;--warn:#e3aa52;--warnbg:#382a12;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111414;--card:#1a1e1f;--ink:#e7ebec;--mute:#949c9f;--line:#2b3133;--soft:#202627;--accent:#7cb0dc;--good:#5cc590;--goodbg:#15302a;--bad:#ec8a74;--badbg:#3a1f19;--warn:#e3aa52;--warnbg:#382a12;--askbg:#16283a;--evbg:#252219;--evline:#3a3427;--evink:#d9c7a3;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111414;--card:#1a1e1f;--ink:#e7ebec;--mute:#949c9f;--line:#2b3133;--soft:#202627;--accent:#7cb0dc;--good:#5cc590;--goodbg:#15302a;--bad:#ec8a74;--badbg:#3a1f19;--warn:#e3aa52;--warnbg:#382a12;--askbg:#16283a;--evbg:#252219;--evline:#3a3427;--evink:#d9c7a3;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 var(--sans);padding-inline:16px;padding-block:14px 48px}
 .wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
@@ -23,6 +23,14 @@ h1{font:700 22px/1.1 var(--cond);margin:0;letter-spacing:.01em}
 button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,tr:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .how{font-size:13.5px;color:var(--mute);margin:0;padding:10px 12px;background:var(--soft);border-radius:8px}
 .how b{color:var(--ink);font-weight:600}
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--mute)}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.key span::before{content:"";width:12px;height:12px;border-radius:3px;border:1px solid}
+.key .k-price::before{background:var(--askbg);border-color:var(--accent)}
+.key .k-ev::before{background:var(--evbg);border-color:var(--evline)}
+.key .k-val::before{background:var(--goodbg);border-color:var(--good)}
+.key .k-risk::before{background:var(--warnbg);border-color:var(--warn)}
+h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .pos{color:var(--good)}.neg{color:var(--bad)}
 .chip{display:inline-block;font-size:11.5px;padding:2px 7px;border-radius:4px;background:var(--warnbg);color:var(--warn);margin:2px 4px 0 0}
 /* filters: the live site's controls, in the prototype's tokens */
@@ -40,8 +48,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .sc td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
 .sc th:nth-child(2),.sc td:nth-child(2){position:sticky;left:0;text-align:left;background:var(--card);z-index:1;max-width:170px;overflow:hidden;text-overflow:ellipsis;font-family:var(--sans);font-weight:500;box-shadow:1px 0 0 var(--line)}
 .sc th:nth-child(2){background:var(--soft);z-index:3}
-.sc tr.row{cursor:pointer}.sc tr.row:hover td{background:var(--soft)}
-.sc tr.open td{background:var(--soft)}
+.sc tr.row{cursor:pointer}
 .sc td.disc{font-weight:600}
 .sc tr.x td{white-space:normal;text-align:left;background:var(--soft);padding:10px}
 /* The opened row: answer first (how far below, what it's worth), the math folded away. */
@@ -52,19 +59,23 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .verdict b{font:700 26px/1 var(--cond)}
 .verdict span{font-size:14px;color:var(--ink)}
 .vals{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-.vals div:first-child{grid-column:1/-1;border-color:var(--ink)}
-.vals .worth{grid-column:1/-1;border-color:var(--good);background:var(--goodbg)}.vals .worth b{color:var(--good)}
-@media (min-width:1024px){.vals{grid-template-columns:repeat(6,1fr)}.vals div:first-child,.vals .worth{grid-column:auto}}
+/* Three roles, three colours: the price (blue), the evidence (one shared sand), our value (green). */
+.xin .vals > div{background:var(--evbg);border-color:var(--evline)}
+.xin .vals > div:first-child{grid-column:1/-1;background:var(--askbg);border-color:var(--accent)}.vals div:first-child b{color:var(--accent)}
+.xin .vals > .worth{grid-column:1/-1;border-color:var(--good);background:var(--goodbg)}.vals .worth b{color:var(--good)}
+@media (min-width:1024px){.vals{grid-template-columns:repeat(6,1fr)}.xin .vals > div:first-child,.xin .vals > .worth{grid-column:auto}}
 .vals div{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:1px}
 .vals span{font-size:11.5px;color:var(--mute);line-height:1.2}
 .vals b{font:600 15px var(--mono)}
-.trail{font-size:13.5px}
-.rec{display:flex;flex-direction:column;gap:4px}
+.vals div:not(:first-child):not(.worth) b{color:var(--evink)}
+.trail{font-size:13.5px;color:var(--warn)}
+.rec{display:flex;flex-direction:column;gap:4px;border-left:3px solid var(--warn);padding-left:10px}
+.rec .lbl{color:var(--warn)}
 .rec ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
 .rec li{display:grid;grid-template-columns:72px 1fr;gap:8px;font-size:13.5px;line-height:1.35}
 .ri summary{cursor:pointer;list-style:none;color:var(--ink)}.ri summary::-webkit-details-marker{display:none}
 .ri summary::after{content:" ▸";color:var(--mute)}.ri[open] summary::after{content:" ▾"}
-.means{margin:6px 0 4px;font-size:13px;color:var(--ink);background:var(--card);border-left:3px solid var(--accent);padding:6px 8px;border-radius:0 4px 4px 0}
+.means{margin:6px 0 4px;font-size:13px;color:var(--ink);background:var(--card);border-left:3px solid var(--warn);padding:6px 8px;border-radius:0 4px 4px 0}
 .rec ul.rdl{display:block;margin:4px 0 0;padding-left:16px;list-style:disc}
 .rec ul.rdl li{display:list-item;font:12.5px/1.45 var(--mono);color:var(--mute)}
 .rec .rd{font:12px var(--mono);color:var(--mute);padding-top:1px}
@@ -74,6 +85,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .xin a{font-size:13.5px;color:var(--accent)}
 .math summary{cursor:pointer;font-size:12.5px;color:var(--mute)}
 .math ul{margin:6px 0 0;padding-left:16px;font:12px/1.45 var(--sans);color:var(--mute)}
+.sc th.r-price,.sc td.r-price{background:var(--askbg);color:var(--accent)}
+.sc td.r-price{font-weight:600}
+.sc th.r-ev,.sc td.r-ev{background:var(--evbg);color:var(--evink)}
+.sc th.r-val,.sc td.r-val{background:var(--goodbg);color:var(--good)}
+.sc td.r-val{font-weight:600}
+.sc th.r-risk,.sc td.r-risk{color:var(--warn)}
+.sc th.r-risk{background:var(--warnbg)}
+.sc tr.row:hover td,.sc tr.open td{filter:brightness(.96)}
 .sc tfoot td{position:sticky;bottom:0;background:var(--soft);font-weight:600;border-top:2px solid var(--ink)}
 .sc tr.more td{text-align:left;position:static}
 .sc tr.more button{position:sticky;left:10px;font:500 13px var(--sans);padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
@@ -99,7 +118,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
 <body>
 <div class="wrap">
   <header>
-    <h1>Twin Cities homes asking less than they're worth</h1>
+    <h1>Twin Cities homes <span class="hp">asking less</span> than they're <span class="hv">worth</span></h1>
     <p class="lede" id="sub">Every home for sale in the 7-county metro, ranked by how far the ask sits below three separate estimates of value.</p>
   </header>
   <div class="filters">
@@ -119,6 +138,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
     </div>
   </div>
   <p class="how"><b>Tap a column to sort. Tap a home to see it.</b></p>
+  <div class="key" aria-label="Colour key"><span class="k-price">Their asking price</span><span class="k-ev">What the records say</span><span class="k-val">What we think it's worth</span><span class="k-risk">Worth a closer look</span></div>
   <div id="view"></div>
 <details class="method"><summary>How the ranking works</summary>
 <p>Each home gets up to three estimates of value, each a join on public records you can check:</p>
@@ -145,6 +165,8 @@ const drop=d=>d.original_ask&&d.original_ask>d.ask?Math.round((d.ask/d.original_
 const chips=d=>{const s=[...((REC[d.property_id]||{}).tags||[]),...(d.signals||[]).filter(x=>!/vacant building list|^Minneapolis .* case /.test(x))].map(x=>x.replace(/^listing text: /,"").replace(/ \(as of.*\)| CE\d+ \(.*\)/,""));if(d.hoa)s.push("HOA $"+d.hoa+"/mo");return s.map(x=>`<span class="chip">${esc(x)}</span>`).join("")};
 const V=$("#view");let REC={},ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
 const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["block_med","Block",d=>d.block_med],["under","Below value",under],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
+// Colour tells the story: blue = their price, sand = what the records say, green = what we think it's worth, amber = worth a closer look.
+const ROLE={ask:"price",est_cal:"ev",est_comp:"ev",est_deed:"ev",block_med:"ev",under:"val",agree:"val",drop:"risk",n_cuts:"risk"};
 const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,block_med:k,under:v=>v==null?"–":v+"%",agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
 function recs(d){
  const it=(REC[d.property_id]||{}).items||[];if(!it.length)return "";
@@ -174,12 +196,13 @@ function screener(){
  const ph=d=>{const e=EV[d.property_id];return e&&e[1]?`<img src="${esc(e[1])}" alt="" loading="lazy">`:"<span></span>"};
  const ln=d=>{const e=EV[d.property_id];return e&&e[2]?`<a href="${esc(e[2])}" target="_blank" rel="noopener">See the listing on Realtor.com →</a>`:""};
  V.innerHTML=`<div class="sc-wrap"><table class="sc"><thead><tr>${COLS.map(c=>`<th tabindex="0" data-k="${c[0]}" ${c[0]==sk?`aria-sort="${sd<0?"descending":"ascending"}"`:""}>${c[1]}</th>`).join("")}</tr></thead><tbody>
- ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}" tabindex="0">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc pos":c[0]=="drop"&&v?"neg":""}">${c[0]=="address"||c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
+ ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}" tabindex="0">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc":""}">${c[0]=="address"||c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
  ${open1==d.property_id?`<tr class="x"><td colspan="${COLS.length}">${panel(d)}</td></tr>`:""}`).join("")}
  ${rows.length>limit?`<tr class="more"><td colspan="${COLS.length}"><button id="more">Show more (${(rows.length-limit).toLocaleString()} left)</button></td></tr>`:""}
- </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td><td>${k(med(rows.map(r=>r.block_med)))}</td>${(m=>`<td class="${m<0?"neg":"pos"}">${m??"–"}%</td>`)(med(rows.map(under)))}<td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;
+ </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td><td>${k(med(rows.map(r=>r.block_med)))}</td><td>${med(rows.map(under))??"–"}%</td><td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;
  V.querySelectorAll("th").forEach(th=>{const go=()=>{const kk=th.dataset.k;if(sk==kk)sd=-sd;else{sk=kk;sd=["rank","address","city","ask"].includes(kk)?1:-1}limit=150;window.va("event",{name:"sort",data:{col:kk}});screener()};th.onclick=go;th.onkeydown=e=>{if(e.key=="Enter")go()}});
  V.querySelectorAll("tr.row").forEach(tr=>{const go=()=>{const id=tr.dataset.r;open1=open1==id?null:id;if(open1)window.va("event",{name:"expand",data:{id}});screener()};tr.onclick=go;tr.onkeydown=e=>{if(e.key=="Enter")go()}});
+ V.querySelectorAll("thead tr,tr.row,tfoot tr").forEach(tr=>[...tr.children].forEach((td,i)=>{const r=ROLE[COLS[i]?.[0]];if(r)td.classList.add("r-"+r)}));
  $("#more")?.addEventListener("click",()=>{limit+=150;screener()});
 }
 function apply(){
