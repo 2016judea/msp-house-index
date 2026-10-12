@@ -2,6 +2,7 @@
 """Deploy site/ to Vercel over the REST API (no CLI). Needs VERCEL_TOKEN.
 Enables Web Analytics on the project and prints the production aliases."""
 import hashlib, json, os, sys, time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import requests
 
@@ -11,19 +12,35 @@ SITE = Path(__file__).resolve().parent.parent / "site"
 H = {"Authorization": f"Bearer {os.environ['VERCEL_TOKEN']}"}
 API = "https://api.vercel.com"
 
-files = []
-for p in sorted(SITE.rglob("*")):
-    if p.is_file() and not p.name.startswith("."):
-        b = p.read_bytes()
-        sha = hashlib.sha1(b).hexdigest()
-        requests.post(f"{API}/v2/files?teamId={TEAM}", data=b, headers={**H, "x-vercel-digest": sha, "Content-Type": "application/octet-stream"})
-        files.append({"file": str(p.relative_to(SITE)), "sha": sha, "size": len(b)})
+# ~10k files since the block map (site/map/): upload 16 at a time, each sent once per content hash.
+def upload(p):
+    b = p.read_bytes()
+    sha = hashlib.sha1(b).hexdigest()
+    for _ in range(4):
+        try:
+            r = S.post(f"{API}/v2/files?teamId={TEAM}", data=b, headers={**H, "x-vercel-digest": sha, "Content-Type": "application/octet-stream"}, timeout=60)
+            if r.ok:
+                break
+        except requests.RequestException:
+            pass
+        time.sleep(2)
+    else:
+        sys.exit(f"upload failed: {p}")
+    return {"file": str(p.relative_to(SITE)), "sha": sha, "size": len(b)}
+
+
+S = requests.Session()
+S.mount("https://", requests.adapters.HTTPAdapter(pool_maxsize=16))
+paths = [p for p in sorted(SITE.rglob("*")) if p.is_file() and not p.name.startswith(".")]
+with ThreadPoolExecutor(16) as ex:
+    files = list(ex.map(upload, paths))
+print(f"uploaded {len(files)} files")
 d = requests.post(f"{API}/v13/deployments?teamId={TEAM}&forceNew=1", headers=H, json={
     "name": PROJECT, "project": PROJECT, "target": "production", "files": files,
     "projectSettings": {"framework": None, "buildCommand": "echo build", "outputDirectory": ".", "installCommand": "echo skip"},
 }).json()
 print("deployment", d.get("id"), d.get("readyState"), d.get("error"))
-for _ in range(60):
+for _ in range(200):
     s = requests.get(f"{API}/v13/deployments/{d['id']}?teamId={TEAM}", headers=H).json()
     if s.get("readyState") in ("READY", "ERROR"):
         break

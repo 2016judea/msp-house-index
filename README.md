@@ -4,7 +4,8 @@
 
 Every home for sale in the seven-county Minneapolis–Saint Paul metro, joined to
 its county parcel, valued three independent ways, and ranked by how far the
-asking price sits below what it's worth. Each row says why in one plain line,
+asking price sits below what it's worth. The site shows the ten furthest below
+value free; the full list is $100, once. Each row says why in one plain line,
 and expands to the arithmetic behind it.
 
 > asking $150k; 10 similar homes nearby sold for ~$246k; EMV $268k ×1.14 local
@@ -47,6 +48,13 @@ violations, "major rehab", "fire damage"…) gets a tier, and its value becomes
 the same house bought and resold within 2 years (`scripts/build_condition.py`,
 `data/condition.json`, method in `DATA_MODEL.md`).
 
+**Block map.** Each opened row shows the Metropolitan Council's spring 2025 aerial
+photo (public domain, via MnGeo) with every lot within ~150 m drawn on top and filled
+by what the county appraises it at, per finished sq ft or in total, in fifths of the
+homes in frame. Shops, offices and apartments get a dashed line and the businesses on
+them (Overture Places). `make map` rebuilds `site/map/` (~32 MB, 400 m cells, loaded
+only when a row opens).
+
 No number comes from a model. Every figure is a join or arithmetic on one.
 
 ## Run it
@@ -55,7 +63,7 @@ No number comes from a model. Every figure is a join or arithmetic on one.
 uv sync
 make fetch     # ~45 min of polite Realtor.com requests, cached on disk per day
 make county    # reads ~/Desktop/bricks/data/*.duckdb read-only
-make build     # seconds: data/index.parquet, data/index.csv, site/data.json
+make build     # seconds: data/index.*, private/ (full set), site/ (top 10)
 python scripts/qa_row.py 1 2 3   # everything behind a ranked row
 VERCEL_TOKEN=… make deploy
 ```
@@ -64,9 +72,31 @@ Realtor.com endpoints are the ones its own pages call (`frontdoor/graphql`
 `home_search` and `home`), found in `~/Desktop/house-lookup`. Requests are
 spaced 1.5 s apart, 20 homes per detail request, everything cached.
 
+## The paywall
+
+`site/` ships only the ten homes furthest below value (the page's default sort) and
+`site/meta.json` (the count and every city, for the offer). `make build` writes the
+full set to `private/` (gitignored); `scripts/build_public.py` gates it, and
+`scripts/deploy.py` uploads `private/bundle/` as `api/_full/`, which only the
+`/api/data` function reads.
+
+| route | does |
+|---|---|
+| `POST /api/checkout` | Stripe embedded Checkout, $100, Customer + Invoice; mints the buyer's password (`XXXX-XXXX-XXXX`: a nonce + an HMAC of it under `ACCESS_SECRET`) into the session metadata and the invoice footer |
+| `POST /api/stripe-webhook` | `checkout.session.completed`: emails the buyer the password and a `/?pw=` link (Mailgun), once per session, and emails Aidan a sale notice |
+| `GET /api/session-status` | the return page: paid or not, and the buyer's email; sends the password email if the webhook has not |
+| `GET /api/data` | password in `x-password`: HMAC check, then a paid session for it in Stripe; returns every row, or `?id=` one home's records, `?cell=` one map cell |
+
+Vercel env: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ACCESS_SECRET`,
+`MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, `MAILGUN_FROM`. A lost password:
+`python scripts/fulfil.py <session_id>`; every sale: `--recent`; a free copy: `--comp`.
+
+The git history before 2026-10-11 still holds the full index (`data/index.csv`,
+`site/data.json`), because this repo is public.
+
 ## Output
 
-`data/index.csv` / `data/index.parquet`: one row per listing, ranked rows first,
+`data/index.csv` / `data/index.parquet` (local, gitignored): one row per listing, ranked rows first,
 with `rank`, `score`, `why`, the three estimates and every input behind them,
 `exclusion` for the rows that weren't ranked, and the signals.
 

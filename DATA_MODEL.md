@@ -205,3 +205,95 @@ subtracting it would overstate the as-is value. It is shown as a card, never sub
 Every sentence in the story is a template in `site/index.html` (`events()`) over these
 records; the current listing's sentence uses the same cut count and drop as the Cuts and
 Dropped columns (counted from the last relist).
+
+## Block map: what is the neighbourhood appraised at? (added 2026-10-11, written before probing)
+
+Aidan: *"an aerial grid view of the neighborhood and what they are appraised at… helps visualize
+the neighborhood valuation dynamic."* The ideal record, from the need alone:
+
+### MapParcel — *one lot near the listing*
+
+| field | question it answers |
+|---|---|
+| lot line (polygon) | where does this lot sit, on the photo |
+| emv_total | what does the county say the whole lot is worth |
+| finished sq ft | how big is the house, so value reads per square foot and a big house isn't just "valuable" |
+| emv ÷ finished sq ft | is this house appraised high or low *for its size*, against its neighbours |
+| year built | is it the same vintage as the listing |
+| last sale date + price | what a buyer actually paid, and when |
+| address (number + street) | which house is this, to go and look |
+| units on the lot (stacked condo parcels) | is this one house or a building of units |
+| is_listing | which lot is the one for sale |
+
+### Neighbourhood — *the frame around one listing*
+
+| field | question |
+|---|---|
+| radius (~150-200 m) | the block and the blocks facing it |
+| value breaks (quantiles of the parcels in frame) | what counts as high or low *here* |
+| aerial photo, recent, leaf-off | what is physically there: garages, additions, vacant lots, the park |
+
+## Neighborhood: what is around this house? (added 2026-10-11, written before probing)
+
+Aidan: *"any other data from brickandmortar.dev that would be interesting and applicable?"*
+Applicable means: a fact someone evaluating this one home would act on. Each is a fact
+about the parcel or a measured count around it, carrying its source and date.
+
+### ParcelRules — *what can I do with this lot?*
+
+| field | question it answers |
+|---|---|
+| zoning_district (code + name) | what the city lets you build here |
+| zoning_purpose (the code's own sentence, section cited) | what that district is for, in the city's words |
+| historic (landmark / historic site, on or beside the lot) | will a rehab or exterior change need preservation review |
+| lead_service_line (city classification) | will the water line need replacing |
+
+### Hazards — *what is in the ground nearby?*
+
+| field | question |
+|---|---|
+| cleanup sites within 200 m (name, program, open/closed, distance) | is there known contamination next door |
+
+### Investment — *is money going into this area or leaving it?*
+
+| field | question |
+|---|---|
+| permits within 400 m, last 2 years (count, declared value) | are neighbours fixing up |
+| new dwellings approved within 400 m | is anyone building here |
+| demolitions within 400 m | are houses coming down |
+| city median of each, same radius and window | is that a lot or a little *here* |
+
+### Block — *who owns the street?*
+
+| field | question |
+|---|---|
+| homes on the block, and how many send the tax bill elsewhere | owner-occupied street, or a landlord street |
+
+### Access — *how do I get around, and how loud is it?*
+
+| field | question |
+|---|---|
+| transit stops within 400 m, nearest distance | can I live here without a car |
+| busiest counted road within 100 m and its daily traffic | is the house on a loud road |
+
+### Left out on purpose
+
+Crime, shots fired, 911 calls, police stops and census demographics. Shown next to homes for
+sale they steer buyers by who lives in a neighbourhood, which is a fair-housing problem and the
+reason the big listing sites took crime maps down. They are in the bricks substrate; they are
+not joined here. FEMA flood zone is already on the record list (`build_records.py`).
+
+### Reality check for the block map (2026-10-11, `scripts/build_map.py` → `site/map/<cell>.json`)
+
+| field | filled | source / note |
+|---|---|---|
+| lot lines | 397,607 lots around 7,262 of 7,262 ranked listings | MetroGIS parcels, all 7 counties, simplified to 1 m. Dakota draws 18,882 condo/townhome units as points with no lot polygon: drawn as dots |
+| emv_total | every lot the county values | MetroGIS current |
+| finished sq ft | county file outside Hennepin (~80-95% of dwellings); Minneapolis from the city assessor's 2025 file (115,771 parcels) | **Hennepin outside Minneapolis: unfilled.** No public file carries it; those maps open on total value and say why |
+| stacked units | median *dwelling* unit per lot | parking/storage stall parcels ($9k) would otherwise drag a condo tower's median down |
+| year built, last sale | county file | Hennepin sale dates are months |
+| not a home | 34,100 lots | county `is_dwelling` false (commercial, industrial, apartments 4+, churches, parks); drawn with a dashed line |
+| businesses on them | 22,677 | **Overture Places** (CDLA-Permissive-2.0), confidence ≥ 0.5, point in a non-home lot only, so a home-based registration never names a house. **Google ratings/status not shown**: bricks' RIGHTS_WITHHELD class, and a static file here is redistribution. **MN SOS bulk not used**: non-commercial licence |
+| aerial photo | 7-county, spring 2025, leaf-off, 30 cm | Metropolitan Council via MnGeo WMS (`met25`), **public domain** (Minn. Stat. ch. 13, per its metadata); attributed under the map |
+
+Payload: 32.0 MB in 9,553 cell files of 400 m; an opened row fetches 1-4 of them (median 9 KB).
