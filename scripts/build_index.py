@@ -345,8 +345,11 @@ def main():
             open_viol.setdefault(v["APN"], []).append((v.get("Violation_Code_Description") or "").strip())
     for r in rows:
         r["open_violations"] = open_viol.get(r["pin"], []) if r["county"] == "hennepin" else []
-    global COND
+    global COND, VAL, ASK
     COND = json.loads((D / "condition.json").read_text())
+    VAL = _comp_grids(rows)
+    from msp.valuation import AskModel
+    ASK = AskModel.load()
     out = [score(r) for r in rows]
     out.sort(key=lambda r: (r["rank_ok"], r["score"] if r["score"] is not None else -9), reverse=True)
     rank = 0
@@ -364,7 +367,7 @@ def main():
     keep = ["rank", "property_id", "url", "address", "city", "zip", "county", "type_group", "beds", "baths", "sqft", "year_built", "ask", "original_ask",
             "dom", "n_cuts", "cut_pct", "pending", "score", "est_cal", "est_comp", "est_deed", "est_avm", "agree", "why", "exclusion",
             "evidence", "signals", "photo", "distressed", "hoa", "list_date", "tier", "tier_facts", "asis_ratio", "asis_n", "arv", "worth",
-            "repair_ppsf", "repair_n", "repair_est", "spread_ppsf", "discounts_named", "n_estimates"]
+            "repair_ppsf", "repair_n", "repair_est", "spread_ppsf", "discounts_named", "n_estimates", "worth_est", "unexplained_gap", "cond_words", "expected_sale"]
     ranked = [{k: r.get(k) for k in keep if r.get(k) not in (None, [], "", False)} for r in out if r["rank_ok"]]
     # The list paints from data.json; evidence.json (the expanded view) loads after.
     heavy = ("evidence", "photo", "url")
@@ -374,6 +377,27 @@ def main():
     (site / "evidence.json").write_text(json.dumps({r["property_id"]: [r.get(k) for k in heavy] for r in ranked},
                                                    separators=(",", ":"), default=str))
     summary(out)
+
+
+def _comp_grids(rows):
+    """Adjusted comp grid per listing (msp/valuation.py; accuracy in data/backtest.json)."""
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from msp import valuation
+    grids, models = valuation.value_listings(rows)
+    # One file per listing, gated like every per-listing layer (build_public.py PER_LISTING_DIRS).
+    out = ROOT / "private" / "comps"
+    import shutil
+    shutil.rmtree(out, ignore_errors=True)
+    out.mkdir(parents=True)
+    keep = ("address", "city", "photo", "url", "sold_date", "sold_price", "dist_m", "sqft", "beds", "baths", "year", "flags",
+            "same_building", "same_subdivision", "time_adjusted", "lines", "adjusted", "weight", "emv")
+    for pid, g in grids.items():
+        slim = {k: g.get(k) for k in ("value", "emv_value", "emv_ratio", "comp_value", "model", "model_n", "month", "range")}
+        slim["comps"] = [{k: c.get(k) for k in keep} for c in g["comps"]]
+        (out / f"{pid}.json").write_text(json.dumps(slim, separators=(",", ":"), default=float))
+    (D / "valuation_model.json").write_text(json.dumps(models.summaries(), indent=1))
+    return grids
 
 
 def _records(con, sql):
@@ -396,7 +420,10 @@ def score(r):
 
     # --- the three opinions ---
     est_cal = round(r["emv"] * r["cal_ratio"]) if r.get("emv") and r.get("cal_ratio") and r.get("cal_n", 0) >= 10 else None
-    est_comp = round(r["comp_ppsf"] * r["sqft"]) if r.get("comp_ppsf") and r.get("sqft") else None
+    g = VAL.get(r["property_id"])
+    est_comp = g["comp_value"] if g else round(r["comp_ppsf"] * r["sqft"]) if r.get("comp_ppsf") and r.get("sqft") else None
+    if g:
+        r["comp_n"], r["same_building"] = len(g["comps"]), any(c["same_building"] for c in g["comps"])
     est_deed = None
     deed_date = r.get("deed_date")
     if r.get("deed_price") and deed_date and r.get("idx_then") and r.get("idx_now"):
@@ -420,14 +447,27 @@ def score(r):
     arvs = [e for e in (est_cal, est_comp, est_deed) if e]
     r["arv"] = round(statistics.median(arvs)) if arvs else None
     r["worth"] = round(r["arv"] * ratio) if r["arv"] else None
+    # The ask is information (msp/valuation.py AskModel, curve in data/backtest.json): each
+    # estimate becomes the price a home asking this much has actually sold for.
+    cond = (g or {}).get("subject", {}).get("cond") or (0.0, [])
+    # Closed sales say the ask is nearly the price: homes listed 10-26% under our estimate sold
+    # within 1% of their ask (data/ask_model.json curve). So where the ask is 30%+ under every
+    # estimate and no record or listing word explains it, the value is the expected sale at that
+    # ask, not our estimate: we can't see inside (8031 Tierneys Woods Curv, 2026-10-11).
+    r["worth_est"], r["cond_words"] = r["worth"], cond[1]
+    r["expected_sale"] = round(ASK.predict(r["worth"], ask, cond)) if ASK and ask and r["worth"] else None
+    r["unexplained_gap"] = bool(ask and r["worth_est"] and ask < 0.7 * r["worth_est"] and tier == "none" and cond[0] >= 0)
+    expect = (lambda e: ASK.predict(e, ask, cond)) if r["unexplained_gap"] else (lambda e: e)
+    if r["unexplained_gap"]:
+        r["worth"] = r["expected_sale"]
     if t:
         rp = COND["tiers"]["heavy" if tier == "condemned" else tier]
         r["repair_ppsf"], r["repair_n"], r["spread_ppsf"] = rp["repair_ppsf"], rp["repair_n"], rp["spread_ppsf"]
         r["repair_est"] = round(rp["repair_ppsf"] * r["sqft"]) if r.get("sqft") else None
     named = [(n, e) for n, e in (("County", est_cal), ("Comps", est_comp), ("Last sale", est_deed), ("Realtor.com", r.get("rdc_avm"))) if e]
-    ests = [e * ratio for _, e in named]
+    ests = [expect(e * ratio) for _, e in named]
     disc = [1 - ask / e for e in ests] if ask else []
-    r["discounts_named"] = [{"name": n, "arv": e, "asis": round(e * ratio), "disc": round(1 - ask / (e * ratio), 3)} for n, e in named] if ask else []
+    r["discounts_named"] = [{"name": n, "arv": e, "asis": round(e * ratio), "expected": round(expect(e * ratio)), "disc": round(1 - ask / expect(e * ratio), 3)} for n, e in named] if ask else []
     r["n_estimates"] = len(ests)
     if len(disc) >= 2:
         # Missing opinions count as zero discount, out of three; disagreement is
@@ -512,7 +552,11 @@ def score(r):
     if est_cal:
         ev.append(f"County: EMV {money(r['emv'])} ({county.title()} {assessed.year} assessment, parcel {r['pin']}) × {r['cal_ratio']:.2f}, "
                   f"the median sale÷EMV of the {r['cal_n']} nearest recorded sales at a similar EMV (within {r['cal_radius_m']/1609:.1f} mi) = {money(est_cal)}")
-    if est_comp:
+    if est_comp and g:
+        ev.append(f"Comps: the {len(g['comps'])} most similar sales, each brought to {g['month']} with the {g['model']} price index and adjusted for "
+                  f"every difference at rates measured from {g['model_n']:,} sales, weighted toward the least-adjusted = {money(est_comp)} "
+                  f"(adjusted range {money(g['range'][0])} to {money(g['range'][1])})")
+    elif est_comp:
         where = "in this building" if r.get("same_building") else f"within {r['comp_radius_m']/1609:.1f} mi"
         ev.append(f"Comps: {r['comp_n']} similar {PLURAL.get(tg, 'homes')} sold in the last year {where} at a median "
                   f"${r['comp_ppsf']:.0f}/sqft × {r['sqft']:,} sqft = {money(est_comp)} (nearest: {r['comp_nearest_addr']}, {money(r['comp_nearest_price'])})")
@@ -524,12 +568,18 @@ def score(r):
         src = (f"{tt['stp_n']} Saint Paul flips with ${COND['light_max_ppsf']}+/sqft of permitted work and {tt['mpls_n']} Minneapolis houses bought with a vacant-building case open"
                if r["tier"] != "light" else f"{tt['stp_n']} Saint Paul flips with permitted work under ${COND['light_max_ppsf']}/sqft")
         ev.append(f"Condition {r['tier']}: " + "; ".join(r["tier_facts"]) + ".")
-        ev.append(f"Worth as-is: the estimates above are after-repair values. Their middle, {money(r['arv'])}, × {r['asis_ratio']:.2f} = {money(r['worth'])}. "
+        ev.append(f"Worth as-is: the estimates above are after-repair values. Their middle, {money(r['arv'])}, × {r['asis_ratio']:.2f} = {money(r['worth_est'])}. "
                   f"{r['asis_ratio']:.2f} is the median buy price ÷ resale price of {r['asis_n']} houses sold and resold within 3-24 months for more ({src})"
                   + (". No condemned house in the records was flipped, so this uses the heavy ratio" if r["tier"] == "condemned" else "") + ".")
         if r.get("repair_est"):
             ev.append(f"Repair cost: those flips filed permits worth a median ${r['repair_ppsf']:.0f}/sqft (n={r['repair_n']}, Saint Paul) × {r['sqft']:,} sqft = {money(r['repair_est'])}. "
                       f"Owners under-declare permit values: the same flips resold for ${r['spread_ppsf']:.0f}/sqft more than they were bought for.")
+    if r.get("expected_sale"):
+        ev.append(f"Expected sale at this ask: {money(r['expected_sale'])}. In {ASK.n:,} closed sales, homes asking {abs(ask / r['worth_est'] - 1):.0%} "
+                  f"{'under' if ask < r['worth_est'] else 'over'} our estimate sold {r['expected_sale'] / ask - 1:+.1%} against their ask"
+                  + (" (used as the value here: nothing on record explains the gap)" if r.get("unexplained_gap") else ""))
+    if r.get("unexplained_gap"):
+        ev.append("Asking far below every estimate with no reason on record. Usually condition we can't see.")
     if r.get("rdc_avm"):
         ev.append(f"Realtor.com estimate (avg of {r['rdc_avm_n']}): {money(r['rdc_avm'])}")
     if r.get("hoa"):

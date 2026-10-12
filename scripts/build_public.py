@@ -53,7 +53,7 @@ PER_LISTING = []
 extra = {n: json.loads((PRIV / f"{n}.json").read_text()) for n in PER_LISTING}
 # Or a directory of one file per listing, private/<name>/<property_id>.json: the top 10's ship
 # as site/<name>/<property_id>.json. The page reads either kind with layer(name, id).
-PER_LISTING_DIRS = ["nb"]  # scripts/build_neighborhood.py
+PER_LISTING_DIRS = ["nb", "comps"]  # scripts/build_neighborhood.py; comps: build_index.py (msp/valuation.py grid)
 for n in PER_LISTING_DIRS:
     extra[n] = {f.stem: json.loads(f.read_text()) for f in (PRIV / n).glob("*.json")}
 
@@ -86,7 +86,11 @@ if (PRIV / "map").exists():
     for k in {k for r in top if r.get("m") for k in r["m"][0]}:
         shutil.copy(PRIV / "map" / f"{k}.json", SITE / "map" / f"{k}.json")
 cities = [c for c, _ in collections.Counter(r["city"] for r in rows if r.get("city")).most_common()]
-(SITE / "meta.json").write_text(dump({"built": d["built"], "n": len(rows), "shown": len(top), "cities": cities, "price_usd": 100}))
+# The accuracy line, read from the backtest (scripts/backtest.py), never typed.
+bt = json.loads((ROOT / "data" / "backtest.json").read_text())
+acc = {"n": bt["methods"]["expected"]["all"]["n"], "days": bt["holdout_days"],
+       "within_10": bt["methods"]["expected"]["all"]["within_10"], "within_10_records": bt["methods"]["worth_new"]["all"]["within_10"]}
+(SITE / "meta.json").write_text(dump({"built": d["built"], "n": len(rows), "shown": len(top), "cities": cities, "price_usd": 100, "accuracy": acc}))
 
 # --- private: the bundle the paid route serves ---
 B = PRIV / "bundle"

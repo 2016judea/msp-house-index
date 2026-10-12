@@ -641,7 +641,10 @@ def grid(s, pool, asof, models, n_comps=None):
     # size, quality and lot, so this needs no adjustments, only the time index.
     emv_value = None
     if s.get("emv") and hasattr(pool, "emv"):
-        rs = [(c["time_adjusted"] / pool.emv[c["i"]], c["weight"]) for c in comps if not np.isnan(pool.emv[c["i"]])]
+        # A sale at under half or over twice its EMV was matched to the wrong parcel (a condo's
+        # garage stall, a common-area lot): left in, one put a $190k condo at $7M (2026-10-12).
+        rs = [(c["time_adjusted"] / pool.emv[c["i"]], c["weight"]) for c in comps
+              if not np.isnan(pool.emv[c["i"]]) and 0.5 <= c["sold_price"] / pool.emv[c["i"]] <= 2.0]
         if len(rs) >= 3:
             rs.sort()
             tot, acc = sum(x for _, x in rs), 0
@@ -653,7 +656,7 @@ def grid(s, pool, asof, models, n_comps=None):
             for c in comps:
                 e = pool.emv[c["i"]]
                 c["emv"] = None if np.isnan(e) else float(e)
-    return {"value": round(value, -3), "emv_value": round(emv_value, -3) if emv_value else None, "emv_ratio": round(ratio, 3) if emv_value else None, "model": f"{m.area} {m.kind}", "model_n": m.n, "month": m_month, "comps": comps,
+    return {"value": float(round(value, -3)), "emv_value": float(round(emv_value, -3)) if emv_value else None, "emv_ratio": round(ratio, 3) if emv_value else None, "model": f"{m.area} {m.kind}", "model_n": m.n, "month": m_month, "comps": comps,
             "range": [round(float(vals.min()), -3), round(float(vals.max()), -3)]}
 
 
@@ -699,7 +702,7 @@ def value_listings(listings, asof=None):
                                                       "renovated", "needs_work", "subdivision")})
         g = grid(s, pool, asof, models)
         if g:
-            g["comp_value"] = round(reconcile(g), -3)
+            g["comp_value"] = float(round(reconcile(g), -3))
             g["subject"] = {k: s.get(k) for k in ("sqft", "beds", "baths", "baths_full", "baths_half", "lot", "year", "garage", "bsmt_fin",
                                                    "walkout", "roof_new", "below_share", "cond")}
             out[L["property_id"]] = g
@@ -756,7 +759,14 @@ class AskModel:
 
     def predict(self, est, ask, cond=None):
         cneg = 1.0 if cond and cond[0] < 0 else 0.0
-        return est * math.exp(float(np.dot(self._x(math.log(ask / est), cneg), self.beta)))
+        g = min(max(math.log(ask / est), -0.8), 0.5)
+        out = est * math.exp(float(np.dot(self._x(g, cneg), self.beta)))
+        # Never further from the ask than closed sales in any gap band were (the curve's own
+        # sale-vs-ask range): past the data a piecewise line would invent a discount.
+        rng = [c["sale_vs_ask_fit"] for c in (self.table or []) if c["n"] >= 30]
+        if rng:
+            out = min(max(out, ask * (1 + min(rng))), ask * (1 + max(rng)))
+        return float(out)
 
     def summary(self):
         return {"beta": [round(b, 5) for b in self.beta], "knots": list(self.knots), "n": self.n,

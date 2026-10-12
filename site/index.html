@@ -241,6 +241,23 @@ details.method summary{cursor:pointer;color:var(--ink)}
 .nb .nbd ul{margin:0 0 6px;padding-left:16px}.nb .nbd li{background:none;border:0;color:var(--mute)}
 .nb .nbd p{margin:0;font:11.5px var(--mono);color:var(--mute)}.nb .nbd a{color:var(--accent)}
 .nb-hd{margin-top:14px}
+/* Comp grid: each sale in the sand "records" role, the reconciled value in green. Phone: a sideways row of cards; desktop: a table. */
+.acc{margin:4px 0 0;font-size:13px;color:var(--mute)}.acc b{color:var(--good);font-weight:600}
+.cg-v{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--goodbg);border:1px solid var(--good);border-radius:6px;padding:7px 9px;font-size:13px;color:var(--mute)}
+.cg-v b{font:600 17px var(--mono);color:var(--good)}
+.cg-cards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-top:6px;overscroll-behavior-x:contain}
+.cg-c{flex:0 0 82%;max-width:280px;scroll-snap-align:start;background:var(--evbg);border:1px solid var(--evline);border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--evink)}
+.cg-c img,.cg-tab img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px;max-height:none}
+.cg-c .a{font-weight:600;color:var(--ink);font-size:13.5px}.cg-c .p{font:600 14px var(--mono);color:var(--evink)}
+.cg-c ul,.cg-tab ul{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.cg-c li,.cg-tab li{font-size:11.5px;line-height:1.35;color:var(--mute)}.cg-c li b,.cg-tab li b{font:600 11.5px var(--mono);color:var(--ink)}
+.cg-adj{border-top:1px dashed var(--evline);padding-top:4px;display:flex;justify-content:space-between;font-size:12px}.cg-adj b{font:600 14px var(--mono);color:var(--good)}
+.cg-f{display:flex;flex-wrap:wrap;gap:3px}.cg-f span{font-size:10.5px;padding:1px 5px;border-radius:3px;background:var(--card);border:1px solid var(--evline)}
+.cg-tab{display:none;width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px}
+.cg-tab th{font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--mute);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+.cg-tab td{vertical-align:top;padding:6px;border-bottom:1px solid var(--evline);background:var(--evbg);color:var(--evink);white-space:normal;text-align:left}
+.cg-tab td.n{font:600 13px var(--mono);white-space:nowrap}.cg-tab td.g{color:var(--good)}
+@media (min-width:1024px){.cg-cards{display:none}.cg-tab{display:table}.cg-tab td:first-child{width:92px}}
 </style>
 </head>
 <body>
@@ -248,6 +265,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
   <header>
     <h1>Twin Cities homes <span class="hp">asking less</span> than they're <span class="hv">worth</span></h1>
     <p class="lede" id="sub">Every home for sale in the 7-county metro, ranked by how far the ask sits below three separate estimates of value.</p>
+    <p class="acc" id="acc" hidden></p>
   </header>
   <div class="filters" id="filters" hidden>
     <select id="city" aria-label="City"><option value="">All cities</option></select>
@@ -313,9 +331,9 @@ const worth=d=>d.worth||(ests(d).length?mid(d):null);
 const under=d=>worth(d)?Math.round((1-d.ask/worth(d))*100):null;
 const TIER={light:"Light work",heavy:"Heavy rehab",condemned:"Condemned"};
 const drop=d=>d.original_ask&&d.original_ask>d.ask?Math.round((d.ask/d.original_ask-1)*100):0;
-const chips=d=>{const s=[...((REC[d.property_id]||{}).tags||[]),...(d.signals||[]).filter(x=>!/vacant building list|^Minneapolis .* case /.test(x)&&!(d.asis_ratio&&/^listing text/.test(x)))].map(x=>x.replace(/^listing text: /,"").replace(/ \(as of.*\)| CE\d+ \(.*\)/,""));if(d.hoa)s.push("HOA $"+d.hoa+"/mo");return s.map(x=>`<span class="chip">${esc(x)}</span>`).join("")};
+const chips=d=>{const s=[...((REC[d.property_id]||{}).tags||[]),...(d.signals||[]).filter(x=>!/vacant building list|^Minneapolis .* case /.test(x)&&!(d.asis_ratio&&/^listing text/.test(x)))].map(x=>x.replace(/^listing text: /,"").replace(/ \(as of.*\)| CE\d+ \(.*\)/,""));if(d.hoa)s.push("HOA $"+d.hoa+"/mo");if(d.unexplained_gap)s.unshift("Asking far below every estimate with no reason on record. Usually condition we can't see.");return s.map(x=>`<span class="chip">${esc(x)}</span>`).join("")};
 const V=$("#view");let REC={},ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
-const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["block_med","Block",d=>d.block_med],["under","Vs value",under],["tier","Condition",d=>TIER[d.tier]||null],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
+const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["block_med","Block",d=>d.block_med],["under","Vs value",under],["tier","Condition",d=>TIER[d.tier]||(d.unexplained_gap?"Gap unexplained":null)],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
 // Colour tells the story: blue = their price, sand = what the records say, green = what we think it's worth, amber = worth a closer look.
 const ROLE={ask:"price",est_cal:"ev",est_comp:"ev",est_deed:"ev",block_med:"ev",agree:"val",tier:"risk",drop:"risk",n_cuts:"risk"};
 const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,block_med:k,under:v=>v==null?"–":Math.abs(v)<=3?Math.abs(v)+"%":Math.abs(v)+"% "+(v>0?"under":"over"),agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
@@ -478,7 +496,8 @@ function panel(d){
  const fx=tiered?" fixed up":"";
  return `<div class="xin">${ph}<div class="xb">
   <div class="verdict"><b class="${vsCls(u)=="even"?"even":u<0?"neg":"pos"}">${u==null?"–":Math.abs(u)<=3?"About at "+(tiered?"its as-is value":"value")+` (${Math.abs(u)}%)`:Math.abs(u)+"% "+(u<0?"above":"below")+(tiered?" as-is value":" value")}</b></div>
-  <div class="vals">${tile("Asking",d.ask)}${tile("County says"+fx,d.est_cal)}${tile("Similar homes sold"+(tiered?" (fixed up)":""),d.est_comp)}${tile("Last sale"+(tiered?", brought forward":""),d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}${tiered&&d.repair_est?`<div class="repair"><span>Repair cost</span><b>${k(d.repair_est)}</b><span>permits filed say, ${d.repair_n} flips</span></div>`:""}<div class="worth ${vsCls(u)}"><span>${tiered?"Worth as-is":"Worth about"}</span><b>${k(worth(d))}</b><span>${tiered?`${k(mid(d))} fixed up × ${d.asis_ratio.toFixed(2)}`:"middle of the estimates"}</span></div></div>
+  <div class="vals">${tile("Asking",d.ask)}${tile("County says"+fx,d.est_cal)}${tile("Similar homes sold"+(tiered?" (fixed up)":""),d.est_comp)}${tile("Last sale"+(tiered?", brought forward":""),d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}${tiered&&d.repair_est?`<div class="repair"><span>Repair cost</span><b>${k(d.repair_est)}</b><span>permits filed say, ${d.repair_n} flips</span></div>`:""}<div class="worth ${vsCls(u)}"><span>${tiered?"Worth as-is":"Worth about"}</span><b>${k(worth(d))}</b><span>${d.unexplained_gap?`expected sale at this ask; the records say ${k(d.worth_est)}`:tiered?`${k(mid(d))} fixed up × ${d.asis_ratio.toFixed(2)}`:"middle of the estimates"}</span></div></div>
+  <div class="cg-slot" data-id="${d.property_id}">${compsHTML(d)}</div>
   ${chips(d)?`<div>${chips(d)}</div>`:""}
   ${d.m?`<div class="bm-slot" data-id="${d.property_id}"></div>`:""}
   <div class="nb-slot" data-id="${d.property_id}">${nbHTML(d.property_id)}</div>
@@ -508,6 +527,27 @@ function screener(){
  placeMap();
  requestAnimationFrame(drawTL);
 }
+
+// ---- Comp grid: the 6 most similar sales, each time-adjusted and adjusted for every difference at measured rates
+// (msp/valuation.py → private/comps, gated like every per-listing layer). Every number here is computed, none typed.
+const CG={};
+function compsHTML(d){
+ const id=d.property_id;
+ if(!(id in CG)){CG[id]=undefined;layer("comps",id).then(x=>{CG[id]=x||{};const sl=V.querySelector(`.cg-slot[data-id="${id}"]`);if(sl)sl.innerHTML=compsHTML(d)});return `<div class="lbl">Comparable sales</div><p class="lbl">Loading…</p>`}
+ const g=CG[id];if(g===undefined)return `<div class="lbl">Comparable sales</div><p class="lbl">Loading…</p>`;
+ if(!g.comps?.length)return "";
+ const mo=s=>new Date(s.slice(0,10)+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"});
+ const mi=m=>m<160?"same block":(m/1609).toFixed(1)+" mi";
+ const sg=n=>(n>=0?"+":"−")+k(Math.abs(n)).replace("−","");
+ const lines=c=>c.lines.map(l=>`<li><b>${sg(l.amt)}</b> ${esc(l.why)}</li>`).join("");
+ const fl=c=>c.flags?.length?`<div class="cg-f">${c.flags.map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:"";
+ const img=c=>c.photo?`<img src="${esc(c.photo)}" alt="" loading="lazy">`:"";
+ const facts=c=>`${c.sqft?.toLocaleString()} sqft · ${c.beds??"–"} bd ${c.baths??"–"} ba · built ${c.year??"–"}`;
+ const head=`<div class="lbl">Comparable sales, adjusted like an appraiser</div>
+  <div class="cg-v"><b>${k(g.comp_value)}</b><span>${g.emv_value?`the adjusted sales say ${k(g.value)}; the same sales against their county values say ${k(g.emv_value)}; half of each`:`weighted middle of the adjusted sales`}. Rates measured from ${g.model_n.toLocaleString()} ${esc(g.model)} sales, prices brought to ${mo(g.month+"-01")}.</span></div>`;
+ const cards=`<div class="cg-cards">${g.comps.map(c=>`<div class="cg-c">${img(c)}<span class="a">${esc(c.address)}</span><span><span class="p">${k(c.sold_price)}</span> sold ${mo(c.sold_date)} · ${mi(c.dist_m)}</span><span>${facts(c)}</span>${fl(c)}<ul>${lines(c)}</ul><div class="cg-adj"><span>Adjusted · weight ${Math.round(c.weight*100)}%</span><b>${k(c.adjusted)}</b></div></div>`).join("")}</div>`;
+ const tab=`<table class="cg-tab"><thead><tr><th></th><th>Sale</th><th>Adjustments</th><th>Adjusted</th><th>Weight</th></tr></thead><tbody>${g.comps.map(c=>`<tr><td>${img(c)}</td><td><b style="color:var(--ink)">${esc(c.address)}</b><br><span class="p">${k(c.sold_price)}</span> ${mo(c.sold_date)} · ${mi(c.dist_m)}<br>${facts(c)}${fl(c)}</td><td><ul>${lines(c)||"<li>none needed</li>"}</ul></td><td class="n g">${k(c.adjusted)}</td><td class="n">${Math.round(c.weight*100)}%</td></tr>`).join("")}</tbody></table>`;
+ return head+cards+tab}
 
 // ---- Neighborhood: facts about the parcel and counts around it (scripts/build_neighborhood.py → private/nb, gated like every
 // per-listing layer). Crime and demographics are left out on purpose (fair housing; DATA_MODEL.md, Neighborhood).
@@ -741,6 +781,8 @@ async function confirmPaid(id){
 const qs=new URLSearchParams(location.search),pwq=qs.get("pw"),paidq=qs.get("paid");
 if(pwq||paidq){qs.delete("pw");qs.delete("paid");history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:"")+location.hash)}
 fetch("meta.json").then(r=>r.json()).then(m=>{
+ // Written from data/backtest.json by build_public.py: never typed.
+ const a=m.accuracy;if(a){$("#acc").innerHTML=`On the ${a.n.toLocaleString()} homes that sold in the last ${a.days} days, our value was within 10% of the sale price for <b>${Math.round(a.within_10_records)}%</b>. Taking the asking price into account, ${Math.round(a.within_10)}%.`;$("#acc").hidden=false}
  $("#payN").textContent=m.n.toLocaleString();
  const c=m.cities;$("#payC").textContent=` across ${c.length>1?c.slice(0,-1).join(", ")+" and "+c[c.length-1]:c[0]}.`;
 });
