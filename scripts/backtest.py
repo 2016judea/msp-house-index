@@ -9,7 +9,7 @@ sale price.
 
 The site's accuracy line is read from data/backtest.json, never typed.
 """
-import json, sys, statistics, collections, datetime as dt
+import json, math, sys, statistics, collections, datetime as dt
 from pathlib import Path
 import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -150,6 +150,8 @@ def tiers():
     return tier
 
 
+NO_CAL = True  # the validate-window recalibration made it worse (bias +0.9%); left off
+TRAIN_FROM = "2025-12-01"  # two months after the pool starts, so the first fits have comps
 TEST_HOUSES = {"7744511998": "8031 Tierneys Woods Curv, Bloomington: asking $499,900, the index said $921k (2026-10-11)"}
 
 
@@ -166,8 +168,10 @@ def main():
     val_lo = (TODAY - dt.timedelta(days=2 * HOLDOUT_DAYS)).isoformat()
     # Each home is valued with area models fitted on sales before its month (Models),
     # comps sold before its day (grid), and condition phrases measured before the holdout.
-    models = V.Models(pool, holdout_from=val_lo)
-    subs = [i for i, r in enumerate(pool.rows) if r["date"] >= val_lo and r["type_group"] in TYPES][::every]
+    # Every sale from TRAIN_FROM is valued too: the sale-to-list model trains on the ones
+    # before the holdout (all seasons). Each still uses only models fitted before its month.
+    models = V.Models(pool, holdout_from=TRAIN_FROM)
+    subs = [i for i, r in enumerate(pool.rows) if r["date"] >= TRAIN_FROM and r["type_group"] in TYPES][::every]
     print(f"pool {pool.n} sales; valuing {len(subs)} sold since {val_lo} (validate < {hold_lo} <= holdout)", flush=True)
     county = county_opinions(pool, subs)
     print(f"matched to a county parcel: {len(county)}", flush=True)
@@ -192,13 +196,13 @@ def main():
         if k % 4000 == 0:
             print(f"  {k}/{len(subs)}", flush=True)
     # The asking price is information: fit on the validate window, score on the holdout.
-    fit_rows = [(e["worth_new"], x["ask"], r["price"], x["cond"]) for r, e, x in results if r["date"] < hold_lo and e["worth_new"] and x["ask"]]
+    fit_rows = [(e["worth_new"], x["ask"], r["price"], x["cond"]) for r, e, x in results if val_lo <= r["date"] < hold_lo and e["worth_new"] and x["ask"]]
     ask = V.AskModel.fit(fit_rows)
     for r, e, x in results:
         e["expected"] = ask.predict(e["worth_new"], x["ask"], x["cond"]) if e["worth_new"] and x["ask"] else e["worth_new"]
     methods = ["baseline", "grid", "emv_comps", "comp_new", "worth_shipped", "worth_new", "expected"]
     hold = [(r, e) for r, e, x in results if r["date"] >= hold_lo]
-    val = [(r, e) for r, e, x in results if r["date"] < hold_lo]
+    val = [(r, e) for r, e, x in results if val_lo <= r["date"] < hold_lo]
     which = val if "--validate" in sys.argv else hold
     rep = report(which, methods, len(which))
     print_report(rep)
@@ -214,20 +218,101 @@ def main():
         print(f"  ask {c['ask_vs_estimate']:+.0%} vs estimate: n={c['n']:5}  sale vs estimate fit {c['sale_vs_estimate_fit']:+.1%}, "
               f"observed {c['sale_vs_estimate_observed_median'] if c['sale_vs_estimate_observed_median'] is None else format(c['sale_vs_estimate_observed_median'], '+.1%')}; "
               f"sale vs ask {c['sale_vs_ask_fit']:+.1%}")
+    sl = sale_list(results, hold_lo)
     tests = named_tests(pool, models, ask, tier)
     for pid, t in tests.items():
         print(f"\n## test {pid}: {t['note']}\n  baseline comps {t['baseline_comp']}, grid {t['grid']}, condition {t['condition']}, tier {t['tier']}, below_share {t['below_share']}")
         for c in t["comps"]:
             print(f"    {c}")
     out = {"built": TODAY.isoformat(), "holdout_days": HOLDOUT_DAYS, "holdout_from": hold_lo, "validate_from": val_lo,
-           "holdout_n": len(hold), "validate_n": len(val), "sample_every": every, "pool_n": pool.n,
-           "methods": rep, "deep_discount": {"n": len(deep), "methods": deep_rep}, "ask_model": ask.summary(), "tests": tests,
+           "holdout_n": len(hold), "validate_n": len(val), "sale_list_train_from": TRAIN_FROM, "sample_every": every, "pool_n": pool.n,
+           "methods": rep, "deep_discount": {"n": len(deep), "methods": deep_rep}, "ask_model": ask.summary(), "sale_list": sl, "tests": tests,
            "settings": V.Models.settings()}
     if every == 1 and "--validate" not in sys.argv and not any(a.startswith("--set=") for a in sys.argv):
         (D / "backtest.json").write_text(json.dumps(out, indent=1, default=str))
         # Production refits the ask curve on the whole 180 days.
-        allfit = [(e["worth_new"], x["ask"], r["price"], x["cond"]) for r, e, x in results if e["worth_new"] and x["ask"]]
+        allfit = [(e["worth_new"], x["ask"], r["price"], x["cond"]) for r, e, x in results if r["date"] >= val_lo and e["worth_new"] and x["ask"]]
         (D / "ask_model.json").write_text(json.dumps(V.AskModel.fit(allfit).summary(), indent=1))
+    return out
+
+
+def recent_shift(m, rows, before, days=60):
+    lo = (dt.date.fromisoformat(before) - dt.timedelta(days=days)).isoformat()
+    r = [math.log(p / f["ask"]) - m.raw(f) for f, p, d in rows if lo <= d < before]
+    return round(float(np.median(r)), 4) if r else 0.0
+
+
+def sale_list(results, hold_lo):
+    """Room to negotiate: predict sale ÷ last ask from what the listing showed while for sale.
+    Fit on sales before the holdout, scored on the holdout; production refit on all."""
+    rows = []
+    for r, e, x in results:
+        run = r.get("run")
+        if not run or not e.get("worth_new"):
+            continue
+        dom = (dt.date.fromisoformat(r["date"][:10]) - dt.date.fromisoformat(run["listed"])).days - V.CLOSE_LAG
+        month = (dt.date.fromisoformat(r["date"][:10]) - dt.timedelta(days=V.CLOSE_LAG)).month
+        f = V.sl_inputs(run["ask"], e["worth_new"], max(dom, 0), run["n_cuts"], run["orig"], run["relisted"], r["type_group"],
+                        V.area_of(r), month, (r.get("cond") or (0, []))[0], r.get("hoa"))
+        rows.append((f, r["price"], r["date"] >= hold_lo, r["date"]))
+    val_lo = (TODAY - dt.timedelta(days=2 * HOLDOUT_DAYS)).isoformat()
+    train = [(f, p) for f, p, h, d in rows if not h]
+    test = [(f, p) for f, p, h, d in rows if h]
+    # Shrink: the regression is fitted on sales before the validate window and its predictions
+    # scaled by the factor that minimises median error on the validate window (it overreaches
+    # out of sample otherwise); then refitted on everything before the holdout.
+    m1 = V.SaleListModel.fit([(f, p) for f, p, h, d in rows if d < val_lo])
+    vrows = [(f, p) for f, p, h, d in rows if val_lo <= d and not h]
+    # Calibration: least squares of the validate window's actual log(sale/ask) on the raw
+    # prediction, so a predicted 3% under the ask means 3% on average.
+    xr = np.array([m1.raw(f) for f, _ in vrows])
+    yr = np.array([math.log(p / f["ask"]) for f, p in vrows])
+    slope, shift = np.polyfit(xr, yr, 1)
+    best = (round(float(slope), 3), round(float(shift), 4))
+    m = V.SaleListModel.fit(train)
+    m.shrink, m.shift = (1.0, 0.0) if NO_CAL else best
+    # Market temperature: the median miss over the last 60 days of training, so a cooling
+    # (or heating) market moves the level. Only sales before the holdout are read.
+    m.shift = recent_shift(m, [(f, p, d) for f, p, h, d in rows if not h], hold_lo)
+    print(f"  market-temperature shift from the 60 days before {hold_lo}: {m.shift:+.4f}")
+    print(f"  calibration on the validate window: slope {best[0]}, shift {best[1]}")
+    pred = np.array([f["ask"] * m.ratio(f) for f, _ in test])
+    act = np.array([p for _, p in test])
+    asks = np.array([f["ask"] for f, _ in test])
+    err = (pred - act) / act
+    err_ask = (asks - act) / act
+    st = lambda e: {"n": len(e), "median_abs_pct": round(float(np.median(np.abs(e))) * 100, 2), "within_2": round(float(np.mean(np.abs(e) <= .02)) * 100, 1),
+                    "within_5": round(float(np.mean(np.abs(e) <= .05)) * 100, 1), "within_10": round(float(np.mean(np.abs(e) <= .10)) * 100, 1),
+                    "bias_pct": round(float(np.median(e)) * 100, 2)}
+    pr, ar = pred / asks, act / asks
+    order = np.argsort(pr)
+    dec = []
+    for k in range(10):
+        idx = order[k * len(order) // 10:(k + 1) * len(order) // 10]
+        dec.append({"decile": k + 1, "n": int(len(idx)), "predicted_sale_vs_ask": round(float(np.mean(pr[idx])) - 1, 4),
+                    "actual_sale_vs_ask": round(float(np.mean(ar[idx])) - 1, 4)})
+    # Long-listed, cut homes: where room to negotiate should exist.
+    soft = np.array([f["dom"] >= 91 or f["n_cuts"] >= 2 for f, _ in test])
+    # Ranking power: do the homes we'd put at the top actually sell further under their ask?
+    top = pr <= np.quantile(pr, 0.05)
+    out = {"train_n": len(train), "holdout_n": len(test), "predicted": st(err), "ask_alone": st(err_ask),
+           "calibration": {"slope": best[0], "shift": best[1]}, "top_5pct_room": {"n": int(top.sum()), "predicted_sale_vs_ask": round(float(np.median(pr[top])) - 1, 4),
+                                                   "actual_sale_vs_ask": round(float(np.median(ar[top])) - 1, 4)},
+           "soft_listings": {"n": int(soft.sum()), "predicted": st(err[soft]), "ask_alone": st(err_ask[soft])}, "deciles": dec,
+           "model": m.summary()}
+    print(f"\n## sale-to-list model: train {len(train):,}, holdout {len(test):,}")
+    print(f"  predicted sale: {out['predicted']}\n  ask alone:      {out['ask_alone']}")
+    print(f"  most room (predicted bottom 5%, n={out['top_5pct_room']['n']}): predicted {out['top_5pct_room']['predicted_sale_vs_ask']:+.1%}, actual {out['top_5pct_room']['actual_sale_vs_ask']:+.1%}")
+    print(f"  long-listed or 2+ cuts ({out['soft_listings']['n']}): predicted {out['soft_listings']['predicted']}  ask alone {out['soft_listings']['ask_alone']}")
+    for d_ in dec:
+        print(f"  decile {d_['decile']:2}: n={d_['n']:5} predicted {d_['predicted_sale_vs_ask']:+.1%}  actual {d_['actual_sale_vs_ask']:+.1%}")
+    for c, v in out["model"]["as_percent"].items():
+        print(f"    {v:+.1%}  {c}")
+    if "--validate" not in sys.argv:
+        mf = V.SaleListModel.fit([(f, p) for f, p, _, _ in rows])
+        mf.shrink, mf.shift = (1.0, 0.0) if NO_CAL else best
+        mf.shift = recent_shift(mf, [(f, p, d) for f, p, _, d in rows], TODAY.isoformat())
+        (D / "sale_list_model.json").write_text(json.dumps(mf.summary(), indent=1))
     return out
 
 

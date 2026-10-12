@@ -345,11 +345,11 @@ def main():
             open_viol.setdefault(v["APN"], []).append((v.get("Violation_Code_Description") or "").strip())
     for r in rows:
         r["open_violations"] = open_viol.get(r["pin"], []) if r["county"] == "hennepin" else []
-    global COND, VAL, ASK
+    global COND, VAL, SL
     COND = json.loads((D / "condition.json").read_text())
     VAL = _comp_grids(rows)
-    from msp.valuation import AskModel
-    ASK = AskModel.load()
+    from msp.valuation import SaleListModel
+    SL = SaleListModel.load()
     out = [score(r) for r in rows]
     out.sort(key=lambda r: (r["rank_ok"], r["score"] if r["score"] is not None else -9), reverse=True)
     rank = 0
@@ -367,7 +367,7 @@ def main():
     keep = ["rank", "property_id", "url", "address", "city", "zip", "county", "type_group", "beds", "baths", "sqft", "year_built", "ask", "original_ask",
             "dom", "n_cuts", "cut_pct", "pending", "score", "est_cal", "est_comp", "est_deed", "est_avm", "agree", "why", "exclusion",
             "evidence", "signals", "photo", "distressed", "hoa", "list_date", "tier", "tier_facts", "asis_ratio", "asis_n", "arv", "worth",
-            "repair_ppsf", "repair_n", "repair_est", "spread_ppsf", "discounts_named", "n_estimates", "worth_est", "unexplained_gap", "cond_words", "expected_sale", "deep_gap"]
+            "repair_ppsf", "repair_n", "repair_est", "spread_ppsf", "discounts_named", "n_estimates", "worth_est", "unexplained_gap", "cond_words", "room", "room_pct", "sl_ratio"]
     ranked = [{k: r.get(k) for k in keep if r.get(k) not in (None, [], "", False)} for r in out if r["rank_ok"]]
     # The list paints from data.json; evidence.json (the expanded view) loads after.
     heavy = ("evidence", "photo", "url")
@@ -455,37 +455,37 @@ def score(r):
     arvs = [e for e in (est_cal, est_comp, est_deed) if e]
     r["arv"] = round(statistics.median(arvs)) if arvs else None
     r["worth"] = round(r["arv"] * ratio) if r["arv"] else None
-    # The ask is information (msp/valuation.py AskModel, curve in data/backtest.json): each
-    # estimate becomes the price a home asking this much has actually sold for.
+    # The records value (comps, county, last deed; condition-aware) is evidence. What the home
+    # will sell for is predicted from how listings like it actually closed against their ask
+    # (msp/valuation.py SaleListModel, data/sale_list_model.json, backtest in data/backtest.json).
     cond = (g or {}).get("subject", {}).get("cond") or (0.0, [])
-    # Closed sales say the ask is nearly the price: homes listed 10-26% under our estimate sold
-    # within 1% of their ask (data/ask_model.json curve). So where the ask is 30%+ under every
-    # estimate and no record or listing word explains it, the value is the expected sale at that
-    # ask, not our estimate: we can't see inside (8031 Tierneys Woods Curv, 2026-10-11).
     r["worth_est"], r["cond_words"] = r["worth"], cond[1]
-    r["expected_sale"] = round(ASK.predict(r["worth"], ask, cond)) if ASK and ask and r["worth"] else None
+    # Priced 30%+ under every estimate with nothing on record or in the listing to explain it:
+    # closed sales say it will still sell near its ask; usually condition we can't see.
     r["unexplained_gap"] = bool(ask and r["worth_est"] and ask < 0.7 * r["worth_est"] and tier == "none" and cond[0] >= 0)
-    # 25%: on the holdout, homes asking that far under our records value sold a median 41% under
-    # it and 4% from the expected sale at their ask (data/backtest.json deep_discount).
-    r["deep_gap"] = bool(ask and r["worth_est"] and ask < 0.75 * r["worth_est"])
-    expect = (lambda e: ASK.predict(e, ask, cond)) if r["deep_gap"] and ASK else (lambda e: e)
-    if r["deep_gap"] and r["expected_sale"]:
-        r["worth"] = r["expected_sale"]
+    if SL and ask:
+        from msp.valuation import sl_inputs, area_of
+        f = sl_inputs(ask, r["worth_est"], r.get("dom"), r.get("n_cuts"), r.get("original_ask"), r.get("relisted"), r.get("type_group"),
+                      area_of(r), TODAY.month, cond[0], r.get("hoa"))
+        r["sl_ratio"] = round(SL.ratio(f), 4)
+        r["worth"] = round(ask * r["sl_ratio"])
+        r["room"] = ask - r["worth"]
+        r["room_pct"] = round(r["room"] / ask, 4)
     if t:
         rp = COND["tiers"]["heavy" if tier == "condemned" else tier]
         r["repair_ppsf"], r["repair_n"], r["spread_ppsf"] = rp["repair_ppsf"], rp["repair_n"], rp["spread_ppsf"]
         r["repair_est"] = round(rp["repair_ppsf"] * r["sqft"]) if r.get("sqft") else None
     named = [(n, e) for n, e in (("County", est_cal), ("Comps", est_comp), ("Last sale", est_deed), ("Realtor.com", r.get("rdc_avm"))) if e]
-    ests = [expect(e * ratio) for _, e in named]
+    ests = [e * ratio for _, e in named]
     disc = [1 - ask / e for e in ests] if ask else []
-    r["discounts_named"] = [{"name": n, "arv": e, "asis": round(e * ratio), "expected": round(expect(e * ratio)), "disc": round(1 - ask / expect(e * ratio), 3)} for n, e in named] if ask else []
+    r["discounts_named"] = [{"name": n, "arv": e, "asis": round(e * ratio), "disc": round(1 - ask / (e * ratio), 3)} for n, e in named] if ask else []
     r["n_estimates"] = len(ests)
     if len(disc) >= 2:
-        # Missing opinions count as zero discount, out of three; disagreement is
-        # charged at half its spread. Three agreeing beat one big gap.
+        # Agreement of the records estimates: evidence beside the prediction.
         sd = statistics.pstdev(disc)
-        r["score"] = round(sum(disc) / max(3, len(disc)) - 0.5 * sd, 4)
         r["agree"] = round(1 - min(1, sd / 0.25), 2)
+        # The ranking key is room to negotiate: ask minus predicted sale, as a share of the ask.
+        r["score"] = r.get("room_pct")
     else:
         r["score"], r["agree"] = None, None
     r["discounts"] = [round(x, 3) for x in disc]
@@ -588,10 +588,11 @@ def score(r):
         if r.get("repair_est"):
             ev.append(f"Repair cost: those flips filed permits worth a median ${r['repair_ppsf']:.0f}/sqft (n={r['repair_n']}, Saint Paul) × {r['sqft']:,} sqft = {money(r['repair_est'])}. "
                       f"Owners under-declare permit values: the same flips resold for ${r['spread_ppsf']:.0f}/sqft more than they were bought for.")
-    if r.get("expected_sale"):
-        ev.append(f"Expected sale at this ask: {money(r['expected_sale'])}. In {ASK.n:,} closed sales, homes asking {abs(ask / r['worth_est'] - 1):.0%} "
-                  f"{'under' if ask < r['worth_est'] else 'over'} our estimate sold {r['expected_sale'] / ask - 1:+.1%} against their ask"
-                  + (" (used as the value here: on closed sales a gap this deep was almost never real)" if r.get("deep_gap") else ""))
+    if r.get("sl_ratio"):
+        ev.append(f"Likely sells for {money(r['worth'])}: {r['sl_ratio'] - 1:+.1%} against the ask, predicted from how {SL.n:,} closed Twin Cities sales went "
+                  f"against their last ask given days listed ({r.get('dom')}), price cuts ({r.get('n_cuts') or 0}), the ask against the records value "
+                  f"({money(r['worth_est'])}), area, price, type, season, listing words and HOA. Room to negotiate: {money(abs(r['room']))} "
+                  + ("under the ask" if r['room'] >= 0 else "OVER the ask: expect to pay more"))
     if r.get("unexplained_gap"):
         ev.append("Asking far below every estimate with no reason on record. Usually condition we can't see.")
     if r.get("rdc_avm"):
@@ -604,9 +605,9 @@ def score(r):
         ev.append(f"Listed at {money(r['original_ask'])}; {r['n_cuts']} price cut{'s' if r['n_cuts'] != 1 else ''} to {money(ask)} ({cut_pct:.0%})")
     r["evidence"] = ev
 
-    parts = [f"asking {money(ask)}"]
+    parts = [f"asking {money(ask)}"] + ([f"likely sells for ~{money(r['worth'])} ({'room ' + money(r['room']) if r['room'] >= 0 else 'expect to pay ' + money(-r['room']) + ' over'})"] if r.get("sl_ratio") else [])
     if r.get("asis_ratio") and r.get("worth"):
-        parts.append(f"needs {'heavy' if r['tier'] != 'light' else 'light'} work ({r['tier_facts'][0].lower()}): worth ~{money(r['worth'])} as-is, {money(r['arv'])} fixed up")
+        parts.append(f"needs {'heavy' if r['tier'] != 'light' else 'light'} work ({r['tier_facts'][0].lower()}): records say ~{money(r['worth_est'])} as-is, {money(r['arv'])} fixed up")
     if est_comp:
         parts.append(f"{r['comp_n']} {'units in this building' if r.get('same_building') else 'similar homes nearby'} sold for ~{money(est_comp)}")
     if est_cal:

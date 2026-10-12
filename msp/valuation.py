@@ -195,6 +195,7 @@ class Pool:
                 url=r.get("href"), hoa=(r.get("hoa") or {}).get("fee"),
                 has_detail=bool(det), flip=flip, flip_from=flip_from,
                 list_price=last_ask(det.get("history") or [], date) or r.get("list_price"),
+                run=run_of(det.get("history") or [], date),
                 text=det.get("text") or "",
                 cond=condition_of(det.get("text") or ""),
                 below_share=below_share(d["sqft"], det),
@@ -780,3 +781,102 @@ class AskModel:
             return None
         j = json.loads(f.read_text())
         return cls(j["beta"], j["n"], tuple(j["knots"]), j.get("curve"))
+
+
+# ------------------------------------------------------- sale-to-list model ---
+# "Room to negotiate" (Aidan, 2026-10-12): what a listing will really sell for, from
+# what similar listings did. log(sale ÷ last ask) regressed on inputs a listing has while
+# it is for sale: days listed, price cuts, relisting, ask against our records value,
+# area, price band, type, season, condition words, HOA. Plain least squares; every
+# coefficient is saved and printed.
+
+CLOSE_LAG = 35  # days from accepted offer to recorded close (MN median ~30-40): a sold home's
+                # days-on-market is its listing-to-close span minus this, to match an active listing's clock
+DOM_BINS = [(0, 15, "under 2 weeks"), (15, 46, "2-6 weeks"), (46, 91, "6-13 weeks"), (91, 99999, "3+ months")]  # 6+ months had too few to stand alone
+BANDS = [(0, 200e3, "under $200k"), (200e3, 350e3, "$200-350k"), (350e3, 500e3, "$350-500k"), (500e3, 750e3, "$500-750k"), (750e3, 1e12, "$750k+")]
+AREAS = ["Minneapolis", "Saint Paul", "Hennepin County", "Ramsey County", "Anoka County", "Dakota County", "Washington County", "Scott County", "Carver County"]
+
+
+def run_of(history, sold_date):
+    """This listing run before `sold_date`: (first listed date, original ask, last ask, cuts, relisted)."""
+    t = sold_date[:10]
+    prev = max((e[0][:10] for e in history if e[0] and e[0][:10] < t and (e[1] or "").lower() == "sold"), default="")
+    ev = sorted((e for e in history if e[0] and prev < e[0][:10] < t and e[2] and e[2] >= 20000
+                 and (e[1] or "").lower() in ("listed", "relisted", "price changed")), key=lambda e: e[0])
+    if not ev:
+        return None
+    starts = [i for i, e in enumerate(ev) if (e[1] or "").lower() in ("listed", "relisted")]
+    s0 = starts[-1] if starts else 0
+    run = ev[s0:]
+    prices = [e[2] for e in run]
+    return dict(listed=run[0][0][:10], orig=prices[0], ask=prices[-1], n_cuts=sum(1 for a, b in zip(prices, prices[1:]) if b < a),
+                relisted=(run[0][1] or "").lower() == "relisted" or len(starts) > 1)
+
+
+def sl_inputs(ask, worth, dom, n_cuts, orig, relisted, type_group, area, month, cond_effect, hoa):
+    return dict(ask=ask, worth=worth, dom=dom, n_cuts=n_cuts or 0, cut=max(0.0, 1 - ask / orig) if orig else 0.0, relisted=bool(relisted),
+                type_group=type_group, area=area, month=int(month), cond=cond_effect or 0.0, hoa=hoa or 0)
+
+
+class SaleListModel:
+    def __init__(self, cols, beta, n, rmse, shrink=1.0, shift=0.0):
+        self.cols, self.beta, self.n, self.rmse, self.shrink, self.shift = cols, list(beta), n, rmse, shrink, shift
+
+    @staticmethod
+    def _x(f):
+        g = min(max(math.log(f["ask"] / f["worth"]), -0.3), 0.3) if f.get("worth") else 0.0
+        x = {"intercept": 1.0, "ask vs records value (log, ±0.3)": g,
+             "no records value": 0.0 if f.get("worth") else 1.0,
+             "price cuts so far (share of first ask)": min(f["cut"], 0.5), "relisted": float(f["relisted"]),
+             "needs-work words": 1.0 if f["cond"] < 0 else 0.0, "renovated words": 1.0 if f["cond"] > 0 else 0.0,
+             "HOA $300+/mo": 1.0 if f["hoa"] >= 300 else 0.0}
+        for lo, hi, lab in DOM_BINS[1:]:
+            x[f"listed {lab}"] = 1.0 if f["dom"] is not None and lo <= f["dom"] < hi else 0.0
+        x["1 price cut"] = 1.0 if f["n_cuts"] == 1 else 0.0
+        x["2+ price cuts"] = 1.0 if f["n_cuts"] >= 2 else 0.0
+        for lo, hi, lab in BANDS:
+            if lab != "$350-500k":
+                x[f"ask {lab}"] = 1.0 if lo <= f["ask"] < hi else 0.0
+        x["townhome"] = 1.0 if f["type_group"] == "townhome" else 0.0
+        x["condo"] = 1.0 if f["type_group"] == "condo" else 0.0
+        for a in AREAS[1:]:
+            x[a] = 1.0 if f["area"] == a else 0.0
+        q = (f["month"] - 1) // 3
+        for qq, lab in ((1, "spring (Apr-Jun)"), (2, "summer (Jul-Sep)"), (3, "fall (Oct-Dec)")):
+            x[lab] = 1.0 if q == qq else 0.0
+        return x
+
+    @classmethod
+    def fit(cls, rows):
+        """rows: (inputs dict, sale price)."""
+        X = [cls._x(f) for f, _ in rows]
+        cols = list(X[0])
+        A = np.array([[x[c] for c in cols] for x in X])
+        y = np.array([math.log(p / f["ask"]) for f, p in rows])
+        keep = np.ones(len(y), bool)
+        for _ in range(2):  # trim the worst 1%: a sale of a different unit, a typo'd price
+            b = np.linalg.lstsq(A[keep] + 0, y[keep], rcond=None)[0]
+            r = np.abs(y - A @ b)
+            keep = r <= np.quantile(r, 0.99)
+        return cls(cols, b, int(keep.sum()), float(np.sqrt(np.mean((y[keep] - A[keep] @ b) ** 2))))
+
+    def ratio(self, f):
+        x = self._x(f)
+        return math.exp(self.shift + self.shrink * self.raw(f))
+
+    def raw(self, f):
+        x = self._x(f)
+        return sum(b * x[c] for c, b in zip(self.cols, self.beta))
+
+    def summary(self):
+        return {"n": self.n, "rmse_log": round(self.rmse, 4), "close_lag_days": CLOSE_LAG, "shrink": self.shrink, "shift": self.shift,
+                "coefficients": {c: round(b, 4) for c, b in zip(self.cols, self.beta)},
+                "as_percent": {c: round(math.exp(b) - 1, 4) for c, b in zip(self.cols, self.beta) if c != "intercept"}}
+
+    @classmethod
+    def load(cls, path=None):
+        f = Path(path or D / "sale_list_model.json")
+        if not f.exists():
+            return None
+        j = json.loads(f.read_text())
+        return cls(list(j["coefficients"]), list(j["coefficients"].values()), j["n"], j["rmse_log"], j.get("shrink", 1.0), j.get("shift", 0.0))

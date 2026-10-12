@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Twin Cities Under-Ask Index</title>
-<meta name="description" content="Every home for sale in the 7-county Twin Cities metro, ranked by how far the asking price sits below what similar homes sold for and what the county says it is worth.">
+<title>Twin Cities Room to Negotiate</title>
+<meta name="description" content="What every Twin Cities home for sale will really sell for, and how much room you have to negotiate, from how 20,000 homes like it actually closed.">
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -241,30 +241,30 @@ details.method summary{cursor:pointer;color:var(--ink)}
 .nb .nbd ul{margin:0 0 6px;padding-left:16px}.nb .nbd li{background:none;border:0;color:var(--mute)}
 .nb .nbd p{margin:0;font:11.5px var(--mono);color:var(--mute)}.nb .nbd a{color:var(--accent)}
 .nb-hd{margin-top:14px}
-/* Comp grid: each sale in the sand "records" role, the reconciled value in green. Phone: a sideways row of cards; desktop: a table. */
+/* Comp grid: all records (sand); green and red stay reserved for the predicted sale against the ask. Phone: a sideways row of cards; desktop: a table. */
 .acc{margin:4px 0 0;font-size:13px;color:var(--mute)}.acc b{color:var(--good);font-weight:600}
-.cg-v{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--goodbg);border:1px solid var(--good);border-radius:6px;padding:7px 9px;font-size:13px;color:var(--mute)}
-.cg-v b{font:600 17px var(--mono);color:var(--good)}
+.cg-v{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--evbg);border:1px solid var(--evline);border-radius:6px;padding:7px 9px;font-size:13px;color:var(--mute)}
+.cg-v b{font:600 17px var(--mono);color:var(--evink)}
 .cg-cards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-top:6px;overscroll-behavior-x:contain}
 .cg-c{flex:0 0 82%;max-width:280px;scroll-snap-align:start;background:var(--evbg);border:1px solid var(--evline);border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--evink)}
 .cg-c img,.cg-tab img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px;max-height:none}
 .cg-c .a{font-weight:600;color:var(--ink);font-size:13.5px}.cg-c .p{font:600 14px var(--mono);color:var(--evink)}
 .cg-c ul,.cg-tab ul{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
 .cg-c li,.cg-tab li{font-size:11.5px;line-height:1.35;color:var(--mute)}.cg-c li b,.cg-tab li b{font:600 11.5px var(--mono);color:var(--ink)}
-.cg-adj{border-top:1px dashed var(--evline);padding-top:4px;display:flex;justify-content:space-between;font-size:12px}.cg-adj b{font:600 14px var(--mono);color:var(--good)}
+.cg-adj{border-top:1px dashed var(--evline);padding-top:4px;display:flex;justify-content:space-between;font-size:12px}.cg-adj b{font:600 14px var(--mono);color:var(--evink)}
 .cg-f{display:flex;flex-wrap:wrap;gap:3px}.cg-f span{font-size:10.5px;padding:1px 5px;border-radius:3px;background:var(--card);border:1px solid var(--evline)}
 .cg-tab{display:none;width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px}
 .cg-tab th{font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--mute);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
 .cg-tab td{vertical-align:top;padding:6px;border-bottom:1px solid var(--evline);background:var(--evbg);color:var(--evink);white-space:normal;text-align:left}
-.cg-tab td.n{font:600 13px var(--mono);white-space:nowrap}.cg-tab td.g{color:var(--good)}
+.cg-tab td.n{font:600 13px var(--mono);white-space:nowrap}.cg-tab td.g{color:var(--ink)}
 @media (min-width:1024px){.cg-cards{display:none}.cg-tab{display:table}.cg-tab td:first-child{width:92px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Twin Cities homes <span class="hp">asking less</span> than they're <span class="hv">worth</span></h1>
-    <p class="lede" id="sub">Every home for sale in the 7-county metro, ranked by how far the ask sits below three separate estimates of value.</p>
+    <h1>What every Twin Cities home will <span class="hv">really sell for</span>, and your room to negotiate</h1>
+    <p class="lede" id="sub">Every home for sale in the 7-county metro, against how homes like it actually closed.</p>
     <p class="acc" id="acc" hidden></p>
   </header>
   <div class="filters" id="filters" hidden>
@@ -284,7 +284,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
     </div>
   </div>
   <p class="how"><b>Tap a column to sort. Tap a home to see it.</b></p>
-  <div class="key" aria-label="Colour key"><span class="k-price">Their asking price</span><span class="k-ev">What the records say</span><span class="k-val">Asking less than it's worth</span><span class="k-over">Asking more than it's worth</span><span class="k-risk">Worth a closer look</span></div>
+  <div class="key" aria-label="Colour key"><span class="k-price">Their asking price</span><span class="k-ev">What the records say</span><span class="k-val">Room to negotiate</span><span class="k-over">Expect to pay over ask</span><span class="k-risk">Worth a closer look</span></div>
   <div id="view"></div>
   <section class="paid" id="paid" hidden aria-live="polite">
     <h2 id="paidH">Confirming your payment…</h2>
@@ -304,16 +304,17 @@ details.method summary{cursor:pointer;color:var(--ink)}
     <div class="pay-co" id="checkout"></div>
   </section>
 <details class="method"><summary>How the ranking works</summary>
-<p>Each home gets up to three estimates of value, each a join on public records you can check:</p>
+<p><b>Likely sells for</b> is predicted from how <span data-m="sl_n">20,000+</span> Twin Cities homes that closed in the last year sold against their last asking price. The inputs are what a listing shows while it is for sale: days listed, how many times and how far the price was cut, whether it was relisted, its ask against the records value below, area, price band, type, season, the listing's own words and HOA. Each input's effect is measured, not guessed. <b>Room to negotiate</b> is the ask minus that price; red means homes like it sell over their ask.</p>
+<p><b>Records say it's worth</b> is the evidence: the middle of up to three estimates, each a join on public records you can check.</p>
 <ul>
-<li><b>County, corrected.</b> The county's assessed market value × the median sale-to-assessment ratio of the 30 nearest recorded sales at a similar assessed value. Assessors run low on expensive homes and high on cheap ones, so the raw assessment is never used alone.</li>
-<li><b>Comparable sales.</b> Median price per square foot of up to 10 similar homes (same kind, ±25% size, built within 25 years) that closed in the last year within 2 miles, × this home's square feet.</li>
-<li><b>Last sale, brought forward.</b> The last recorded deed (if 2+ years ago) × how much that county's prices have moved since, measured against today's assessments.</li>
+<li><b>County, corrected.</b> The county's assessed market value × the median sale-to-assessment ratio of the 30 nearest recorded sales at a similar assessed value.</li>
+<li><b>Comparable sales, adjusted like an appraiser.</b> The six most similar homes that closed nearby, each brought to this month with the area's price index and adjusted for every difference (size, baths, garage, basement, lot, age, location, condition) at rates measured from that area's own sales. Half that, half the same sales read against their county values.</li>
+<li><b>Last sale, brought forward.</b> The last recorded deed (if 2+ years ago) × how much that county's prices have moved since.</li>
 </ul>
-<p><b>Houses that need work.</b> All three estimates are what the house is worth fixed up. When the public record or the listing says it needs work (a vacant building list, a vacant-building case, unfixed housing violations, or words like "major rehab" or "fire damage"), it gets a condition: light work, heavy rehab or condemned. Then we measure what the market pays for a house in that state: the same house bought and sold again within two years for more. Houses with heavy permitted work between the two sales were bought for a median <span data-c="heavy.ratio">0.46</span> of the resale price (<span data-c="heavy.n">113</span> flips); light work, <span data-c="light.ratio">0.75</span> (<span data-c="light.n">308</span> flips). <b>Worth as-is</b> is the middle estimate × that ratio, and the ranking uses it. <b>Repair cost</b> is the permit value those flips filed per square foot ($<span data-c="heavy.repair_ppsf">51</span>/sqft heavy, $<span data-c="light.repair_ppsf">4</span>/sqft light, Saint Paul permits) × this home's size. Permits run low, so it is shown, not subtracted.</p>
+<p><b>Condition.</b> Listing words were measured against what those homes sold for: "sold as-is" closed a median <span data-m="g:as-is sale">21%</span> under comparable sales, "needs work" <span data-m="g:needs work">20%</span>, "investor / cash" <span data-m="g:investor / cash">19%</span>, a renovation euphemism ("ready for renovation") <span data-m="g:renovation euphemism">14%</span>. The comps adjust for it, and so do the county and last-sale estimates, which never see inside. When the public record says a house needs work (vacant-building lists and cases, unfixed violations), the estimates become worth-as-is with the ratio measured from flips: heavy work <span data-c="heavy.ratio">0.46</span> (<span data-c="heavy.n">113</span> flips), light <span data-c="light.ratio">0.75</span> (<span data-c="light.n">308</span>).</p>
+<p><b>Gap unexplained</b> (amber) means the ask is 30%+ under every records estimate and nothing on record or in the listing says why. Homes like that still sold near their ask: usually condition we can't see.</p>
 <p><b>The block map.</b> Every lot within about 150 m of the home, drawn as a diagram and shaded by what the county appraises it at: per finished square foot by default, so a big house doesn't just read as valuable, or the total. The colour breaks are the fifths of the lots in that frame, so bright means high <i>for this block</i>. Shops, offices and apartments are hatched, with the businesses on them from Overture Places. Square feet come from the county file; Hennepin publishes none, so Minneapolis lots use the city assessor's 2025 file and Hennepin's suburbs open on total value. Condo units stacked on one lot show as one lot at the median unit. Recent sales are the county's last recorded deed since 2022 over $30k.</p>
-<p><b>Agree</b> is 100% minus the spread of how far the ask sits below each estimate; a spread of 25 points scores 0%.</p>
-<p>The score is the average discount across all three (a missing one counts as zero), minus half the disagreement between them. Three estimates that agree beat one big gap.</p>
+<p><b>Agree</b> is 100% minus the spread of how far the ask sits below each records estimate; a spread of 25 points scores 0%.</p>
 <p>Not ranked: homes under contract, lots and land, teardowns, new builds the assessment hasn't caught, condo units that couldn't be matched to their own parcel, co-ops, multi-parcel listings, auctions and mobile homes. Listings from Realtor.com; parcels, assessments and deeds from the seven counties via MetroGIS; permits from Minneapolis and Saint Paul.</p>
 </details>
 
@@ -328,23 +329,24 @@ const mid=d=>{const e=ests(d).sort((a,b)=>a-b),n=e.length;return n%2?e[(n-1)/2]:
 // The median of the estimates, so one bad estimate cannot carry a home to the top.
 // For a house that needs work, the build's as-is value (the middle estimate × the measured as-is ratio).
 const worth=d=>d.worth||(ests(d).length?mid(d):null);
-const under=d=>worth(d)?Math.round((1-d.ask/worth(d))*100):null;
+// Room to negotiate: the predicted sale's discount off the ask, % (build_index.py room_pct). Negative = expect to pay over ask.
+const under=d=>d.room_pct==null?null:Math.round(d.room_pct*100);
 const TIER={light:"Light work",heavy:"Heavy rehab",condemned:"Condemned"};
 const drop=d=>d.original_ask&&d.original_ask>d.ask?Math.round((d.ask/d.original_ask-1)*100):0;
 const chips=d=>{const s=[...((REC[d.property_id]||{}).tags||[]),...(d.signals||[]).filter(x=>!/vacant building list|^Minneapolis .* case /.test(x)&&!(d.asis_ratio&&/^listing text/.test(x)))].map(x=>x.replace(/^listing text: /,"").replace(/ \(as of.*\)| CE\d+ \(.*\)/,""));if(d.hoa)s.push("HOA $"+d.hoa+"/mo");if(d.unexplained_gap)s.unshift("Asking far below every estimate with no reason on record. Usually condition we can't see.");return s.map(x=>`<span class="chip">${esc(x)}</span>`).join("")};
-const V=$("#view");let REC={},ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
-const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["block_med","Block",d=>d.block_med],["under","Vs value",under],["tier","Condition",d=>TIER[d.tier]||(d.unexplained_gap?"Gap unexplained":null)],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
+let METH={};const V=$("#view");let REC={},ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
+const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["block_med","Block",d=>d.block_med],["under","Room",under],["tier","Condition",d=>TIER[d.tier]||(d.unexplained_gap?"Gap unexplained":null)],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
 // Colour tells the story: blue = their price, sand = what the records say, green = what we think it's worth, amber = worth a closer look.
 const ROLE={ask:"price",est_cal:"ev",est_comp:"ev",est_deed:"ev",block_med:"ev",agree:"val",tier:"risk",drop:"risk",n_cuts:"risk"};
-const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,block_med:k,under:v=>v==null?"–":Math.abs(v)<=3?Math.abs(v)+"%":Math.abs(v)+"% "+(v>0?"under":"over"),agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
+const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,block_med:k,under:v=>v==null?"–":v==0?"at ask":Math.abs(v)+"% "+(v>0?"under":"over"),agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
 let infoN=0;
 const info=(lbl,html)=>{const id="ip"+(++infoN);return `<span class="lrow"><span class="lbl">${lbl}</span><button type="button" class="info" aria-expanded="false" aria-controls="${id}" aria-label="How this is worked out">ⓘ</button></span><div class="ipop" id="${id}" role="note">${html}</div>`};
-// Vs value, diverging: green when asking under what it's worth, red when over, nothing within ±3%.
-// One interpolation: a light tint at 5%, full at 40% or more, the text darkening toward ink as the tint deepens.
-function vsStyle(u){if(u==null||Math.abs(u)<=3)return "color:var(--mute);background:var(--card)";
- const c=u>0?"var(--good)":"var(--bad)",t=Math.min(1,Math.max(0,(Math.abs(u)-5)/35));
+// Room, diverging: green when it should sell under the ask, red when over, nothing at the ask.
+// One interpolation: a light tint at 1%, full at 10% or more, the text darkening toward ink as the tint deepens.
+function vsStyle(u){if(u==null||u==0)return "color:var(--mute);background:var(--card)";
+ const c=u>0?"var(--good)":"var(--bad)",t=Math.min(1,Math.max(0,(Math.abs(u)-1)/9));
  return `background:color-mix(in srgb,${c} ${(8+34*t).toFixed(1)}%,var(--card));color:color-mix(in srgb,${c},var(--ink) ${(t*55).toFixed(0)}%)`}
-const vsCls=u=>u==null||Math.abs(u)<=3?"even":u<0?"over":"";
+const vsCls=u=>u==null||u==0?"even":u<0?"over":"";
 function story(d){
  const pct=x=>(x>0?"+":x<0?"−":"")+Math.abs(Math.round(x*100))+"%";
  const tiered=!!d.asis_ratio,dn=d.discounts_named||[],m=mid(d);
@@ -352,11 +354,14 @@ function story(d){
  const miss=have.filter(x=>!x[1]).map(x=>x[0]);
  // Worth: which estimates it was computed from, and which were missing.
  const hv=have.filter(x=>x[1]);
- const wf=`<p>Worth about is the middle of the estimates${hv.length==2?" (with two, the average of the two)":""}: ${k(m)}.</p>${tiered?`<p>That is what it would be worth fixed up. Houses in this condition sold for ${Math.round(d.asis_ratio*100)}% of their fixed-up price (${d.asis_n} flips we measured), so ${k(m)} × ${d.asis_ratio.toFixed(2)} = ${k(d.worth)}.</p>`:""}${d.est_avm?`<p>Realtor.com's own estimate (${k(d.est_avm)}) counts in the score and Agree, not in this middle.</p>`:""}`;
- const w=`<div class="blk val ihost">${info(`${tiered?"Worth as-is":"Worth about"} ${k(worth(d))}`,wf)}
+ const wf=`<p>Records say it's worth the middle of the estimates${hv.length==2?" (with two, the average of the two)":""}: ${k(m)}.</p>${tiered?`<p>That is what it would be worth fixed up. Houses in this condition sold for ${Math.round(d.asis_ratio*100)}% of their fixed-up price (${d.asis_n} flips we measured), so ${k(m)} × ${d.asis_ratio.toFixed(2)} = ${k(d.worth)}.</p>`:""}${d.est_avm?`<p>Realtor.com's own estimate (${k(d.est_avm)}) counts in the score and Agree, not in this middle.</p>`:""}`;
+ const lf=`<p>Predicted from how ${METH.sl_n||"20,000+"} closed Twin Cities sales went against their last asking price, given what this listing shows now: ${d.dom??"?"} days listed, ${d.n_cuts||0} price cut${d.n_cuts==1?"":"s"}, the ask against the records value, area, price, type, season, the listing's words and HOA. Homes like this sold for ${((d.sl_ratio-1)*100).toFixed(1)}% against their ask.</p><p>The records value is evidence, not the price: on closed sales a home asking far under the records still sold near its ask.</p>`;
+ const u=under(d);
+ const lk=d.sl_ratio?`<div class="blk val ihost">${info(`Likely sells for ${k(worth(d))}`,lf)}<p>${u>0?`${k(d.room)} of room under the ${k(d.ask)} ask.`:u<0?`Expect to pay ${k(-d.room)} over the ${k(d.ask)} ask.`:`About the ${k(d.ask)} ask.`}</p></div>`:"";
+ const w=lk+`<div class="blk ihost">${info(`Records say it's worth${tiered?" as-is":""} ${k(d.worth_est)}`,wf)}
   <p>${hv.map(x=>`${x[0]} ${k(x[1])}`).join(" · ")}${tiered?` · fixed up ${k(m)}`:""}.${miss.length?` No ${miss.join(" or ").toLowerCase()} estimate for this home.`:""}</p></div>`;
  // Agree: every estimate that went into it, its value, and how far it sits from the middle.
- const ag=d.agree==null?"":`<div class="blk val ihost">${info(`Agree ${Math.round(d.agree*100)}%`,`<p>Agree is 100% minus the spread (standard deviation) of how far the ask sits below each estimate${tiered?" as-is":""}. A spread of 25 points or more scores 0%.</p><p>Rank #${d.rank} sorts by score ${d.score.toFixed(2)}: the average of those gaps, with a missing estimate counted as no gap (out of 3), minus half the spread.</p>`)}
+ const ag=d.agree==null?"":`<div class="blk val ihost">${info(`Agree ${Math.round(d.agree*100)}%`,`<p>Agree is 100% minus the spread (standard deviation) of how far the ask sits below each estimate${tiered?" as-is":""}. A spread of 25 points or more scores 0%.</p><p>Rank #${d.rank} sorts by room to negotiate, not by these gaps.</p>`)}
   <div class="eg"><span class="h">Estimate</span><span class="h n">Value</span><span class="h n">vs middle</span><span class="h n">Ask is${tiered?" (as-is)":""}</span>${dn.map(x=>`<span>${esc(x.name)}</span><span class="n ev">${k(x.arv)}</span><span class="n">${pct(x.arv/m-1)}</span><span class="n">${Math.abs(Math.round(x.disc*100))}% ${x.disc<0?"above":"below"}</span>`).join("")}</div>
 </div>`;
  const cf=`${d.tier=="condemned"?"<p>No condemned house in the records was bought and resold, so this uses the heavy-rehab ratio.</p>":""}${d.repair_est?`<p>Repair cost: flips like this filed permits for a median $${Math.round(d.repair_ppsf)}/sqft (${d.repair_n} homes) × ${d.sqft.toLocaleString()} sqft = ${k(d.repair_est)}. Permits run low: those same flips resold for $${Math.round(d.spread_ppsf)}/sqft more than they cost.</p>`:""}`;
@@ -435,7 +440,7 @@ function chartPts(d,t){
  for(const [y,v] of t?.assess||[])P.push({d:`${y}-01-02`,v,k:"a",cap:`${y}: the county valued it at ${usd(v)}`});
  for(const s of t?.sales||[])if(!s.bulk)P.push({d:s.d,v:s.v,k:"s",cap:`${day(s.d)}: sold for ${usd(s.v)}`});
  for(const r of runs(t?.list||[]))for(const e of r.ev)if(e.p)P.push({d:e.d,v:e.p,k:"l",run:r.start,cap:`${day(e.d)}: ${e.e=="Price Changed"?"price cut to":e.e.toLowerCase()+" at"} ${usd(e.p)}`});
- if(worth(d))P.push({d:today,v:worth(d),k:"w",cap:`Today: we think it's worth ${usd(worth(d))}${d.asis_ratio?" as-is":""}`});
+ if(worth(d))P.push({d:today,v:worth(d),k:"w",cap:`Today: it will likely sell for ${usd(worth(d))}`});
  return P}
 function drawTL(){
  const box=document.querySelector(".tl[data-id]");if(!box)return;
@@ -485,7 +490,7 @@ function storyTL(d){
  const E=events(d,t),by=[];
  for(const e of E){const g=by[by.length-1];if(g&&g.y==e.y)g.e.push(e);else by.push({y:e.y,e:[e]})}
  const li=e=>e.more?`<li class="${e.cls}"><details><summary>${e.html}</summary>${e.more.means?`<p class="means">${esc(e.more.means)}</p>`:""}${e.more.lines?`<ul>${e.more.lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</details></li>`:`<li class="${e.cls}">${e.html}</li>`;
- const tw=d.asis_ratio?`we think it's worth <b class="g">${k(worth(d))}</b> as it stands, ${k(d.arv)} fixed up.`:`we think it's worth <b class="g">${k(worth(d))}</b>.`;
+ const tw=`it will likely sell for <b class="g">${k(worth(d))}</b>; the records say ${k(d.worth_est)}${d.asis_ratio?" as it stands":""}.`;
  return `<div class="tl" data-id="${d.property_id}"></div>
  <ol class="hist">${by.map(g=>`<li class="yr"><span class="y">${g.y}</span><ul>${g.e.map(li).join("")}</ul></li>`).join("")}
  <li class="yr now"><span class="y">Today</span><ul><li class="price">Asking <b class="b">${k(d.ask)}</b>; ${tw}</li></ul></li></ol>`}
@@ -495,8 +500,8 @@ function panel(d){
  const tile=(name,v)=>v?`<div><span>${name}</span><b>${k(v)}</b></div>`:"";
  const fx=tiered?" fixed up":"";
  return `<div class="xin">${ph}<div class="xb">
-  <div class="verdict"><b class="${vsCls(u)=="even"?"even":u<0?"neg":"pos"}">${u==null?"–":Math.abs(u)<=3?"About at "+(tiered?"its as-is value":"value")+` (${Math.abs(u)}%)`:Math.abs(u)+"% "+(u<0?"above":"below")+(tiered?" as-is value":" value")}</b></div>
-  <div class="vals">${tile("Asking",d.ask)}${tile("County says"+fx,d.est_cal)}${tile("Similar homes sold"+(tiered?" (fixed up)":""),d.est_comp)}${tile("Last sale"+(tiered?", brought forward":""),d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}${tiered&&d.repair_est?`<div class="repair"><span>Repair cost</span><b>${k(d.repair_est)}</b><span>permits filed say, ${d.repair_n} flips</span></div>`:""}<div class="worth ${vsCls(u)}"><span>${tiered?"Worth as-is":"Worth about"}</span><b>${k(worth(d))}</b><span>${d.deep_gap?`expected sale at this ask; the records say ${k(d.worth_est)}, a gap that closed sales say is rarely real`:tiered?`${k(mid(d))} fixed up × ${d.asis_ratio.toFixed(2)}`:"middle of the estimates"}</span></div></div>
+  <div class="verdict"><b class="${vsCls(u)=="even"?"even":u<0?"neg":"pos"}">${u==null?"–":u==0?"Likely sells at about its ask":u>0?`${k(d.room)} of room to negotiate (${u}%)`:`Expect to pay ${k(-d.room)} over ask (${-u}%)`}</b></div>
+  <div class="vals">${tile("Asking",d.ask)}${tile("County says"+fx,d.est_cal)}${tile("Similar homes sold"+(tiered?" (fixed up)":""),d.est_comp)}${tile("Last sale"+(tiered?", brought forward":""),d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}${tiered&&d.repair_est?`<div class="repair"><span>Repair cost</span><b>${k(d.repair_est)}</b><span>permits filed say, ${d.repair_n} flips</span></div>`:""}${d.worth_est?`<div><span>Records say it's worth${tiered?" as-is":""}</span><b>${k(d.worth_est)}</b><span>${tiered?`${k(mid(d))} fixed up × ${d.asis_ratio.toFixed(2)}`:"middle of the estimates"}</span></div>`:""}<div class="worth ${vsCls(u)}"><span>Likely sells for</span><b>${k(worth(d))}</b><span>${u==null?"":u==0?"about the ask":u>0?`${k(d.room)} under the ask`:`${k(-d.room)} over the ask`}${d.unexplained_gap?"; the records gap is probably condition we can't see":""}</span></div></div>
   <div class="cg-slot" data-id="${d.property_id}">${compsHTML(d)}</div>
   ${chips(d)?`<div>${chips(d)}</div>`:""}
   ${d.m?`<div class="bm-slot" data-id="${d.property_id}"></div>`:""}
@@ -706,7 +711,7 @@ for(const id of ["city","price","beds"])$("#"+id).addEventListener("change",appl
 $("#types").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
  if(b.dataset.x)b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
  else document.querySelectorAll("#types [data-t]").forEach(c=>c.setAttribute("aria-pressed",c===b?"true":"false"));apply()});
-// ---- The gate. site/ ships the 10 furthest below value; the rest come from /api/data behind a
+// ---- The gate. site/ ships the 10 with the most room to negotiate; the rest come from /api/data behind a
 // password (emailed after the $100 checkout, or issued by hand). scripts/build_public.py writes both halves.
 const PK="pk_live_51TUvvcBzD4mN8eOD28H6oQkFwFHwF1SLtWxN1vHRmnSxntWFefgd33mEIVmjv8ekxWgkZft3OpPlzmVXMIeHPBwj003998hjTf";
 let PW=null;const DET={};
@@ -726,8 +731,8 @@ function boot(d,full){
  document.querySelectorAll("[data-c]").forEach(el=>{const [t,f]=el.dataset.c.split("."),v=d.condition?.tiers?.[t]?.[f];if(v!=null)el.textContent=f=="ratio"?v.toFixed(2):Math.round(v)});
  $("#city").innerHTML=`<option value="">All cities</option>`+[...new Set(ROWS.map(r=>r.city))].sort().map(c=>`<option>${esc(c)}</option>`).join("");
  const upd=`Updated ${new Date(d.built+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}.`;
- $("#sub").innerHTML=full?`<span class="unl">Full directory unlocked</span>${ROWS.length.toLocaleString()} homes for sale, ranked by how far below value they're asking. ${upd}`
-  :`The ${ROWS.length} homes for sale asking furthest below what they're worth, of every listing in the 7-county metro. ${upd}`;
+ $("#sub").innerHTML=full?`<span class="unl">Full directory unlocked</span>${ROWS.length.toLocaleString()} homes for sale, ranked by room to negotiate. ${upd}`
+  :`The ${ROWS.length} homes with the most room to negotiate, of every listing in the 7-county metro. ${upd}`;
  $("#filters").hidden=!full;$("#pay").hidden=full;if(full)$("#paid").hidden=true;
  apply();
 }
@@ -782,7 +787,8 @@ const qs=new URLSearchParams(location.search),pwq=qs.get("pw"),paidq=qs.get("pai
 if(pwq||paidq){qs.delete("pw");qs.delete("paid");history.replaceState(null,"",location.pathname+(qs.toString()?"?"+qs:"")+location.hash)}
 fetch("meta.json").then(r=>r.json()).then(m=>{
  // Written from data/backtest.json by build_public.py: never typed.
- const a=m.accuracy;if(a){$("#acc").innerHTML=`On the ${a.n.toLocaleString()} homes that sold in the last ${a.days} days, our value was within 10% of the sale price for <b>${Math.round(a.within_10_records)}%</b>. Taking the asking price into account, ${Math.round(a.within_10)}%.`;$("#acc").hidden=false}
+ METH=m.method||{};document.querySelectorAll("[data-m]").forEach(el=>{const k_=el.dataset.m,v=k_.startsWith("g:")?METH.groups?.[k_.slice(2)]:METH[k_];if(v!=null)el.textContent=k_.startsWith("g:")?Math.round(Math.abs(v)*100)+"%":v.toLocaleString()});
+ const a=m.accuracy;if(a){$("#acc").innerHTML=`On the ${a.n.toLocaleString()} homes that sold since ${new Date(a.since+"T12:00").toLocaleDateString("en-US",{month:"long"})}, our predicted price was within 5% for <b>${Math.round(a.within_5)}%</b>, and off by a median ${a.median_abs_pct.toFixed(1)}%.`;$("#acc").hidden=false}
  $("#payN").textContent=m.n.toLocaleString();
  const c=m.cities;$("#payC").textContent=` across ${c.length>1?c.slice(0,-1).join(", ")+" and "+c[c.length-1]:c[0]}.`;
 });

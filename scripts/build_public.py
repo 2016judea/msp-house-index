@@ -29,13 +29,10 @@ d = json.loads((PRIV / "data.json").read_text())
 rows = sorted(d["rows"], key=lambda r: r["rank"])
 
 
-# The page's default sort: "Below value", 1 - ask / worth, where worth is the build's as-is
-# value or else the median estimate (site/index.html worth()/under(), mirrored exactly,
-# including JS Math.round and the stable sort over rank order).
+# The page's default sort: "Room", the predicted discount off the ask (room_pct, from build_index.py),
+# mirrored in site/index.html under(): Math.round(room_pct*100), stable over rank order.
 def under(r):
-    e = sorted(x for x in (r.get("est_cal"), r.get("est_comp"), r.get("est_deed")) if x)
-    w = r.get("worth") or (None if not e else (e[(len(e) - 1) // 2] if len(e) % 2 else (e[len(e) // 2 - 1] + e[len(e) // 2]) / 2))
-    return None if not w else math.floor((1 - r["ask"] / w) * 100 + 0.5)
+    return None if r.get("room_pct") is None else math.floor(r["room_pct"] * 100 + 0.5)
 
 
 top = sorted((r for r in rows if under(r) is not None), key=under, reverse=True)[:TOP]
@@ -88,9 +85,12 @@ if (PRIV / "map").exists():
 cities = [c for c, _ in collections.Counter(r["city"] for r in rows if r.get("city")).most_common()]
 # The accuracy line, read from the backtest (scripts/backtest.py), never typed.
 bt = json.loads((ROOT / "data" / "backtest.json").read_text())
-acc = {"n": bt["methods"]["expected"]["all"]["n"], "days": bt["holdout_days"],
-       "within_10": bt["methods"]["expected"]["all"]["within_10"], "within_10_records": bt["methods"]["worth_new"]["all"]["within_10"]}
-(SITE / "meta.json").write_text(dump({"built": d["built"], "n": len(rows), "shown": len(top), "cities": cities, "price_usd": 100, "accuracy": acc}))
+sl = bt["sale_list"]
+acc = {"n": sl["holdout_n"], "since": bt["holdout_from"], "median_abs_pct": sl["predicted"]["median_abs_pct"],
+       "within_5": sl["predicted"]["within_5"], "within_2": sl["predicted"]["within_2"]}
+cg = json.loads((ROOT / "data" / "condition_phrases.json").read_text())["groups"]
+method = {"sl_n": json.loads((ROOT / "data" / "sale_list_model.json").read_text())["n"], "groups": {g: v["effect"] for g, v in cg.items()}}
+(SITE / "meta.json").write_text(dump({"built": d["built"], "n": len(rows), "shown": len(top), "cities": cities, "price_usd": 100, "accuracy": acc, "method": method}))
 
 # --- private: the bundle the paid route serves ---
 B = PRIV / "bundle"

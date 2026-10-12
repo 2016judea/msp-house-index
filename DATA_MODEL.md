@@ -425,3 +425,79 @@ Groups with |t| < 2.5 are not used. Single phrases and the mined 2-4 word phrase
 - MLS sqft includes finished basements; above-grade sqft is inferred from the foundation area (`below_share`), not read from the county (Hennepin publishes none).
 - Block median now needs 3+ sales (`build_block.py`).
 - Basement terms (`bsmt`, `below_share`; `bsmt_fin` was removed because it double-counted `below_share`) came out with the wrong sign in most suburban areas and are dropped there, so the Tierneys-style "5,400 sqft includes a basement" correction only applies in Minneapolis and Saint Paul. Bedrooms are dropped everywhere: at equal size, more bedrooms do not sell for more.
+
+## Room to negotiate: what it will really sell for (added 2026-10-12)
+
+Aidan's decision, after the curve above showed closed sales land within ~3% of the ask whatever the records say: **rank by room to negotiate** = ask − predicted sale. The records value stays as evidence.
+
+### Ideal model, then reality
+
+| field | question | filled from |
+|---|---|---|
+| predicted sale ÷ ask | what will it really close at | `SaleListModel` (`msp/valuation.py`) |
+| days listed | is the seller tiring | listing date (search); for closed sales, listed → close minus a 35-day closing lag |
+| price cuts (count, share of first ask), relisted | is the seller already moving | Realtor `property_history`, this listing run only |
+| ask ÷ records value | is it priced under or over the evidence | the condition-aware worth above |
+| area, price band, type, season | how hot is this market | city/county; ask band; house/townhome/condo; quarter |
+| condition words, HOA | what the buyer will discount | measured phrase groups; HOA ≥ $300/mo |
+| **showings, offers, days to pending** | **real demand** | **unfilled: no public source. Days are listing → close minus a fixed lag** |
+
+### Backtest (time split): fit on 11,205 sales 2025-12-01 → 2026-07-14, scored on 10,151 sold since
+
+| | median error vs actual sale | within 2% | within 5% | within 10% | bias |
+|---|---|---|---|---|---|
+| predicted sale | 2.19% | 46.4% | 84.0% | 96.4% | +0.73% |
+| the ask alone | 1.79% | 53.6% | 83.9% | 96.2% | +0.0% |
+| long-listed or 2+ cuts (1,248), predicted | 2.2% | | 80.2% | | +0.25% |
+| same, the ask alone | 1.64% | | 81.2% | | +0.84% |
+
+**Read this plainly:** as a point estimate the prediction is no closer than the ask itself (the market cooled through the holdout and the level ran ~0.7% high). What it adds is order: sorted into tenths by predicted room, the homes really did sell from under to over their ask.
+
+| tenth (most room first) | n | predicted sale vs ask | actual sale vs ask |
+|---|---|---|---|
+| 1 | 1,015 | -3.6% | -2.2% |
+| 2 | 1,015 | -1.8% | -1.8% |
+| 3 | 1,015 | -0.9% | -1.0% |
+| 4 | 1,015 | -0.1% | -0.9% |
+| 5 | 1,015 | +0.5% | -0.3% |
+| 6 | 1,015 | +1.1% | -0.1% |
+| 7 | 1,015 | +1.6% | +0.5% |
+| 8 | 1,015 | +2.2% | +0.8% |
+| 9 | 1,015 | +2.8% | +1.3% |
+| 10 | 1,016 | +4.0% | +3.4% |
+
+### Coefficients (`data/sale_list_model.json`, refit on all 21,142; market-temperature shift from the last 60 days +0.0002)
+
+| input | effect on sale ÷ ask |
+|---|---|
+| ask vs records value (log, ±0.3) | -4.0% |
+| no records value | -0.0% |
+| price cuts so far (share of first ask) | -11.7% |
+| relisted | -0.6% |
+| needs-work words | -0.2% |
+| renovated words | +0.8% |
+| HOA $300+/mo | +0.1% |
+| listed 2-6 weeks | -1.1% |
+| listed 6-13 weeks | -1.3% |
+| listed 3+ months | -0.5% |
+| 1 price cut | -1.2% |
+| 2+ price cuts | -0.4% |
+| ask under $200k | -0.4% |
+| ask $200-350k | +0.3% |
+| ask $500-750k | -0.4% |
+| ask $750k+ | -1.6% |
+| townhome | -1.5% |
+| condo | -3.2% |
+| Saint Paul | -0.1% |
+| Hennepin County | -0.4% |
+| Ramsey County | -0.2% |
+| Anoka County | -0.4% |
+| Dakota County | -0.4% |
+| Washington County | -0.4% |
+| Scott County | -0.7% |
+| Carver County | -0.4% |
+| spring (Apr-Jun) | -0.2% |
+| summer (Jul-Sep) | -1.0% |
+| fall (Oct-Dec) | -0.1% |
+
+A ±0.3 clip on the ask-vs-records gap and one '3+ months' bucket keep thin cells from driving the price; a 6+ month bucket alone predicted a +5% premium. A recalibration fitted on the validate window made the holdout worse (bias +0.9%) and is off (`NO_CAL` in `scripts/backtest.py`).

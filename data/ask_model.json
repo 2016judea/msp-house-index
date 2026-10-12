@@ -1,13 +1,13 @@
 {
  "beta": [
-  0.04589,
-  1.15359,
-  -0.10434,
-  -0.0537,
-  -0.1086,
-  0.31014,
-  -0.00596,
-  -0.04297
+  0.04559,
+  1.15304,
+  -0.10236,
+  -0.05576,
+  -0.10782,
+  0.31062,
+  -0.00595,
+  -0.0429
  ],
  "knots": [
   -0.3,
@@ -36,49 +36,49 @@
   },
   {
    "ask_vs_estimate": -0.33,
-   "n": 87,
+   "n": 86,
    "sale_vs_estimate_fit": -0.34,
    "sale_vs_estimate_observed_median": -0.322,
-   "sale_vs_ask_fit": -0.015
+   "sale_vs_ask_fit": -0.016
   },
   {
    "ask_vs_estimate": -0.259,
-   "n": 212,
+   "n": 213,
    "sale_vs_estimate_fit": -0.259,
    "sale_vs_estimate_observed_median": -0.251,
    "sale_vs_ask_fit": -0.0
   },
   {
    "ask_vs_estimate": -0.181,
-   "n": 809,
+   "n": 812,
    "sale_vs_estimate_fit": -0.177,
-   "sale_vs_estimate_observed_median": -0.167,
+   "sale_vs_estimate_observed_median": -0.166,
    "sale_vs_ask_fit": 0.005
   },
   {
    "ask_vs_estimate": -0.095,
-   "n": 3969,
+   "n": 3932,
    "sale_vs_estimate_fit": -0.089,
    "sale_vs_estimate_observed_median": -0.076,
    "sale_vs_ask_fit": 0.007
   },
   {
    "ask_vs_estimate": 0.0,
-   "n": 8812,
+   "n": 8834,
    "sale_vs_estimate_fit": 0.007,
    "sale_vs_estimate_observed_median": 0.003,
    "sale_vs_ask_fit": 0.007
   },
   {
    "ask_vs_estimate": 0.105,
-   "n": 4477,
+   "n": 4484,
    "sale_vs_estimate_fit": 0.1,
    "sale_vs_estimate_observed_median": 0.088,
    "sale_vs_ask_fit": -0.005
   },
   {
    "ask_vs_estimate": 0.221,
-   "n": 2945,
+   "n": 2950,
    "sale_vs_estimate_fit": 0.221,
    "sale_vs_estimate_observed_median": 0.304,
    "sale_vs_ask_fit": -0.001
