@@ -53,7 +53,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .verdict span{font-size:14px;color:var(--ink)}
 .vals{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .vals div:first-child{grid-column:1/-1;border-color:var(--ink)}
-@media (min-width:1024px){.vals{grid-template-columns:repeat(5,1fr)}.vals div:first-child{grid-column:auto}}
+.vals .worth{grid-column:1/-1;border-color:var(--good);background:var(--goodbg)}.vals .worth b{color:var(--good)}
+@media (min-width:1024px){.vals{grid-template-columns:repeat(6,1fr)}.vals div:first-child,.vals .worth{grid-column:auto}}
 .vals div{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:1px}
 .vals span{font-size:11.5px;color:var(--mute);line-height:1.2}
 .vals b{font:600 15px var(--mono)}
@@ -158,7 +159,7 @@ function panel(d){
  const cut=d.original_ask&&d.original_ask>d.ask?`Listed at ${k(d.original_ask)}, now ${k(d.ask)} · ${d.n_cuts} price cut${d.n_cuts==1?"":"s"} · ${d.dom} days`:`${d.dom} days on the market, no price cuts`;
  return `<div class="xin">${ph}<div class="xb">
   <div class="verdict"><b class="${u<0?"neg":"pos"}">${u==null?"–":Math.abs(u)+"% "+(u<0?"above":"below")+" value"}</b></div>
-  <div class="vals">${tile("Asking",d.ask)}${tile("County says",d.est_cal)}${tile("Similar homes sold",d.est_comp)}${tile("Last sale",d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}</div>
+  <div class="vals">${tile("Asking",d.ask)}${tile("County says",d.est_cal)}${tile("Similar homes sold",d.est_comp)}${tile("Last sale",d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}<div class="worth"><span>Worth about</span><b>${k(mid(d))}</b><span>middle of the estimates</span></div></div>
   ${chips(d)?`<div>${chips(d)}</div>`:""}
   <div class="trail">${cut}</div>
   ${recs(d)}
