@@ -1,0 +1,711 @@
+{
+ "built": "2026-10-12",
+ "before": "2026-07-14",
+ "n_sales": 21041,
+ "median_residual": 0.0073,
+ "groups": {
+  "as-is sale": {
+   "n": 173,
+   "effect": -0.2071,
+   "mean_effect": -0.2379,
+   "t": -12.9,
+   "pattern": "\\b(?:sold|selling|being sold|offered|sale) (?:in )?[\\\"'\u201c]?as[- ]is\\b|\\bas[- ]is[\\\"'\u201d]? (?:condition|sale)\\b|will not (?:make|do) (?:any )?repairs|no repairs"
+  },
+  "needs work": {
+   "n": 267,
+   "effect": -0.202,
+   "mean_effect": -0.2255,
+   "t": -13.9,
+   "pattern": "\\b(?:tlc|fixer(?:[- ]upper)?|handyman(?: special)?|rehab|needs? (?:some |a lot of )?(?:work|repairs?)|in need of|repairs needed|sweat equity)\\b"
+  },
+  "investor / cash": {
+   "n": 286,
+   "effect": -0.1889,
+   "mean_effect": -0.2069,
+   "t": -12.7,
+   "pattern": "\\b(?:investor|investors|cash only|cash offers only|cash or rehab|rehab loan|not (?:fha|va|financeable)|conventional or cash)\\b"
+  },
+  "renovation euphemism": {
+   "n": 64,
+   "effect": -0.1407,
+   "mean_effect": -0.159,
+   "t": -5.0,
+   "pattern": "\\b(?:ready for (?:renovation|updating|updates|your updates|a remodel)|possibilities for renovation|renovation (?:project|opportunity)|needs? (?:a )?(?:full |complete |total )?(?:renovation|remodel|updating|updates)|awaits? (?:your )?(?:renovation|updates|remodel)|in need of (?:updating|updates|renovation|repair)|update to your (?:taste|liking|style)|restore,? redesign|starting point)\\b"
+  },
+  "build / land": {
+   "n": 91,
+   "effect": -0.0787,
+   "mean_effect": -0.1409,
+   "t": -4.5,
+   "pattern": "\\b(?:looking to build|build your (?:dream|own|new) home|tear ?down|lot value|land value|value is in the land|buildable lot)\\b"
+  },
+  "cosmetic / personal touches": {
+   "n": 732,
+   "effect": -0.0653,
+   "mean_effect": -0.0845,
+   "t": -11.5,
+   "pattern": "\\b(?:cosmetic (?:updates|work|improvements)|personal touches|your (?:own )?personal touch|needs? (?:some )?updating|could use (?:some )?updat\\w*|bring your (?:ideas|own ideas)|make it your own|update to your)\\b"
+  },
+  "bones / potential": {
+   "n": 691,
+   "effect": -0.0618,
+   "mean_effect": -0.0825,
+   "t": -9.3,
+   "pattern": "\\b(?:good bones|great bones|solid bones|diamond in the rough|sweat equity|tons of potential|lots of potential|full of potential|endless possibilities|bring your (?:vision|ideas|imagination|tools|contractor|paintbrush))\\b"
+  },
+  "original / dated": {
+   "n": 33,
+   "effect": 0.0267,
+   "mean_effect": -0.019,
+   "t": -0.6,
+   "pattern": "\\b(?:original condition|time capsule|lovingly maintained by (?:the )?original|dated|original (?:kitchen|bath|baths|carpet|finishes))\\b"
+  },
+  "renovated": {
+   "n": 4230,
+   "effect": 0.0331,
+   "mean_effect": 0.0448,
+   "t": 14.8,
+   "pattern": "\\b(?:(?:completely|fully|totally|extensively|newly|beautifully|tastefully|thoughtfully|meticulously) (?:renovated|remodeled|remodelled|updated|rehabbed)|(?:full|complete|total|gut|top[- ]to[- ]bottom) (?:renovation|remodel|rehab)|renovated in 20\\d\\d|remodeled in 20\\d\\d)\\b"
+  }
+ },
+ "candidates": {
+  "rehab": {
+   "n": 27,
+   "effect": -0.3443,
+   "mean_effect": -0.368,
+   "t": -6.0
+  },
+  "investor": {
+   "n": 130,
+   "effect": -0.2276,
+   "mean_effect": -0.2468,
+   "t": -11.0
+  },
+  "sold as-is": {
+   "n": 135,
+   "effect": -0.2271,
+   "mean_effect": -0.25,
+   "t": -12.2
+  },
+  "fixer": {
+   "n": 25,
+   "effect": -0.212,
+   "mean_effect": -0.2361,
+   "t": -5.3
+  },
+  "sweat equity": {
+   "n": 62,
+   "effect": -0.1994,
+   "mean_effect": -0.1949,
+   "t": -6.3
+  },
+  "handyman": {
+   "n": 20,
+   "effect": -0.1913,
+   "mean_effect": -0.1684,
+   "t": -2.9
+  },
+  "as-is": {
+   "n": 247,
+   "effect": -0.1765,
+   "mean_effect": -0.1892,
+   "t": -10.5
+  },
+  "as is": {
+   "n": 247,
+   "effect": -0.1765,
+   "mean_effect": -0.1892,
+   "t": -10.5
+  },
+  "in need of": {
+   "n": 37,
+   "effect": -0.1616,
+   "mean_effect": -0.2268,
+   "t": -4.9
+  },
+  "bring your vision": {
+   "n": 70,
+   "effect": -0.1431,
+   "mean_effect": -0.1514,
+   "t": -4.3
+  },
+  "tlc": {
+   "n": 94,
+   "effect": -0.1418,
+   "mean_effect": -0.1927,
+   "t": -7.1
+  },
+  "repairs": {
+   "n": 90,
+   "effect": -0.1408,
+   "mean_effect": -0.1687,
+   "t": -6.2
+  },
+  "solid bones": {
+   "n": 49,
+   "effect": -0.1373,
+   "mean_effect": -0.1746,
+   "t": -5.8
+  },
+  "investors": {
+   "n": 159,
+   "effect": -0.1207,
+   "mean_effect": -0.1753,
+   "t": -7.5
+  },
+  "contractor": {
+   "n": 26,
+   "effect": -0.1013,
+   "mean_effect": -0.079,
+   "t": -2.0
+  },
+  "personal touches": {
+   "n": 115,
+   "effect": -0.101,
+   "mean_effect": -0.1328,
+   "t": -6.9
+  },
+  "bring your ideas": {
+   "n": 68,
+   "effect": -0.1002,
+   "mean_effect": -0.1264,
+   "t": -4.8
+  },
+  "cosmetic": {
+   "n": 184,
+   "effect": -0.0867,
+   "mean_effect": -0.1018,
+   "t": -6.7
+  },
+  "updating": {
+   "n": 94,
+   "effect": -0.0653,
+   "mean_effect": -0.0943,
+   "t": -4.1
+  },
+  "make it your own": {
+   "n": 320,
+   "effect": -0.0607,
+   "mean_effect": -0.0663,
+   "t": -7.0
+  },
+  "build equity": {
+   "n": 357,
+   "effect": -0.06,
+   "mean_effect": -0.0726,
+   "t": -6.2
+  },
+  "great bones": {
+   "n": 61,
+   "effect": -0.0484,
+   "mean_effect": -0.0701,
+   "t": -2.9
+  },
+  "your vision": {
+   "n": 181,
+   "effect": -0.0427,
+   "mean_effect": -0.0726,
+   "t": -3.5
+  },
+  "equity": {
+   "n": 919,
+   "effect": -0.0288,
+   "mean_effect": -0.0508,
+   "t": -7.2
+  },
+  "incredible opportunity": {
+   "n": 127,
+   "effect": -0.0208,
+   "mean_effect": -0.0347,
+   "t": -1.6
+  },
+  "potential": {
+   "n": 1876,
+   "effect": -0.02,
+   "mean_effect": -0.0372,
+   "t": -7.0
+  },
+  "foundation": {
+   "n": 141,
+   "effect": -0.0186,
+   "mean_effect": -0.0043,
+   "t": -0.2
+  },
+  "make it yours": {
+   "n": 275,
+   "effect": -0.0155,
+   "mean_effect": -0.0314,
+   "t": -3.1
+  },
+  "opportunity": {
+   "n": 4237,
+   "effect": -0.0137,
+   "mean_effect": -0.0199,
+   "t": -5.7
+  },
+  "brand new": {
+   "n": 2618,
+   "effect": -0.0037,
+   "mean_effect": -0.0004,
+   "t": -0.1
+  },
+  "original owner": {
+   "n": 149,
+   "effect": -0.0028,
+   "mean_effect": 0.0092,
+   "t": 0.6
+  },
+  "newer roof": {
+   "n": 611,
+   "effect": -0.002,
+   "mean_effect": -0.004,
+   "t": -0.6
+  },
+  "customize": {
+   "n": 145,
+   "effect": 0.0053,
+   "mean_effect": -0.0111,
+   "t": -0.6
+  },
+  "move-in ready": {
+   "n": 4805,
+   "effect": 0.0057,
+   "mean_effect": 0.0058,
+   "t": 2.2
+  },
+  "move in ready": {
+   "n": 4810,
+   "effect": 0.0057,
+   "mean_effect": 0.0058,
+   "t": 2.2
+  },
+  "new roof": {
+   "n": 2165,
+   "effect": 0.006,
+   "mean_effect": 0.0084,
+   "t": 2.2
+  },
+  "new furnace": {
+   "n": 972,
+   "effect": 0.006,
+   "mean_effect": 0.0026,
+   "t": 0.5
+  },
+  "original owners": {
+   "n": 113,
+   "effect": 0.0073,
+   "mean_effect": 0.0107,
+   "t": 0.8
+  },
+  "one owner": {
+   "n": 287,
+   "effect": 0.0096,
+   "mean_effect": 0.0081,
+   "t": 0.8
+  },
+  "vintage": {
+   "n": 301,
+   "effect": 0.01,
+   "mean_effect": -0.0053,
+   "t": -0.4
+  },
+  "new kitchen": {
+   "n": 487,
+   "effect": 0.0128,
+   "mean_effect": 0.006,
+   "t": 0.8
+  },
+  "updated": {
+   "n": 7961,
+   "effect": 0.0134,
+   "mean_effect": 0.0231,
+   "t": 9.2
+  },
+  "retro": {
+   "n": 43,
+   "effect": 0.0187,
+   "mean_effect": -0.006,
+   "t": -0.3
+  },
+  "new windows": {
+   "n": 577,
+   "effect": 0.0193,
+   "mean_effect": 0.0252,
+   "t": 3.6
+  },
+  "renovation": {
+   "n": 251,
+   "effect": 0.0225,
+   "mean_effect": -0.0047,
+   "t": -0.3
+  },
+  "turnkey": {
+   "n": 383,
+   "effect": 0.028,
+   "mean_effect": 0.0401,
+   "t": 4.3
+  },
+  "estate": {
+   "n": 112,
+   "effect": 0.0385,
+   "mean_effect": 0.0522,
+   "t": 1.9
+  },
+  "remodeled": {
+   "n": 1859,
+   "effect": 0.0392,
+   "mean_effect": 0.0477,
+   "t": 11.3
+  },
+  "fully updated": {
+   "n": 230,
+   "effect": 0.0417,
+   "mean_effect": 0.0505,
+   "t": 4.6
+  },
+  "renovated": {
+   "n": 1327,
+   "effect": 0.0471,
+   "mean_effect": 0.0511,
+   "t": 9.3
+  },
+  "customization": {
+   "n": 76,
+   "effect": 0.0493,
+   "mean_effect": 0.0421,
+   "t": 1.7
+  },
+  "completely remodeled": {
+   "n": 166,
+   "effect": 0.0656,
+   "mean_effect": 0.0764,
+   "t": 5.5
+  },
+  "builders": {
+   "n": 121,
+   "effect": 0.1108,
+   "mean_effect": 0.1342,
+   "t": 6.8
+  }
+ },
+ "mined": {
+  "for investors": {
+   "n": 48,
+   "effect": -0.2894,
+   "mean_effect": -0.2615,
+   "t": -6.0
+  },
+  "an investor": {
+   "n": 50,
+   "effect": -0.2469,
+   "mean_effect": -0.2367,
+   "t": -6.7
+  },
+  "sold as is": {
+   "n": 43,
+   "effect": -0.2465,
+   "mean_effect": -0.247,
+   "t": -6.5
+  },
+  "sold as-is": {
+   "n": 108,
+   "effect": -0.2292,
+   "mean_effect": -0.2497,
+   "t": -10.7
+  },
+  "sold as": {
+   "n": 44,
+   "effect": -0.2161,
+   "mean_effect": -0.2379,
+   "t": -6.2
+  },
+  "is being sold": {
+   "n": 95,
+   "effect": -0.2133,
+   "mean_effect": -0.2437,
+   "t": -9.2
+  },
+  "being sold": {
+   "n": 115,
+   "effect": -0.2071,
+   "mean_effect": -0.2293,
+   "t": -9.9
+  },
+  "being sold as-is": {
+   "n": 73,
+   "effect": -0.2071,
+   "mean_effect": -0.2222,
+   "t": -9.2
+  },
+  "is being sold as-is": {
+   "n": 63,
+   "effect": -0.2071,
+   "mean_effect": -0.2295,
+   "t": -8.5
+  },
+  "sweat equity": {
+   "n": 57,
+   "effect": -0.2027,
+   "mean_effect": -0.2035,
+   "t": -6.2
+  },
+  "home is being sold": {
+   "n": 44,
+   "effect": -0.2019,
+   "mean_effect": -0.2075,
+   "t": -5.4
+  },
+  "home is being": {
+   "n": 46,
+   "effect": -0.2003,
+   "mean_effect": -0.2056,
+   "t": -5.6
+  },
+  "vision and": {
+   "n": 64,
+   "effect": -0.1794,
+   "mean_effect": -0.1897,
+   "t": -5.3
+  },
+  "your vision and": {
+   "n": 44,
+   "effect": -0.1794,
+   "mean_effect": -0.1938,
+   "t": -4.3
+  },
+  "is being": {
+   "n": 119,
+   "effect": -0.1778,
+   "mean_effect": -0.1936,
+   "t": -8.2
+  },
+  "opportunity awaits": {
+   "n": 47,
+   "effect": -0.1766,
+   "mean_effect": -0.1805,
+   "t": -5.3
+  },
+  "looking to build": {
+   "n": 58,
+   "effect": -0.1572,
+   "mean_effect": -0.1841,
+   "t": -6.4
+  },
+  "ideas and": {
+   "n": 56,
+   "effect": -0.1538,
+   "mean_effect": -0.1541,
+   "t": -5.6
+  },
+  "home needs": {
+   "n": 51,
+   "effect": -0.1437,
+   "mean_effect": -0.1627,
+   "t": -6.0
+  },
+  "solid bones": {
+   "n": 49,
+   "effect": -0.1373,
+   "mean_effect": -0.1746,
+   "t": -5.8
+  },
+  "is priced": {
+   "n": 53,
+   "effect": -0.1373,
+   "mean_effect": -0.1617,
+   "t": -5.6
+  },
+  "equity in": {
+   "n": 62,
+   "effect": -0.1366,
+   "mean_effect": -0.1315,
+   "t": -4.3
+  },
+  "equity this": {
+   "n": 41,
+   "effect": -0.1318,
+   "mean_effect": -0.1553,
+   "t": -4.6
+  },
+  "your ideas and": {
+   "n": 46,
+   "effect": -0.1294,
+   "mean_effect": -0.1402,
+   "t": -4.5
+  },
+  "buyers looking to": {
+   "n": 73,
+   "effect": -0.1156,
+   "mean_effect": -0.1541,
+   "t": -6.1
+  },
+  "great opportunity to build": {
+   "n": 46,
+   "effect": -0.1124,
+   "mean_effect": -0.1455,
+   "t": -4.2
+  },
+  "with little": {
+   "n": 45,
+   "effect": -0.1109,
+   "mean_effect": -0.1279,
+   "t": -4.0
+  },
+  "appliances ample cabinetry": {
+   "n": 44,
+   "effect": -0.1073,
+   "mean_effect": -0.0949,
+   "t": -4.3
+  },
+  "and personal": {
+   "n": 44,
+   "effect": -0.1051,
+   "mean_effect": -0.1237,
+   "t": -4.4
+  },
+  "add value": {
+   "n": 50,
+   "effect": -0.1037,
+   "mean_effect": -0.1086,
+   "t": -4.1
+  },
+  "personal touches": {
+   "n": 114,
+   "effect": -0.1033,
+   "mean_effect": -0.135,
+   "t": -7.0
+  },
+  "priced to": {
+   "n": 122,
+   "effect": -0.1022,
+   "mean_effect": -0.1237,
+   "t": -6.7
+  },
+  "great potential": {
+   "n": 117,
+   "effect": -0.102,
+   "mean_effect": -0.1138,
+   "t": -5.1
+  },
+  "opportunity for buyers looking": {
+   "n": 44,
+   "effect": -0.0994,
+   "mean_effect": -0.0824,
+   "t": -4.1
+  },
+  "bring your ideas": {
+   "n": 63,
+   "effect": -0.0992,
+   "mean_effect": -0.1215,
+   "t": -4.4
+  },
+  "of potential": {
+   "n": 164,
+   "effect": -0.0977,
+   "mean_effect": -0.1002,
+   "t": -5.7
+  },
+  "buyers looking": {
+   "n": 109,
+   "effect": -0.0969,
+   "mean_effect": -0.1157,
+   "t": -5.8
+  },
+  "opportunity to build equity": {
+   "n": 126,
+   "effect": -0.0943,
+   "mean_effect": -0.1087,
+   "t": -5.5
+  },
+  "priced to sell": {
+   "n": 76,
+   "effect": -0.0935,
+   "mean_effect": -0.1301,
+   "t": -5.9
+  },
+  "cosmetic updates": {
+   "n": 101,
+   "effect": -0.0924,
+   "mean_effect": -0.0966,
+   "t": -5.0
+  },
+  "equity with": {
+   "n": 72,
+   "effect": -0.0914,
+   "mean_effect": -0.0888,
+   "t": -4.1
+  },
+  "bring your": {
+   "n": 244,
+   "effect": -0.0911,
+   "mean_effect": -0.109,
+   "t": -7.5
+  },
+  "extended family": {
+   "n": 66,
+   "effect": -0.0899,
+   "mean_effect": -0.0787,
+   "t": -4.0
+  },
+  "no association": {
+   "n": 66,
+   "effect": -0.0886,
+   "mean_effect": -0.0833,
+   "t": -4.6
+  },
+  "bones and": {
+   "n": 83,
+   "effect": -0.0885,
+   "mean_effect": -0.1332,
+   "t": -5.4
+  },
+  "fantastic opportunity for": {
+   "n": 71,
+   "effect": -0.0872,
+   "mean_effect": -0.0895,
+   "t": -4.2
+  },
+  "for buyers looking to": {
+   "n": 53,
+   "effect": -0.0868,
+   "mean_effect": -0.0903,
+   "t": -4.2
+  },
+  "whether you're first-time buyer": {
+   "n": 77,
+   "effect": -0.0864,
+   "mean_effect": -0.0963,
+   "t": -6.7
+  },
+  "you're first-time buyer": {
+   "n": 79,
+   "effect": -0.0864,
+   "mean_effect": -0.0958,
+   "t": -6.8
+  },
+  "you're first-time": {
+   "n": 88,
+   "effect": -0.0849,
+   "mean_effect": -0.0946,
+   "t": -6.6
+  },
+  "to build equity": {
+   "n": 242,
+   "effect": -0.0848,
+   "mean_effect": -0.0871,
+   "t": -6.1
+  },
+  "whether you're first-time": {
+   "n": 85,
+   "effect": -0.0834,
+   "mean_effect": -0.0899,
+   "t": -6.4
+  },
+  "as is": {
+   "n": 85,
+   "effect": -0.0828,
+   "mean_effect": -0.1686,
+   "t": -6.0
+  }
+ }
+}

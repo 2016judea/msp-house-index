@@ -1,0 +1,87 @@
+{
+ "beta": [
+  0.07534,
+  1.24087,
+  -0.2143,
+  -0.03114,
+  -0.10866,
+  0.32144,
+  -0.00602,
+  -0.04137
+ ],
+ "knots": [
+  -0.3,
+  -0.15,
+  0.0,
+  0.15
+ ],
+ "n": 20963,
+ "terms": [
+  "intercept",
+  "gap",
+  "gap past -0.30",
+  "gap past -0.15",
+  "gap past +0.00",
+  "gap past +0.15",
+  "needs-work words",
+  "needs-work words \u00d7 gap below 0"
+ ],
+ "curve": [
+  {
+   "ask_vs_estimate": -0.393,
+   "n": 167,
+   "sale_vs_estimate_fit": -0.42,
+   "sale_vs_estimate_observed_median": -0.492,
+   "sale_vs_ask_fit": -0.044
+  },
+  {
+   "ask_vs_estimate": -0.33,
+   "n": 95,
+   "sale_vs_estimate_fit": -0.344,
+   "sale_vs_estimate_observed_median": -0.323,
+   "sale_vs_ask_fit": -0.021
+  },
+  {
+   "ask_vs_estimate": -0.259,
+   "n": 258,
+   "sale_vs_estimate_fit": -0.257,
+   "sale_vs_estimate_observed_median": -0.25,
+   "sale_vs_ask_fit": 0.003
+  },
+  {
+   "ask_vs_estimate": -0.181,
+   "n": 852,
+   "sale_vs_estimate_fit": -0.177,
+   "sale_vs_estimate_observed_median": -0.167,
+   "sale_vs_ask_fit": 0.006
+  },
+  {
+   "ask_vs_estimate": -0.095,
+   "n": 4057,
+   "sale_vs_estimate_fit": -0.089,
+   "sale_vs_estimate_observed_median": -0.077,
+   "sale_vs_ask_fit": 0.007
+  },
+  {
+   "ask_vs_estimate": 0.0,
+   "n": 8874,
+   "sale_vs_estimate_fit": 0.006,
+   "sale_vs_estimate_observed_median": 0.003,
+   "sale_vs_ask_fit": 0.006
+  },
+  {
+   "ask_vs_estimate": 0.105,
+   "n": 4380,
+   "sale_vs_estimate_fit": 0.1,
+   "sale_vs_estimate_observed_median": 0.089,
+   "sale_vs_ask_fit": -0.005
+  },
+  {
+   "ask_vs_estimate": 0.221,
+   "n": 2708,
+   "sale_vs_estimate_fit": 0.221,
+   "sale_vs_estimate_observed_median": 0.297,
+   "sale_vs_ask_fit": -0.0
+  }
+ ]
+}
