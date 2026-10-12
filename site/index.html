@@ -52,6 +52,22 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .sc tr.more td{text-align:left;position:static}
 .sc tr.more button{position:sticky;left:10px;font:500 13px var(--sans);padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
 details.method{color:var(--mute);font-size:13.5px}
+/* Wide screens: use the width. The table fills the window, the controls sit on one line,
+   and the table runs to the bottom of the screen instead of stopping at 70%. (Aidan, 10/11: "SOOO much unused space") */
+@media (min-width:1024px){
+ .wrap{max-width:1680px}
+ header{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+ .filters{flex-wrap:nowrap;align-items:center}
+ .filters select{flex:0 0 170px}
+ .sorts{width:auto;flex:1}
+ .how{padding:8px 12px}
+ .sc-wrap{max-height:calc(100vh - 250px)}
+ .sc{font-size:13.5px}
+ .sc th:nth-child(2),.sc td:nth-child(2){max-width:300px}
+ .xin{grid-template-columns:280px 1fr;max-width:1100px}
+ .xin img{width:280px;height:210px}
+ .xin ul{font-size:13.5px}
+}
 details.method summary{cursor:pointer;color:var(--ink)}
 </style>
 </head>
@@ -116,7 +132,7 @@ function screener(){
  ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}" tabindex="0">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc pos":c[0]=="drop"&&v?"neg":""}">${c[0]=="address"||c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
  ${open1==d.property_id?`<tr class="x"><td colspan="${COLS.length}"><div class="xin">${ph(d)}<div><div>${chips(d)}</div><ul>${ev(d)}</ul>${ln(d)}</div></div></td></tr>`:""}`).join("")}
  ${rows.length>limit?`<tr class="more"><td colspan="${COLS.length}"><button id="more">Show more (${(rows.length-limit).toLocaleString()} left)</button></td></tr>`:""}
- </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td><td class="pos">${med(rows.map(under))??"–"}%</td><td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;
+ </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td>${(m=>`<td class="${m<0?"neg":"pos"}">${m??"–"}%</td>`)(med(rows.map(under)))}<td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;
  V.querySelectorAll("th").forEach(th=>{const go=()=>{const kk=th.dataset.k;if(sk==kk)sd=-sd;else{sk=kk;sd=["rank","address","city","ask"].includes(kk)?1:-1}limit=150;window.va("event",{name:"sort",data:{col:kk}});screener()};th.onclick=go;th.onkeydown=e=>{if(e.key=="Enter")go()}});
  V.querySelectorAll("tr.row").forEach(tr=>{const go=()=>{const id=tr.dataset.r;open1=open1==id?null:id;if(open1)window.va("event",{name:"expand",data:{id}});screener()};tr.onclick=go;tr.onkeydown=e=>{if(e.key=="Enter")go()}});
  $("#more")?.addEventListener("click",()=>{limit+=150;screener()});
