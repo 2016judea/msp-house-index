@@ -128,6 +128,9 @@ for gid, cx, cy, gj, n, emv, sq, ppsf, yb, sd, sv, an, st, cls in lots:
     addr = " ".join(x for x in [an or "", street] if x)
     # county class in plain words: "234 3A INDUSTRIAL PREFERENTIAL" -> "Industrial preferential"
     cls = re.sub(r"^(\d+\s+)?\d[a-zA-Z]\s+", "", cls).capitalize() if cls else ""
+    # A non-home lot's county sq ft is often the whole building spread over its parcels ($1/sq ft downtown): drop the absurd ones.
+    if cls and ppsf and not 10 <= ppsf <= 3000:
+        ppsf = 0
     sale = (sd.year * 100 + sd.month) if sd else 0
     key = f"{cx}_{cy}"
     where[gid] = (key, len(cells[key]))

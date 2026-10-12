@@ -8,7 +8,8 @@ import requests
 
 TEAM = "team_XnhPzBEcaSfEmZFo9M2isLFY"
 PROJECT = "msp-house-index"
-SITE = Path(__file__).resolve().parent.parent / "site"
+# SITE_DIR deploys another copy of site/ (e.g. a clean `git archive` when the tree holds another session's work)
+SITE = Path(os.environ.get("SITE_DIR") or Path(__file__).resolve().parent.parent / "site")
 H = {"Authorization": f"Bearer {os.environ['VERCEL_TOKEN']}"}
 API = "https://api.vercel.com"
 
