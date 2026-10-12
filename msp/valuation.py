@@ -288,7 +288,7 @@ def baseline(s, pool, asof):
 FEATURES = [  # (key, label, unit for the reader)
     ("lsqft", "size", "log sqft"), ("beds", "bedroom", "bedroom"), ("baths_full", "full bath", "full bath"),
     ("baths_half", "half bath", "half bath"), ("garage", "garage stall", "stall"), ("bsmt", "basement", "basement"),
-    ("bsmt_fin", "finished basement", "finished basement"), ("walkout", "walkout", "walkout"), ("llot", "lot size", "log lot"),
+("walkout", "walkout", "walkout"), ("llot", "lot size", "log lot"),
     ("roof_new", "roof 8 years or newer", "new roof"), ("flip", "bought and resold renovated", "flip"), ("hoa", "HOA dues", "$100/mo"),
     ("below_share", "share of the sqft below grade", "all of it"),
 ]
@@ -620,7 +620,7 @@ def grid(s, pool, asof, models, n_comps=None):
             if abs(amt) >= 500:
                 say = lambda e, g: f"listing reads '{g[0]}' ({e:+.1%} against comps)" if g else "no condition words (0%)"
                 lines.append({"k": "condition", "amt": round(amt, -2), "why": f"subject {say(ce, cg)}, comp {say(re_, rg)}; "
-                              f"measured from {CONDN.get(cg[0] if cg else rg[0], 0):,} sales whose listings used those words (scripts/mine_condition.py)"})
+                              f"measured from {CONDN.get(cg[0] if cg else rg[0], 0):,} sales whose listings used those words"})
         adj = sum(l["amt"] for l in lines if l["k"] != "time")
         gross = sum(abs(l["amt"]) for l in lines if l["k"] != "time") / base
         comps.append(dict(i=int(i), pid=r["pid"], address=r["address"], city=r["city"], photo=r["photo"], url=r["url"], sold_date=r["date"],

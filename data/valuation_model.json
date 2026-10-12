@@ -22,69 +22,63 @@
    "median_price": 361000,
    "rates": {
     "lsqft": {
-     "coef": 0.5705,
+     "coef": 0.5805,
      "known_n": 3304,
-     "dollars_at_median": 20600.0,
+     "dollars_at_median": 21000.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0698,
+     "coef": 0.0718,
      "known_n": 3297,
-     "dollars_at_median": 25200.0,
+     "dollars_at_median": 25900.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.1009,
+     "coef": 0.104,
      "known_n": 3297,
-     "dollars_at_median": 36400.0,
+     "dollars_at_median": 37600.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0098,
+     "coef": 0.011,
      "known_n": 2575,
-     "dollars_at_median": 3500.0,
+     "dollars_at_median": 4000.0,
      "per": "stall"
     },
     "bsmt": {
-     "coef": 0.235,
+     "coef": 0.2399,
      "known_n": 2605,
-     "dollars_at_median": 84800.0,
+     "dollars_at_median": 86600.0,
      "per": "basement"
     },
-    "bsmt_fin": {
-     "coef": 0.1111,
-     "known_n": 2605,
-     "dollars_at_median": 40100.0,
-     "per": "finished basement"
-    },
     "walkout": {
-     "coef": 0.0597,
+     "coef": 0.061,
      "known_n": 2605,
-     "dollars_at_median": 21600.0,
+     "dollars_at_median": 22000.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.125,
+     "coef": 0.1212,
      "known_n": 3272,
-     "dollars_at_median": 11300.0,
+     "dollars_at_median": 10900.0,
      "per": "25% more lot"
     },
     "roof_new": {
-     "coef": 0.0416,
+     "coef": 0.0415,
      "known_n": 2180,
      "dollars_at_median": 15000.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0479,
+     "coef": 0.0483,
      "known_n": 3304,
-     "dollars_at_median": 17300.0,
+     "dollars_at_median": 17400.0,
      "per": "flip"
     },
     "below_share": {
-     "coef": -0.2549,
+     "coef": -0.0437,
      "known_n": 2587,
-     "dollars_at_median": -92000.0,
+     "dollars_at_median": -15800.0,
      "per": "all of it"
     }
    },
@@ -93,26 +87,26 @@
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.0908,
-    "1940s-50s": 0.0141,
-    "1960s-70s": 0.0059,
-    "1980s-90s": 0.0077,
-    "2000-2014": 0.1368,
-    "2015 or later": 0.2639
+    "1920s-30s": 0.0898,
+    "1940s-50s": 0.0104,
+    "1960s-70s": -0.0005,
+    "1980s-90s": 0.0046,
+    "2000-2014": 0.1416,
+    "2015 or later": 0.2695
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9543,
-    "2025-12": 0.94,
-    "2026-01": 0.9336,
-    "2026-02": 0.9144,
-    "2026-03": 1.016,
-    "2026-04": 0.9888,
-    "2026-05": 1.044,
-    "2026-06": 1.02,
-    "2026-07": 1.0162,
-    "2026-08": 0.9883,
-    "2026-09": 0.972,
+    "2025-11": 0.9538,
+    "2025-12": 0.9383,
+    "2026-01": 0.9322,
+    "2026-02": 0.9119,
+    "2026-03": 1.0158,
+    "2026-04": 0.9876,
+    "2026-05": 1.0436,
+    "2026-06": 1.0193,
+    "2026-07": 1.0156,
+    "2026-08": 0.9881,
+    "2026-09": 0.9713,
     "2026-10": 0.9987
    },
    "index_n": {
@@ -139,9 +133,9 @@
    "median_price": 472000,
    "rates": {
     "lsqft": {
-     "coef": 0.558,
+     "coef": 0.5594,
      "known_n": 8845,
-     "dollars_at_median": 26300.0,
+     "dollars_at_median": 26400.0,
      "per": "10% more sqft"
     },
     "baths_full": {
@@ -151,71 +145,75 @@
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.0541,
+     "coef": 0.0533,
      "known_n": 8836,
-     "dollars_at_median": 25500.0,
+     "dollars_at_median": 25200.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0328,
+     "coef": 0.0326,
      "known_n": 8500,
-     "dollars_at_median": 15500.0,
+     "dollars_at_median": 15400.0,
      "per": "stall"
     },
     "walkout": {
-     "coef": 0.0084,
+     "coef": 0.0093,
      "known_n": 7180,
-     "dollars_at_median": 3900.0,
+     "dollars_at_median": 4400.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.1181,
+     "coef": 0.1178,
      "known_n": 8787,
      "dollars_at_median": 13900.0,
      "per": "25% more lot"
     },
     "roof_new": {
-     "coef": 0.0217,
+     "coef": 0.0219,
      "known_n": 6365,
-     "dollars_at_median": 10200.0,
+     "dollars_at_median": 10300.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0489,
+     "coef": 0.049,
      "known_n": 8845,
      "dollars_at_median": 23100.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0156,
+     "known_n": 7131,
+     "dollars_at_median": -7400.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0177,
-    "bsmt": -0.1327,
-    "bsmt_fin": -0.0556,
-    "below_share": 0.086
+    "beds": -0.0187,
+    "bsmt": -0.1316
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": -0.0353,
-    "1940s-50s": -0.0768,
-    "1960s-70s": -0.0824,
-    "1980s-90s": -0.0233,
-    "2000-2014": 0.0914,
-    "2015 or later": 0.2342
+    "1920s-30s": -0.0345,
+    "1940s-50s": -0.0749,
+    "1960s-70s": -0.0805,
+    "1980s-90s": -0.0219,
+    "2000-2014": 0.0921,
+    "2015 or later": 0.2345
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9759,
-    "2025-12": 0.9705,
-    "2026-01": 0.9573,
+    "2025-11": 0.9762,
+    "2025-12": 0.9706,
+    "2026-01": 0.9576,
     "2026-02": 0.9372,
-    "2026-03": 1.0021,
-    "2026-04": 1.0096,
-    "2026-05": 1.0184,
-    "2026-06": 1.0224,
-    "2026-07": 1.0247,
-    "2026-08": 1.0057,
-    "2026-09": 0.9996,
-    "2026-10": 1.0038
+    "2026-03": 1.0023,
+    "2026-04": 1.01,
+    "2026-05": 1.0185,
+    "2026-06": 1.0227,
+    "2026-07": 1.0248,
+    "2026-08": 1.0059,
+    "2026-09": 1.0001,
+    "2026-10": 1.0041
    },
    "index_n": {
     "2025-10": 847,
@@ -284,8 +282,7 @@
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0808,
-    "bsmt_fin": -0.0263,
+    "beds": -0.0806,
     "hoa": 0.0056
    },
    "age": {
@@ -367,12 +364,11 @@
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0223,
-    "baths_half": -0.0347,
-    "bsmt_fin": -0.2487,
-    "roof_new": -0.0148,
-    "hoa": 0.0041,
-    "below_share": 0.4407
+    "beds": -0.0213,
+    "baths_half": -0.0468,
+    "roof_new": -0.0149,
+    "hoa": 0.0043,
+    "below_share": 0.0067
    },
    "age": {
     "before 1920": 0.0,
@@ -422,102 +418,92 @@
    "median_price": 305000,
    "rates": {
     "lsqft": {
-     "coef": 0.4912,
+     "coef": 0.4966,
      "known_n": 2672,
-     "dollars_at_median": 15000.0,
+     "dollars_at_median": 15100.0,
      "per": "10% more sqft"
     },
     "beds": {
-     "coef": 0.0068,
+     "coef": 0.0064,
      "known_n": 2671,
-     "dollars_at_median": 2100.0,
+     "dollars_at_median": 1900.0,
      "per": "bedroom"
     },
     "baths_full": {
-     "coef": 0.0929,
+     "coef": 0.0935,
      "known_n": 2671,
-     "dollars_at_median": 28300.0,
+     "dollars_at_median": 28500.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.0868,
+     "coef": 0.0866,
      "known_n": 2671,
-     "dollars_at_median": 26500.0,
+     "dollars_at_median": 26400.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0286,
+     "coef": 0.029,
      "known_n": 1878,
-     "dollars_at_median": 8700.0,
+     "dollars_at_median": 8900.0,
      "per": "stall"
     },
     "bsmt": {
-     "coef": 0.1417,
+     "coef": 0.1434,
      "known_n": 1981,
-     "dollars_at_median": 43200.0,
+     "dollars_at_median": 43700.0,
      "per": "basement"
     },
-    "bsmt_fin": {
-     "coef": 0.0294,
-     "known_n": 1981,
-     "dollars_at_median": 9000.0,
-     "per": "finished basement"
-    },
     "walkout": {
-     "coef": 0.0004,
+     "coef": 0.0009,
      "known_n": 1981,
-     "dollars_at_median": 100.0,
+     "dollars_at_median": 300.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.1531,
+     "coef": 0.1519,
      "known_n": 2626,
-     "dollars_at_median": 11700.0,
+     "dollars_at_median": 11600.0,
      "per": "25% more lot"
     },
     "roof_new": {
-     "coef": 0.0585,
+     "coef": 0.0588,
      "known_n": 1566,
      "dollars_at_median": 17900.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0632,
+     "coef": 0.0638,
      "known_n": 2672,
-     "dollars_at_median": 19300.0,
+     "dollars_at_median": 19400.0,
      "per": "flip"
-    },
-    "below_share": {
-     "coef": -0.0394,
-     "known_n": 1967,
-     "dollars_at_median": -12000.0,
-     "per": "all of it"
     }
    },
-   "dropped_wrong_sign": {},
+   "dropped_wrong_sign": {
+    "below_share": 0.0153
+   },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.0752,
-    "1940s-50s": 0.0921,
-    "1960s-70s": 0.039,
-    "1980s-90s": 0.0441,
-    "2000-2014": 0.1111,
-    "2015 or later": 0.2433
+    "1920s-30s": 0.0766,
+    "1940s-50s": 0.0936,
+    "1960s-70s": 0.0395,
+    "1980s-90s": 0.045,
+    "2000-2014": 0.1135,
+    "2015 or later": 0.2435
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9836,
-    "2025-12": 0.9531,
-    "2026-01": 0.983,
-    "2026-02": 0.9447,
-    "2026-03": 0.9764,
-    "2026-04": 0.9908,
-    "2026-05": 1.0442,
-    "2026-06": 1.0348,
-    "2026-07": 1.0161,
-    "2026-08": 1.0141,
-    "2026-09": 0.953,
-    "2026-10": 0.9919
+    "2025-11": 0.9831,
+    "2025-12": 0.9536,
+    "2026-01": 0.9828,
+    "2026-02": 0.9445,
+    "2026-03": 0.9762,
+    "2026-04": 0.9914,
+    "2026-05": 1.0438,
+    "2026-06": 1.0343,
+    "2026-07": 1.0157,
+    "2026-08": 1.0144,
+    "2026-09": 0.9527,
+    "2026-10": 0.9907
    },
    "index_n": {
     "2025-10": 232,
@@ -598,9 +584,8 @@
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.026,
-    "bsmt": -0.0291,
-    "bsmt_fin": -0.0173
+    "beds": -0.0261,
+    "bsmt": -0.0295
    },
    "age": {
     "before 1920": 0.0,
@@ -681,12 +666,11 @@
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0594,
-    "baths_half": -0.0241,
-    "bsmt": -0.0551,
-    "bsmt_fin": -0.1453,
+    "beds": -0.0606,
+    "baths_half": -0.0282,
+    "bsmt": -0.0606,
     "hoa": 0.0017,
-    "below_share": 0.2511
+    "below_share": 0.0076
    },
    "age": {
     "before 1920": 0.0,
@@ -736,83 +720,87 @@
    "median_price": 390000,
    "rates": {
     "lsqft": {
-     "coef": 0.4447,
+     "coef": 0.4519,
      "known_n": 3978,
-     "dollars_at_median": 17300.0,
+     "dollars_at_median": 17600.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0214,
+     "coef": 0.0218,
      "known_n": 3922,
-     "dollars_at_median": 8400.0,
+     "dollars_at_median": 8500.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.0405,
+     "coef": 0.037,
      "known_n": 3922,
-     "dollars_at_median": 15800.0,
+     "dollars_at_median": 14400.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0412,
+     "coef": 0.0405,
      "known_n": 3290,
-     "dollars_at_median": 16100.0,
+     "dollars_at_median": 15800.0,
      "per": "stall"
     },
     "walkout": {
-     "coef": 0.0364,
+     "coef": 0.0393,
      "known_n": 3043,
-     "dollars_at_median": 14200.0,
+     "dollars_at_median": 15300.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.0792,
+     "coef": 0.0788,
      "known_n": 3861,
      "dollars_at_median": 7700.0,
      "per": "25% more lot"
     },
     "roof_new": {
-     "coef": 0.0293,
+     "coef": 0.0294,
      "known_n": 2649,
-     "dollars_at_median": 11400.0,
+     "dollars_at_median": 11500.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0364,
+     "coef": 0.0362,
      "known_n": 3978,
-     "dollars_at_median": 14200.0,
+     "dollars_at_median": 14100.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0471,
+     "known_n": 3018,
+     "dollars_at_median": -18400.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0025,
-    "bsmt": -0.0007,
-    "bsmt_fin": -0.1008,
-    "below_share": 0.1298
+    "beds": -0.0043,
+    "bsmt": -0.0023
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.0854,
-    "1940s-50s": 0.0563,
-    "1960s-70s": 0.0725,
-    "1980s-90s": 0.1138,
-    "2000-2014": 0.1606,
-    "2015 or later": 0.2549
+    "1920s-30s": 0.086,
+    "1940s-50s": 0.0617,
+    "1960s-70s": 0.0792,
+    "1980s-90s": 0.1204,
+    "2000-2014": 0.1649,
+    "2015 or later": 0.2568
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9815,
+    "2025-11": 0.9812,
     "2025-12": 0.9708,
-    "2026-01": 0.9474,
-    "2026-02": 0.9712,
-    "2026-03": 0.9722,
-    "2026-04": 1.0146,
-    "2026-05": 1.0323,
+    "2026-01": 0.9486,
+    "2026-02": 0.9714,
+    "2026-03": 0.971,
+    "2026-04": 1.0159,
+    "2026-05": 1.0325,
     "2026-06": 1.0,
-    "2026-07": 1.0019,
-    "2026-08": 1.0054,
-    "2026-09": 1.0052,
-    "2026-10": 0.9929
+    "2026-07": 1.0025,
+    "2026-08": 1.0056,
+    "2026-09": 1.0057,
+    "2026-10": 0.9949
    },
    "index_n": {
     "2025-10": 380,
@@ -838,72 +826,76 @@
    "median_price": 280000,
    "rates": {
     "lsqft": {
-     "coef": 0.4931,
+     "coef": 0.5065,
      "known_n": 1051,
-     "dollars_at_median": 13800.0,
+     "dollars_at_median": 14200.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0354,
+     "coef": 0.0377,
      "known_n": 1023,
-     "dollars_at_median": 9900.0,
+     "dollars_at_median": 10600.0,
      "per": "full bath"
     },
     "garage": {
-     "coef": 0.1,
+     "coef": 0.1011,
      "known_n": 909,
-     "dollars_at_median": 28000.0,
+     "dollars_at_median": 28300.0,
      "per": "stall"
     },
     "roof_new": {
-     "coef": 0.0048,
+     "coef": 0.0047,
      "known_n": 641,
-     "dollars_at_median": 1400.0,
+     "dollars_at_median": 1300.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0338,
+     "coef": 0.0322,
      "known_n": 1051,
-     "dollars_at_median": 9500.0,
+     "dollars_at_median": 9000.0,
      "per": "flip"
     },
     "hoa": {
-     "coef": -0.0116,
+     "coef": -0.0118,
      "known_n": 1051,
-     "dollars_at_median": -3200.0,
+     "dollars_at_median": -3300.0,
      "per": "$100/mo"
+    },
+    "below_share": {
+     "coef": -0.0442,
+     "known_n": 349,
+     "dollars_at_median": -12400.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0178,
-    "baths_half": -0.0874,
-    "bsmt": -0.0797,
-    "bsmt_fin": -0.1028,
-    "below_share": 0.1403
+    "beds": -0.018,
+    "baths_half": -0.0921,
+    "bsmt": -0.088
    },
    "age": {
     "before 1920": 0.0,
     "1920s-30s": 0.0,
     "1940s-50s": 0.0,
-    "1960s-70s": -0.1393,
-    "1980s-90s": -0.0255,
-    "2000-2014": 0.021,
-    "2015 or later": 0.1438
+    "1960s-70s": -0.1344,
+    "1980s-90s": -0.0241,
+    "2000-2014": 0.018,
+    "2015 or later": 0.1404
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 1.0217,
-    "2025-12": 0.9504,
-    "2026-01": 0.9742,
-    "2026-02": 0.9681,
-    "2026-03": 0.9698,
-    "2026-04": 0.9719,
-    "2026-05": 1.0009,
-    "2026-06": 1.0001,
+    "2025-11": 1.0238,
+    "2025-12": 0.9507,
+    "2026-01": 0.9735,
+    "2026-02": 0.9656,
+    "2026-03": 0.97,
+    "2026-04": 0.9711,
+    "2026-05": 1.0015,
+    "2026-06": 0.9992,
     "2026-07": 1.0269,
     "2026-08": 1.0,
-    "2026-09": 1.0357,
-    "2026-10": 1.022
+    "2026-09": 1.0365,
+    "2026-10": 1.0228
    },
    "index_n": {
     "2025-10": 96,
@@ -925,49 +917,49 @@
    "area": "Dakota County",
    "kind": "house",
    "n": 4446,
-   "rmse_log": 0.214,
+   "rmse_log": 0.215,
    "median_price": 450000,
    "rates": {
     "lsqft": {
-     "coef": 0.5564,
+     "coef": 0.5578,
      "known_n": 4446,
-     "dollars_at_median": 25000.0,
+     "dollars_at_median": 25100.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0201,
+     "coef": 0.0205,
      "known_n": 4446,
-     "dollars_at_median": 9000.0,
+     "dollars_at_median": 9200.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.0268,
+     "coef": 0.0255,
      "known_n": 4446,
-     "dollars_at_median": 12100.0,
+     "dollars_at_median": 11500.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0204,
+     "coef": 0.0197,
      "known_n": 3559,
-     "dollars_at_median": 9200.0,
+     "dollars_at_median": 8900.0,
      "per": "stall"
     },
     "walkout": {
-     "coef": 0.0005,
+     "coef": 0.0018,
      "known_n": 3291,
-     "dollars_at_median": 200.0,
+     "dollars_at_median": 800.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.1045,
+     "coef": 0.1044,
      "known_n": 4202,
-     "dollars_at_median": 11800.0,
+     "dollars_at_median": 11700.0,
      "per": "25% more lot"
     },
     "roof_new": {
-     "coef": 0.0286,
+     "coef": 0.0283,
      "known_n": 2950,
-     "dollars_at_median": 12900.0,
+     "dollars_at_median": 12800.0,
      "per": "new roof"
     },
     "flip": {
@@ -975,37 +967,41 @@
      "known_n": 4446,
      "dollars_at_median": -9300.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0233,
+     "known_n": 3269,
+     "dollars_at_median": -10500.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0099,
-    "bsmt": -0.0759,
-    "bsmt_fin": -0.134,
-    "below_share": 0.2168
+    "beds": -0.0119,
+    "bsmt": -0.0789
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.0392,
-    "1940s-50s": 0.034,
-    "1960s-70s": 0.0644,
-    "1980s-90s": 0.1052,
-    "2000-2014": 0.167,
-    "2015 or later": 0.3054
+    "1920s-30s": 0.0401,
+    "1940s-50s": 0.0382,
+    "1960s-70s": 0.069,
+    "1980s-90s": 0.1094,
+    "2000-2014": 0.1698,
+    "2015 or later": 0.3072
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9825,
+    "2025-11": 0.9823,
     "2025-12": 0.9642,
     "2026-01": 0.9562,
-    "2026-02": 0.974,
-    "2026-03": 0.9834,
-    "2026-04": 1.0021,
+    "2026-02": 0.9744,
+    "2026-03": 0.9838,
+    "2026-04": 1.0022,
     "2026-05": 1.0474,
-    "2026-06": 1.0394,
-    "2026-07": 1.0253,
-    "2026-08": 1.0241,
-    "2026-09": 1.0275,
-    "2026-10": 1.0228
+    "2026-06": 1.0398,
+    "2026-07": 1.0255,
+    "2026-08": 1.0248,
+    "2026-09": 1.0281,
+    "2026-10": 1.0239
    },
    "index_n": {
     "2025-10": 376,
@@ -1031,62 +1027,66 @@
    "median_price": 285000,
    "rates": {
     "lsqft": {
-     "coef": 0.7299,
+     "coef": 0.7321,
      "known_n": 2231,
-     "dollars_at_median": 20800.0,
+     "dollars_at_median": 20900.0,
      "per": "10% more sqft"
     },
     "garage": {
-     "coef": 0.0802,
+     "coef": 0.0824,
      "known_n": 1648,
-     "dollars_at_median": 22900.0,
+     "dollars_at_median": 23500.0,
      "per": "stall"
     },
     "roof_new": {
-     "coef": 0.0047,
+     "coef": 0.005,
      "known_n": 1216,
      "dollars_at_median": 1400.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0266,
+     "coef": 0.0231,
      "known_n": 2231,
-     "dollars_at_median": 7600.0,
+     "dollars_at_median": 6600.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0058,
+     "known_n": 748,
+     "dollars_at_median": -1700.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0432,
-    "baths_full": -0.0133,
-    "baths_half": -0.0661,
-    "bsmt": -0.0277,
-    "bsmt_fin": -0.0871,
-    "hoa": 0.0017,
-    "below_share": 0.1136
+    "beds": -0.0436,
+    "baths_full": -0.0159,
+    "baths_half": -0.0709,
+    "bsmt": -0.0328,
+    "hoa": 0.0017
    },
    "age": {
     "before 1920": 0.0,
     "1920s-30s": 0.0,
     "1940s-50s": 0.0,
-    "1960s-70s": -0.1519,
-    "1980s-90s": -0.0087,
-    "2000-2014": 0.0152,
-    "2015 or later": 0.1454
+    "1960s-70s": -0.1514,
+    "1980s-90s": -0.0077,
+    "2000-2014": 0.016,
+    "2015 or later": 0.1431
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9642,
-    "2025-12": 0.9402,
-    "2026-01": 0.9638,
-    "2026-02": 0.9694,
-    "2026-03": 0.9524,
-    "2026-04": 1.0001,
-    "2026-05": 0.9985,
-    "2026-06": 1.0091,
-    "2026-07": 0.9933,
-    "2026-08": 0.9833,
-    "2026-09": 0.9706,
-    "2026-10": 0.9422
+    "2025-11": 0.9651,
+    "2025-12": 0.9403,
+    "2026-01": 0.9641,
+    "2026-02": 0.9714,
+    "2026-03": 0.9531,
+    "2026-04": 1.0025,
+    "2026-05": 0.9999,
+    "2026-06": 1.01,
+    "2026-07": 0.9938,
+    "2026-08": 0.9846,
+    "2026-09": 0.9712,
+    "2026-10": 0.9449
    },
    "index_n": {
     "2025-10": 207,
@@ -1149,11 +1149,10 @@
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0378,
-    "baths_half": -0.0777,
-    "bsmt_fin": -0.2055,
-    "hoa": 0.0102,
-    "below_share": 0.335
+    "beds": -0.042,
+    "baths_half": -0.0883,
+    "hoa": 0.0104,
+    "below_share": 0.0057
    },
    "age": {
     "before 1920": 0.0,
@@ -1203,83 +1202,87 @@
    "median_price": 499994,
    "rates": {
     "lsqft": {
-     "coef": 0.6245,
+     "coef": 0.6298,
      "known_n": 3383,
-     "dollars_at_median": 31200.0,
+     "dollars_at_median": 31500.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0006,
+     "coef": 0.0003,
      "known_n": 3375,
-     "dollars_at_median": 300.0,
+     "dollars_at_median": 200.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.022,
+     "coef": 0.0178,
      "known_n": 3375,
-     "dollars_at_median": 11000.0,
+     "dollars_at_median": 8900.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0411,
+     "coef": 0.0407,
      "known_n": 2446,
-     "dollars_at_median": 20500.0,
+     "dollars_at_median": 20400.0,
      "per": "stall"
     },
     "walkout": {
-     "coef": 0.0057,
+     "coef": 0.0113,
      "known_n": 2232,
-     "dollars_at_median": 2800.0,
+     "dollars_at_median": 5600.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.0784,
+     "coef": 0.0779,
      "known_n": 3070,
-     "dollars_at_median": 9800.0,
+     "dollars_at_median": 9700.0,
      "per": "25% more lot"
     },
     "roof_new": {
-     "coef": 0.0269,
+     "coef": 0.028,
      "known_n": 2105,
-     "dollars_at_median": 13500.0,
+     "dollars_at_median": 14000.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0036,
+     "coef": 0.0043,
      "known_n": 3383,
-     "dollars_at_median": 1800.0,
+     "dollars_at_median": 2200.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0575,
+     "known_n": 2220,
+     "dollars_at_median": -28700.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0303,
-    "bsmt": -0.0437,
-    "bsmt_fin": -0.1238,
-    "below_share": 0.175
+    "beds": -0.0315,
+    "bsmt": -0.0444
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.0354,
-    "1940s-50s": -0.0436,
-    "1960s-70s": -0.0665,
-    "1980s-90s": -0.0381,
-    "2000-2014": 0.0377,
-    "2015 or later": 0.1162
+    "1920s-30s": 0.0359,
+    "1940s-50s": -0.0368,
+    "1960s-70s": -0.058,
+    "1980s-90s": -0.0312,
+    "2000-2014": 0.0436,
+    "2015 or later": 0.1182
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9923,
-    "2025-12": 0.9771,
-    "2026-01": 1.0282,
-    "2026-02": 1.0,
-    "2026-03": 0.9982,
-    "2026-04": 0.9888,
-    "2026-05": 1.052,
+    "2025-11": 0.9922,
+    "2025-12": 0.9768,
+    "2026-01": 1.0277,
+    "2026-02": 1.0016,
+    "2026-03": 0.999,
+    "2026-04": 0.9891,
+    "2026-05": 1.0517,
     "2026-06": 1.0439,
     "2026-07": 1.0513,
-    "2026-08": 1.0362,
-    "2026-09": 1.0227,
-    "2026-10": 1.0403
+    "2026-08": 1.0356,
+    "2026-09": 1.0228,
+    "2026-10": 1.0408
    },
    "index_n": {
     "2025-10": 343,
@@ -1301,82 +1304,86 @@
    "area": "Scott County",
    "kind": "house",
    "n": 1796,
-   "rmse_log": 0.232,
+   "rmse_log": 0.231,
    "median_price": 485040,
    "rates": {
     "lsqft": {
-     "coef": 0.4847,
+     "coef": 0.4895,
      "known_n": 1796,
-     "dollars_at_median": 23500.0,
+     "dollars_at_median": 23700.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0442,
+     "coef": 0.0451,
      "known_n": 1795,
-     "dollars_at_median": 21400.0,
+     "dollars_at_median": 21900.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.0483,
+     "coef": 0.0455,
      "known_n": 1795,
-     "dollars_at_median": 23400.0,
+     "dollars_at_median": 22100.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0411,
+     "coef": 0.0407,
      "known_n": 1424,
-     "dollars_at_median": 19900.0,
+     "dollars_at_median": 19800.0,
      "per": "stall"
     },
     "walkout": {
-     "coef": 0.0425,
+     "coef": 0.0458,
      "known_n": 1292,
-     "dollars_at_median": 20600.0,
+     "dollars_at_median": 22200.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.1324,
+     "coef": 0.1312,
      "known_n": 1650,
-     "dollars_at_median": 16100.0,
+     "dollars_at_median": 15900.0,
      "per": "25% more lot"
     },
     "flip": {
-     "coef": 0.0215,
+     "coef": 0.0231,
      "known_n": 1796,
-     "dollars_at_median": 10400.0,
+     "dollars_at_median": 11200.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0468,
+     "known_n": 1283,
+     "dollars_at_median": -22700.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0502,
-    "bsmt": -0.0058,
-    "bsmt_fin": -0.1087,
-    "roof_new": -0.0158,
-    "below_share": 0.1397
+    "beds": -0.0508,
+    "bsmt": -0.0084,
+    "roof_new": -0.0162
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.1165,
-    "1940s-50s": 0.0829,
-    "1960s-70s": 0.0289,
-    "1980s-90s": 0.0915,
-    "2000-2014": 0.1336,
-    "2015 or later": 0.3018
+    "1920s-30s": 0.1182,
+    "1940s-50s": 0.0882,
+    "1960s-70s": 0.036,
+    "1980s-90s": 0.0983,
+    "2000-2014": 0.1401,
+    "2015 or later": 0.3031
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 1.0118,
-    "2025-12": 0.9738,
-    "2026-01": 1.0019,
-    "2026-02": 1.001,
-    "2026-03": 0.9612,
-    "2026-04": 1.0137,
-    "2026-05": 1.0187,
-    "2026-06": 1.0484,
-    "2026-07": 1.0249,
-    "2026-08": 1.024,
-    "2026-09": 1.0257,
-    "2026-10": 1.1123
+    "2025-11": 1.011,
+    "2025-12": 0.9741,
+    "2026-01": 1.0009,
+    "2026-02": 1.0008,
+    "2026-03": 0.9614,
+    "2026-04": 1.0145,
+    "2026-05": 1.0193,
+    "2026-06": 1.0497,
+    "2026-07": 1.0261,
+    "2026-08": 1.0235,
+    "2026-09": 1.0254,
+    "2026-10": 1.1115
    },
    "index_n": {
     "2025-10": 174,
@@ -1402,45 +1409,45 @@
    "median_price": 544770,
    "rates": {
     "lsqft": {
-     "coef": 0.6546,
+     "coef": 0.6577,
      "known_n": 1523,
-     "dollars_at_median": 35700.0,
+     "dollars_at_median": 35800.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0176,
+     "coef": 0.019,
      "known_n": 1517,
-     "dollars_at_median": 9600.0,
+     "dollars_at_median": 10400.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.0175,
+     "coef": 0.015,
      "known_n": 1517,
-     "dollars_at_median": 9500.0,
+     "dollars_at_median": 8200.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.029,
+     "coef": 0.0275,
      "known_n": 1171,
-     "dollars_at_median": 15800.0,
+     "dollars_at_median": 15000.0,
      "per": "stall"
     },
     "walkout": {
-     "coef": 0.0251,
+     "coef": 0.0272,
      "known_n": 1081,
-     "dollars_at_median": 13700.0,
+     "dollars_at_median": 14800.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.1427,
+     "coef": 0.1424,
      "known_n": 1381,
      "dollars_at_median": 19400.0,
      "per": "25% more lot"
     },
     "roof_new": {
-     "coef": 0.0156,
+     "coef": 0.0151,
      "known_n": 1010,
-     "dollars_at_median": 8500.0,
+     "dollars_at_median": 8200.0,
      "per": "new roof"
     },
     "flip": {
@@ -1448,37 +1455,41 @@
      "known_n": 1523,
      "dollars_at_median": 30800.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0454,
+     "known_n": 1075,
+     "dollars_at_median": -24700.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0224,
-    "bsmt": -0.3732,
-    "bsmt_fin": -0.1501,
-    "below_share": 0.2383
+    "beds": -0.0248,
+    "bsmt": -0.3757
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.0715,
-    "1940s-50s": 0.0452,
-    "1960s-70s": -0.0174,
-    "1980s-90s": 0.0449,
-    "2000-2014": 0.1029,
-    "2015 or later": 0.2973
+    "1920s-30s": 0.0734,
+    "1940s-50s": 0.0501,
+    "1960s-70s": -0.0095,
+    "1980s-90s": 0.0535,
+    "2000-2014": 0.1083,
+    "2015 or later": 0.2986
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.9791,
-    "2025-12": 1.0011,
-    "2026-01": 0.9926,
-    "2026-02": 0.9423,
-    "2026-03": 0.948,
-    "2026-04": 0.9715,
-    "2026-05": 0.9918,
+    "2025-11": 0.9803,
+    "2025-12": 1.002,
+    "2026-01": 0.9932,
+    "2026-02": 0.9426,
+    "2026-03": 0.9496,
+    "2026-04": 0.9724,
+    "2026-05": 0.9931,
     "2026-06": 1.015,
-    "2026-07": 1.0221,
-    "2026-08": 1.0115,
-    "2026-09": 0.9926,
-    "2026-10": 0.9966
+    "2026-07": 1.0233,
+    "2026-08": 1.0118,
+    "2026-09": 0.9932,
+    "2026-10": 0.9942
    },
    "index_n": {
     "2025-10": 157,
@@ -1504,39 +1515,39 @@
    "median_price": 430000,
    "rates": {
     "lsqft": {
-     "coef": 0.5488,
+     "coef": 0.5521,
      "known_n": 32077,
-     "dollars_at_median": 23600.0,
+     "dollars_at_median": 23700.0,
      "per": "10% more sqft"
     },
     "baths_full": {
-     "coef": 0.0431,
+     "coef": 0.0433,
      "known_n": 31989,
-     "dollars_at_median": 18500.0,
+     "dollars_at_median": 18600.0,
      "per": "full bath"
     },
     "baths_half": {
-     "coef": 0.0557,
+     "coef": 0.054,
      "known_n": 31989,
-     "dollars_at_median": 23900.0,
+     "dollars_at_median": 23200.0,
      "per": "half bath"
     },
     "garage": {
-     "coef": 0.0226,
+     "coef": 0.0222,
      "known_n": 26671,
-     "dollars_at_median": 9700.0,
+     "dollars_at_median": 9600.0,
      "per": "stall"
     },
     "walkout": {
-     "coef": 0.0097,
+     "coef": 0.0118,
      "known_n": 24487,
-     "dollars_at_median": 4200.0,
+     "dollars_at_median": 5100.0,
      "per": "walkout"
     },
     "llot": {
-     "coef": 0.1105,
+     "coef": 0.11,
      "known_n": 30956,
-     "dollars_at_median": 11900.0,
+     "dollars_at_median": 11800.0,
      "per": "25% more lot"
     },
     "roof_new": {
@@ -1550,37 +1561,41 @@
      "known_n": 32077,
      "dollars_at_median": 15300.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0316,
+     "known_n": 24315,
+     "dollars_at_median": -13600.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.017,
-    "bsmt": -0.0561,
-    "bsmt_fin": -0.059,
-    "below_share": 0.075
+    "beds": -0.0177,
+    "bsmt": -0.0564
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": 0.0746,
-    "1940s-50s": 0.024,
-    "1960s-70s": 0.0177,
-    "1980s-90s": 0.0613,
-    "2000-2014": 0.1347,
-    "2015 or later": 0.2749
+    "1920s-30s": 0.0766,
+    "1940s-50s": 0.0292,
+    "1960s-70s": 0.0234,
+    "1980s-90s": 0.0665,
+    "2000-2014": 0.1384,
+    "2015 or later": 0.2769
    },
    "index": {
     "2025-10": 1.0,
     "2025-11": 0.9757,
-    "2025-12": 0.9632,
-    "2026-01": 0.9667,
-    "2026-02": 0.9563,
-    "2026-03": 0.985,
-    "2026-04": 0.9978,
-    "2026-05": 1.0289,
-    "2026-06": 1.0258,
-    "2026-07": 1.0222,
-    "2026-08": 1.0108,
-    "2026-09": 1.0001,
-    "2026-10": 1.014
+    "2025-12": 0.9634,
+    "2026-01": 0.9669,
+    "2026-02": 0.9567,
+    "2026-03": 0.9854,
+    "2026-04": 0.9983,
+    "2026-05": 1.0291,
+    "2026-06": 1.0264,
+    "2026-07": 1.0226,
+    "2026-08": 1.0112,
+    "2026-09": 1.0006,
+    "2026-10": 1.0148
    },
    "index_n": {
     "2025-10": 2979,
@@ -1602,71 +1617,70 @@
    "area": "Twin Cities metro",
    "kind": "attached",
    "n": 11182,
-   "rmse_log": 0.237,
+   "rmse_log": 0.238,
    "median_price": 285000,
    "rates": {
     "lsqft": {
-     "coef": 0.8712,
+     "coef": 0.8977,
      "known_n": 11182,
-     "dollars_at_median": 24800.0,
+     "dollars_at_median": 25600.0,
      "per": "10% more sqft"
     },
-    "baths_full": {
-     "coef": 0.0071,
-     "known_n": 11140,
-     "dollars_at_median": 2000.0,
-     "per": "full bath"
-    },
     "garage": {
-     "coef": 0.0912,
+     "coef": 0.0916,
      "known_n": 9251,
-     "dollars_at_median": 26000.0,
+     "dollars_at_median": 26100.0,
      "per": "stall"
     },
     "roof_new": {
-     "coef": 0.0005,
+     "coef": 0.0,
      "known_n": 6527,
-     "dollars_at_median": 100.0,
+     "dollars_at_median": 0.0,
      "per": "new roof"
     },
     "flip": {
-     "coef": 0.0468,
+     "coef": 0.0412,
      "known_n": 11182,
-     "dollars_at_median": 13300.0,
+     "dollars_at_median": 11800.0,
      "per": "flip"
+    },
+    "below_share": {
+     "coef": -0.0255,
+     "known_n": 3759,
+     "dollars_at_median": -7300.0,
+     "per": "all of it"
     }
    },
    "dropped_wrong_sign": {
-    "beds": -0.0366,
-    "baths_half": -0.041,
-    "bsmt": -0.005,
-    "bsmt_fin": -0.2145,
-    "hoa": 0.0062,
-    "below_share": 0.3326
+    "beds": -0.0377,
+    "baths_full": -0.0026,
+    "baths_half": -0.0509,
+    "bsmt": -0.0198,
+    "hoa": 0.0064
    },
    "age": {
     "before 1920": 0.0,
-    "1920s-30s": -0.1661,
-    "1940s-50s": -0.205,
-    "1960s-70s": -0.2111,
-    "1980s-90s": -0.0575,
-    "2000-2014": 0.0055,
-    "2015 or later": 0.1492
+    "1920s-30s": -0.1652,
+    "1940s-50s": -0.2008,
+    "1960s-70s": -0.207,
+    "1980s-90s": -0.0557,
+    "2000-2014": 0.0058,
+    "2015 or later": 0.1441
    },
    "index": {
     "2025-10": 1.0,
-    "2025-11": 0.993,
-    "2025-12": 0.973,
-    "2026-01": 0.9597,
-    "2026-02": 0.9804,
-    "2026-03": 0.976,
-    "2026-04": 0.9958,
-    "2026-05": 1.0049,
-    "2026-06": 1.0014,
-    "2026-07": 1.0031,
-    "2026-08": 0.991,
-    "2026-09": 0.9858,
-    "2026-10": 0.9708
+    "2025-11": 0.9956,
+    "2025-12": 0.9744,
+    "2026-01": 0.9603,
+    "2026-02": 0.9826,
+    "2026-03": 0.978,
+    "2026-04": 0.9987,
+    "2026-05": 1.0083,
+    "2026-06": 1.0036,
+    "2026-07": 1.0061,
+    "2026-08": 0.9931,
+    "2026-09": 0.9883,
+    "2026-10": 0.9767
    },
    "index_n": {
     "2025-10": 1013,

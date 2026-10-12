@@ -361,29 +361,29 @@ Aidan: *"quoting what we think the property is worth is the thing that is going 
 | method | n | median abs error | within 5% | within 10% | within 20% | bias |
 |---|---|---|---|---|---|---|
 | comps as shipped (median $/sqft of 10 nearest) | 11,422 | 9.5% | 29.4% | 51.9% | 78.7% | +0.1% |
-| adjusted grid | 11,885 | 8.6% | 32.3% | 56.0% | 80.5% | +0.8% |
-| same comps × county EMV | 9,509 | 7.8% | 34.9% | 59.5% | 83.8% | +1.1% |
-| comp value (grid ½ + EMV ½) | 11,885 | 7.6% | 35.9% | 60.4% | 83.0% | +0.9% |
+| adjusted grid | 11,885 | 8.6% | 32.3% | 55.9% | 80.4% | +0.8% |
+| same comps × county EMV | 9,509 | 7.8% | 35.1% | 59.7% | 83.9% | +1.1% |
+| comp value (grid ½ + EMV ½) | 11,885 | 7.6% | 36.0% | 60.6% | 83.0% | +0.9% |
 | worth as shipped (middle of comps, county, last deed) | 11,728 | 7.4% | 36.1% | 61.1% | 83.8% | -1.0% |
-| worth, new comp value | 11,885 | 7.1% | 37.3% | 62.5% | 83.4% | -0.4% |
-| expected sale given the ask | 11,885 | 2.5% | 71.8% | 88.4% | 94.5% | +1.1% |
+| worth, new comp value | 11,885 | 7.2% | 37.1% | 62.3% | 83.1% | -0.7% |
+| expected sale given the ask | 11,885 | 2.4% | 74.6% | 88.9% | 94.6% | +1.1% |
 
-**Homes asking 25%+ under the shipped worth** (192 in the holdout): shipped worth was off by a median 48.4% (bias +48.4%), new worth 40.8%, expected sale given the ask 4.1%. **A deep discount against our records is almost always something the records can't see.**
+**Homes asking 25%+ under the shipped worth** (192 in the holdout): shipped worth was off by a median 48.4% (bias +48.4%), new worth 38.3%, expected sale given the ask 3.2%. **A deep discount against our records is almost always something the records can't see.**
 
 ### The ask is information (`AskModel`, `data/ask_model.json`, fit on 20,963 closed sales)
 
 | ask vs our estimate | n | sale vs estimate (fit) | sale vs estimate (observed median) | sale vs ask (fit) |
 |---|---|---|---|---|
-| -39% | 90 | -41.1% | -46.4% | -3.0% |
-| -33% | 88 | -34.0% | -32.2% | -1.5% |
-| -26% | 247 | -26.0% | -24.7% | -0.1% |
-| -18% | 841 | -17.7% | -16.7% | +0.5% |
-| -10% | 4,059 | -8.9% | -7.7% | +0.7% |
-| +0% | 8,953 | +0.6% | +0.3% | +0.6% |
-| +10% | 4,384 | +10.0% | +8.9% | -0.5% |
-| +22% | 2,729 | +22.1% | +30.0% | -0.0% |
+| -39% | 80 | -41.2% | -46.5% | -3.0% |
+| -33% | 87 | -34.0% | -32.2% | -1.5% |
+| -26% | 212 | -25.9% | -25.1% | -0.0% |
+| -18% | 809 | -17.7% | -16.7% | +0.5% |
+| -10% | 3,969 | -8.9% | -7.6% | +0.7% |
+| +0% | 8,812 | +0.7% | +0.3% | +0.7% |
+| +10% | 4,477 | +10.0% | +8.8% | -0.5% |
+| +22% | 2,945 | +22.1% | +30.4% | -0.1% |
 
-In every band homes sold within ~3% of their ask. Used as the value only where the ask is 30%+ under every estimate and neither the records nor the listing's words explain it (`unexplained_gap`, amber on the row).
+In every band homes sold within ~3% of their ask. Used as the value wherever the ask is 25%+ under our records value (`deep_gap`): on the holdout those homes sold a median 38.3% under our records value and 3.2% from the expected sale. Where the gap is 30%+ and nothing on record or in the listing explains it, the row also carries `unexplained_gap` (amber). Where the listing's words measure as needs-work, County and Last sale take the same measured discount the comps do (they never see inside).
 
 ### Condition words, measured (`scripts/mine_condition.py`, 21,041 sales before the holdout)
 
@@ -405,18 +405,18 @@ Groups with |t| < 2.5 are not used. Single phrases and the mined 2-4 word phrase
 
 ### Adjustment rates (`data/valuation_model.json`, $ at each area's median price)
 
-| area | n | size +10% | full bath | half bath | garage stall | finished bsmt | lot +25% | dropped (wrong sign) |
-|---|---|---|---|---|---|---|---|---|
-| Minneapolis | 3,304 | $20,600 | $25,200 | $36,400 | $3,500 | $40,100 | $11,300 | beds |
-| Hennepin County | 8,845 | $26,300 | $23,500 | $25,500 | $15,500 | – | $13,900 | beds, bsmt, bsmt_fin, below_share |
-| Saint Paul | 2,672 | $15,000 | $28,300 | $26,500 | $8,700 | $9,000 | $11,700 | – |
-| Ramsey County | 2,130 | $20,700 | $24,900 | $30,900 | $8,000 | – | $10,300 | beds, bsmt, bsmt_fin |
-| Anoka County | 3,978 | $17,300 | $8,400 | $15,800 | $16,100 | – | $7,700 | beds, bsmt, bsmt_fin, below_share |
-| Dakota County | 4,446 | $25,000 | $9,000 | $12,100 | $9,200 | – | $11,800 | beds, bsmt, bsmt_fin, below_share |
-| Washington County | 3,383 | $31,200 | $300 | $11,000 | $20,500 | – | $9,800 | beds, bsmt, bsmt_fin, below_share |
-| Scott County | 1,796 | $23,500 | $21,400 | $23,400 | $19,900 | – | $16,100 | beds, bsmt, bsmt_fin, roof_new, below_share |
-| Carver County | 1,523 | $35,700 | $9,600 | $9,500 | $15,800 | – | $19,400 | beds, bsmt, bsmt_fin, below_share |
-| Twin Cities metro | 32,077 | $23,600 | $18,500 | $23,900 | $9,700 | – | $11,900 | beds, bsmt, bsmt_fin, below_share |
+| area | n | size +10% | full bath | half bath | garage stall | lot +25% | dropped (wrong sign) |
+|---|---|---|---|---|---|---|---|
+| Minneapolis | 3,304 | $21,000 | $25,900 | $37,600 | $4,000 | $10,900 | beds |
+| Hennepin County | 8,845 | $26,400 | $23,500 | $25,200 | $15,400 | $13,900 | beds, bsmt |
+| Saint Paul | 2,672 | $15,100 | $28,500 | $26,400 | $8,900 | $11,600 | below_share |
+| Ramsey County | 2,130 | $20,700 | $24,900 | $30,900 | $8,000 | $10,300 | beds, bsmt |
+| Anoka County | 3,978 | $17,600 | $8,500 | $14,400 | $15,800 | $7,700 | beds, bsmt |
+| Dakota County | 4,446 | $25,100 | $9,200 | $11,500 | $8,900 | $11,700 | beds, bsmt |
+| Washington County | 3,383 | $31,500 | $200 | $8,900 | $20,400 | $9,700 | beds, bsmt |
+| Scott County | 1,796 | $23,700 | $21,900 | $22,100 | $19,800 | $15,900 | beds, bsmt, roof_new |
+| Carver County | 1,523 | $35,800 | $10,400 | $8,200 | $15,000 | $19,400 | beds, bsmt |
+| Twin Cities metro | 32,077 | $23,700 | $18,600 | $23,200 | $9,600 | $11,800 | beds, bsmt |
 
 ### What's still weak
 
@@ -424,4 +424,4 @@ Groups with |t| < 2.5 are not used. Single phrases and the mined 2-4 word phrase
 - Interiors: the county never sees inside, and listing words catch only what the agent admits.
 - MLS sqft includes finished basements; above-grade sqft is inferred from the foundation area (`below_share`), not read from the county (Hennepin publishes none).
 - Block median now needs 3+ sales (`build_block.py`).
-- Basement terms (`bsmt`, `bsmt_fin`, `below_share`) came out with the wrong sign in most suburban areas and are dropped there, so the Tierneys-style "5,400 sqft includes a basement" correction only applies in Minneapolis and Saint Paul. Bedrooms are dropped everywhere: at equal size, more bedrooms do not sell for more.
+- Basement terms (`bsmt`, `below_share`; `bsmt_fin` was removed because it double-counted `below_share`) came out with the wrong sign in most suburban areas and are dropped there, so the Tierneys-style "5,400 sqft includes a basement" correction only applies in Minneapolis and Saint Paul. Bedrooms are dropped everywhere: at equal size, more bedrooms do not sell for more.

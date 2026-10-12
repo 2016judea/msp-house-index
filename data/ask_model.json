@@ -1,13 +1,13 @@
 {
  "beta": [
-  0.04378,
-  1.14761,
-  -0.0952,
-  -0.05972,
-  -0.10559,
-  0.32386,
-  -0.00605,
-  -0.0425
+  0.04589,
+  1.15359,
+  -0.10434,
+  -0.0537,
+  -0.1086,
+  0.31014,
+  -0.00596,
+  -0.04297
  ],
  "knots": [
   -0.3,
@@ -29,59 +29,59 @@
  "curve": [
   {
    "ask_vs_estimate": -0.393,
-   "n": 90,
-   "sale_vs_estimate_fit": -0.411,
-   "sale_vs_estimate_observed_median": -0.464,
+   "n": 80,
+   "sale_vs_estimate_fit": -0.412,
+   "sale_vs_estimate_observed_median": -0.465,
    "sale_vs_ask_fit": -0.03
   },
   {
    "ask_vs_estimate": -0.33,
-   "n": 88,
+   "n": 87,
    "sale_vs_estimate_fit": -0.34,
    "sale_vs_estimate_observed_median": -0.322,
    "sale_vs_ask_fit": -0.015
   },
   {
    "ask_vs_estimate": -0.259,
-   "n": 247,
-   "sale_vs_estimate_fit": -0.26,
-   "sale_vs_estimate_observed_median": -0.247,
-   "sale_vs_ask_fit": -0.001
+   "n": 212,
+   "sale_vs_estimate_fit": -0.259,
+   "sale_vs_estimate_observed_median": -0.251,
+   "sale_vs_ask_fit": -0.0
   },
   {
    "ask_vs_estimate": -0.181,
-   "n": 841,
+   "n": 809,
    "sale_vs_estimate_fit": -0.177,
    "sale_vs_estimate_observed_median": -0.167,
    "sale_vs_ask_fit": 0.005
   },
   {
    "ask_vs_estimate": -0.095,
-   "n": 4059,
+   "n": 3969,
    "sale_vs_estimate_fit": -0.089,
-   "sale_vs_estimate_observed_median": -0.077,
+   "sale_vs_estimate_observed_median": -0.076,
    "sale_vs_ask_fit": 0.007
   },
   {
    "ask_vs_estimate": 0.0,
-   "n": 8953,
-   "sale_vs_estimate_fit": 0.006,
+   "n": 8812,
+   "sale_vs_estimate_fit": 0.007,
    "sale_vs_estimate_observed_median": 0.003,
-   "sale_vs_ask_fit": 0.006
+   "sale_vs_ask_fit": 0.007
   },
   {
    "ask_vs_estimate": 0.105,
-   "n": 4384,
+   "n": 4477,
    "sale_vs_estimate_fit": 0.1,
-   "sale_vs_estimate_observed_median": 0.089,
+   "sale_vs_estimate_observed_median": 0.088,
    "sale_vs_ask_fit": -0.005
   },
   {
    "ask_vs_estimate": 0.221,
-   "n": 2729,
+   "n": 2945,
    "sale_vs_estimate_fit": 0.221,
-   "sale_vs_estimate_observed_median": 0.3,
-   "sale_vs_ask_fit": -0.0
+   "sale_vs_estimate_observed_median": 0.304,
+   "sale_vs_ask_fit": -0.001
   }
  ]
 }

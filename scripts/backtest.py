@@ -183,8 +183,10 @@ def main():
         est["comp_new"] = V.reconcile(g) if g else est["baseline"]
         t, ratio = tier(r.get("text"))
         others = [c.get("cal"), c.get("deed")]
-        for name, comp in (("worth_shipped", est["baseline"]), ("worth_new", est["comp_new"])):
-            three = [x for x in [comp] + others if x]
+        ce = (r.get("cond") or (0.0, []))[0]
+        others_new = [x * (1 + ce) if x and ce < 0 else x for x in others]  # as build_index.py: county and deed can't see inside
+        for name, comp, oth in (("worth_shipped", est["baseline"], others), ("worth_new", est["comp_new"], others_new)):
+            three = [x for x in [comp] + oth if x]
             est[name] = float(np.median(three)) * ratio if three else None
         results.append((r, est, {"ask": r.get("list_price"), "tier": t, "cond": r.get("cond"), "grid": g, "i": i}))
         if k % 4000 == 0:

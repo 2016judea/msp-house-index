@@ -367,7 +367,7 @@ def main():
     keep = ["rank", "property_id", "url", "address", "city", "zip", "county", "type_group", "beds", "baths", "sqft", "year_built", "ask", "original_ask",
             "dom", "n_cuts", "cut_pct", "pending", "score", "est_cal", "est_comp", "est_deed", "est_avm", "agree", "why", "exclusion",
             "evidence", "signals", "photo", "distressed", "hoa", "list_date", "tier", "tier_facts", "asis_ratio", "asis_n", "arv", "worth",
-            "repair_ppsf", "repair_n", "repair_est", "spread_ppsf", "discounts_named", "n_estimates", "worth_est", "unexplained_gap", "cond_words", "expected_sale"]
+            "repair_ppsf", "repair_n", "repair_est", "spread_ppsf", "discounts_named", "n_estimates", "worth_est", "unexplained_gap", "cond_words", "expected_sale", "deep_gap"]
     ranked = [{k: r.get(k) for k in keep if r.get(k) not in (None, [], "", False)} for r in out if r["rank_ok"]]
     # The list paints from data.json; evidence.json (the expanded view) loads after.
     heavy = ("evidence", "photo", "url")
@@ -436,6 +436,14 @@ def score(r):
             # a family transfer, or a different house; it can't be brought forward.
             if r.get("emv") and not (0.6 <= est_deed / (r["emv"] * r["idx_now"]) <= 1.6):
                 est_deed = None
+    # The county and the last deed never see inside. When the listing's words measured as
+    # needs-work (scripts/mine_condition.py), they take the same measured discount the comp
+    # grid applies; the comps already did.
+    ce = ((g or {}).get("subject", {}).get("cond") or (0.0, []))[0]
+    if ce < 0:
+        est_cal = round(est_cal * (1 + ce)) if est_cal else None
+        est_deed = round(est_deed * (1 + ce)) if est_deed else None
+    r["cond_effect"] = ce
     r["est_cal"], r["est_comp"], r["est_deed"] = est_cal, est_comp, est_deed
     r["est_avm"] = r.get("rdc_avm")
     # --- condition: every estimate above is an after-repair value (ARV) ---
@@ -457,8 +465,11 @@ def score(r):
     r["worth_est"], r["cond_words"] = r["worth"], cond[1]
     r["expected_sale"] = round(ASK.predict(r["worth"], ask, cond)) if ASK and ask and r["worth"] else None
     r["unexplained_gap"] = bool(ask and r["worth_est"] and ask < 0.7 * r["worth_est"] and tier == "none" and cond[0] >= 0)
-    expect = (lambda e: ASK.predict(e, ask, cond)) if r["unexplained_gap"] else (lambda e: e)
-    if r["unexplained_gap"]:
+    # 25%: on the holdout, homes asking that far under our records value sold a median 41% under
+    # it and 4% from the expected sale at their ask (data/backtest.json deep_discount).
+    r["deep_gap"] = bool(ask and r["worth_est"] and ask < 0.75 * r["worth_est"])
+    expect = (lambda e: ASK.predict(e, ask, cond)) if r["deep_gap"] and ASK else (lambda e: e)
+    if r["deep_gap"] and r["expected_sale"]:
         r["worth"] = r["expected_sale"]
     if t:
         rp = COND["tiers"]["heavy" if tier == "condemned" else tier]
@@ -549,9 +560,12 @@ def score(r):
     r["rank_ok"] = ex is None
 
     # --- evidence (expandable) and the why line ---
+    if ce < 0:
+        ev.append(f"Condition: the listing reads like {', '.join(((g or {}).get('subject', {}).get('cond') or (0, []))[1])}; sales whose listings used those words sold "
+                  f"{ce:+.1%} against their comps, so County and Last sale below carry that discount")
     if est_cal:
         ev.append(f"County: EMV {money(r['emv'])} ({county.title()} {assessed.year} assessment, parcel {r['pin']}) × {r['cal_ratio']:.2f}, "
-                  f"the median sale÷EMV of the {r['cal_n']} nearest recorded sales at a similar EMV (within {r['cal_radius_m']/1609:.1f} mi) = {money(est_cal)}")
+                  f"the median sale÷EMV of the {r['cal_n']} nearest recorded sales at a similar EMV (within {r['cal_radius_m']/1609:.1f} mi) = {money(est_cal)}" + (f" after the condition discount" if ce < 0 else ""))
     if est_comp and g:
         ev.append(f"Comps: the {len(g['comps'])} most similar sales, each brought to {g['month']} with the {g['model']} price index and adjusted for "
                   f"every difference at rates measured from {g['model_n']:,} sales, weighted toward the least-adjusted = {money(est_comp)} "
@@ -577,7 +591,7 @@ def score(r):
     if r.get("expected_sale"):
         ev.append(f"Expected sale at this ask: {money(r['expected_sale'])}. In {ASK.n:,} closed sales, homes asking {abs(ask / r['worth_est'] - 1):.0%} "
                   f"{'under' if ask < r['worth_est'] else 'over'} our estimate sold {r['expected_sale'] / ask - 1:+.1%} against their ask"
-                  + (" (used as the value here: nothing on record explains the gap)" if r.get("unexplained_gap") else ""))
+                  + (" (used as the value here: on closed sales a gap this deep was almost never real)" if r.get("deep_gap") else ""))
     if r.get("unexplained_gap"):
         ev.append("Asking far below every estimate with no reason on record. Usually condition we can't see.")
     if r.get("rdc_avm"):

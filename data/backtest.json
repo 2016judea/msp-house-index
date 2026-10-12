@@ -150,75 +150,75 @@
     "n": 11885,
     "median_abs_pct": 8.6,
     "within_5": 32.3,
-    "within_10": 56.0,
-    "within_20": 80.5,
+    "within_10": 55.9,
+    "within_20": 80.4,
     "bias_pct": 0.8
    },
    "coverage_pct": 100.0,
    "county": {
     "anoka": {
      "n": 1406,
-     "median_abs_pct": 7.3,
-     "within_5": 36.1,
-     "within_10": 62.3,
-     "within_20": 87.5,
+     "median_abs_pct": 7.4,
+     "within_5": 35.9,
+     "within_10": 62.2,
+     "within_20": 87.1,
      "bias_pct": 0.2
     },
     "carver": {
      "n": 520,
-     "median_abs_pct": 7.9,
-     "within_5": 33.3,
-     "within_10": 59.0,
+     "median_abs_pct": 7.7,
+     "within_5": 33.5,
+     "within_10": 58.8,
      "within_20": 80.6,
-     "bias_pct": 1.5
+     "bias_pct": 1.6
     },
     "dakota": {
      "n": 1851,
-     "median_abs_pct": 7.2,
-     "within_5": 37.9,
-     "within_10": 64.2,
-     "within_20": 86.7,
-     "bias_pct": 1.0
+     "median_abs_pct": 7.3,
+     "within_5": 38.5,
+     "within_10": 64.4,
+     "within_20": 86.5,
+     "bias_pct": 0.9
     },
     "hennepin": {
      "n": 4600,
      "median_abs_pct": 9.7,
-     "within_5": 28.4,
-     "within_10": 51.3,
+     "within_5": 28.0,
+     "within_10": 51.1,
      "within_20": 76.6,
-     "bias_pct": 0.9
+     "bias_pct": 0.8
     },
     "ramsey": {
      "n": 1658,
      "median_abs_pct": 10.6,
-     "within_5": 28.3,
-     "within_10": 48.5,
+     "within_5": 28.6,
+     "within_10": 48.1,
      "within_20": 76.8,
-     "bias_pct": 0.7
+     "bias_pct": 0.8
     },
     "scott": {
      "n": 594,
-     "median_abs_pct": 7.0,
-     "within_5": 38.6,
-     "within_10": 64.8,
-     "within_20": 84.5,
+     "median_abs_pct": 6.7,
+     "within_5": 39.2,
+     "within_10": 64.6,
+     "within_20": 84.2,
      "bias_pct": 0.9
     },
     "washington": {
      "n": 1256,
      "median_abs_pct": 7.9,
-     "within_5": 35.7,
-     "within_10": 58.5,
-     "within_20": 81.0,
-     "bias_pct": 1.0
+     "within_5": 35.6,
+     "within_10": 58.4,
+     "within_20": 80.7,
+     "bias_pct": 0.9
     }
    },
    "type": {
     "condo": {
      "n": 844,
-     "median_abs_pct": 10.3,
-     "within_5": 27.7,
-     "within_10": 49.1,
+     "median_abs_pct": 10.2,
+     "within_5": 28.0,
+     "within_10": 49.3,
      "within_20": 76.7,
      "bias_pct": 2.3
     },
@@ -226,16 +226,16 @@
      "n": 8949,
      "median_abs_pct": 9.0,
      "within_5": 30.9,
-     "within_10": 54.4,
-     "within_20": 79.3,
-     "bias_pct": 0.9
+     "within_10": 54.2,
+     "within_20": 79.2,
+     "bias_pct": 0.8
     },
     "townhome": {
      "n": 2092,
      "median_abs_pct": 6.8,
-     "within_5": 40.0,
+     "within_5": 39.9,
      "within_10": 65.8,
-     "within_20": 87.1,
+     "within_20": 87.0,
      "bias_pct": 0.4
     }
    },
@@ -243,39 +243,39 @@
     "$200-300k": {
      "n": 2062,
      "median_abs_pct": 9.1,
-     "within_5": 30.0,
-     "within_10": 54.6,
-     "within_20": 78.9,
+     "within_5": 29.8,
+     "within_10": 54.2,
+     "within_20": 78.8,
      "bias_pct": 4.4
     },
     "$300-450k": {
      "n": 4338,
      "median_abs_pct": 7.2,
-     "within_5": 38.2,
-     "within_10": 63.7,
-     "within_20": 87.1,
+     "within_5": 38.1,
+     "within_10": 63.5,
+     "within_20": 86.9,
      "bias_pct": 0.8
     },
     "$450-700k": {
      "n": 3060,
-     "median_abs_pct": 7.9,
-     "within_5": 33.9,
-     "within_10": 59.8,
-     "within_20": 86.1,
+     "median_abs_pct": 7.8,
+     "within_5": 34.1,
+     "within_10": 59.7,
+     "within_20": 86.0,
      "bias_pct": 0.0
     },
     "$700k+": {
      "n": 1683,
-     "median_abs_pct": 13.4,
+     "median_abs_pct": 13.1,
      "within_5": 22.5,
      "within_10": 40.4,
-     "within_20": 65.6,
+     "within_20": 65.5,
      "bias_pct": -6.4
     },
     "under $200k": {
      "n": 742,
-     "median_abs_pct": 16.6,
-     "within_5": 19.8,
+     "median_abs_pct": 16.5,
+     "within_5": 19.5,
      "within_10": 34.8,
      "within_20": 57.4,
      "bias_pct": 11.5
@@ -286,19 +286,19 @@
    "all": {
     "n": 9509,
     "median_abs_pct": 7.8,
-    "within_5": 34.9,
-    "within_10": 59.5,
-    "within_20": 83.8,
+    "within_5": 35.1,
+    "within_10": 59.7,
+    "within_20": 83.9,
     "bias_pct": 1.1
    },
    "coverage_pct": 80.0,
    "county": {
     "anoka": {
      "n": 1162,
-     "median_abs_pct": 6.5,
-     "within_5": 40.6,
-     "within_10": 67.6,
-     "within_20": 89.7,
+     "median_abs_pct": 6.4,
+     "within_5": 40.7,
+     "within_10": 67.9,
+     "within_20": 89.8,
      "bias_pct": 1.0
     },
     "carver": {
@@ -306,48 +306,48 @@
      "median_abs_pct": 8.1,
      "within_5": 33.1,
      "within_10": 58.0,
-     "within_20": 81.7,
+     "within_20": 81.5,
      "bias_pct": 1.4
     },
     "dakota": {
      "n": 1374,
-     "median_abs_pct": 7.0,
-     "within_5": 38.1,
-     "within_10": 64.8,
+     "median_abs_pct": 6.9,
+     "within_5": 38.4,
+     "within_10": 65.1,
      "within_20": 86.7,
-     "bias_pct": 1.5
+     "bias_pct": 1.6
     },
     "hennepin": {
      "n": 3895,
      "median_abs_pct": 8.4,
-     "within_5": 32.9,
+     "within_5": 33.1,
      "within_10": 56.7,
-     "within_20": 82.3,
+     "within_20": 82.4,
      "bias_pct": 0.9
     },
     "ramsey": {
      "n": 1375,
-     "median_abs_pct": 9.8,
-     "within_5": 29.9,
-     "within_10": 51.0,
+     "median_abs_pct": 9.7,
+     "within_5": 29.8,
+     "within_10": 51.3,
      "within_20": 78.7,
      "bias_pct": 1.8
     },
     "scott": {
      "n": 419,
      "median_abs_pct": 7.1,
-     "within_5": 38.7,
-     "within_10": 64.4,
-     "within_20": 85.7,
-     "bias_pct": 1.3
+     "within_5": 38.4,
+     "within_10": 64.7,
+     "within_20": 85.4,
+     "bias_pct": 1.4
     },
     "washington": {
      "n": 879,
      "median_abs_pct": 6.7,
-     "within_5": 38.3,
-     "within_10": 64.8,
+     "within_5": 38.8,
+     "within_10": 65.3,
      "within_20": 86.7,
-     "bias_pct": 0.7
+     "bias_pct": 0.5
     }
    },
    "type": {
@@ -355,24 +355,24 @@
      "n": 709,
      "median_abs_pct": 9.4,
      "within_5": 31.5,
-     "within_10": 52.6,
+     "within_10": 52.9,
      "within_20": 80.3,
-     "bias_pct": 1.2
+     "bias_pct": 1.1
     },
     "house": {
      "n": 7089,
      "median_abs_pct": 8.2,
-     "within_5": 33.0,
-     "within_10": 57.6,
-     "within_20": 82.4,
+     "within_5": 33.2,
+     "within_10": 57.8,
+     "within_20": 82.5,
      "bias_pct": 1.1
     },
     "townhome": {
      "n": 1711,
      "median_abs_pct": 5.8,
-     "within_5": 44.3,
+     "within_5": 44.4,
      "within_10": 70.4,
-     "within_20": 91.2,
+     "within_20": 91.1,
      "bias_pct": 1.0
     }
    },
@@ -380,42 +380,42 @@
     "$200-300k": {
      "n": 1618,
      "median_abs_pct": 7.8,
-     "within_5": 36.2,
-     "within_10": 60.7,
-     "within_20": 84.9,
+     "within_5": 36.5,
+     "within_10": 61.1,
+     "within_20": 84.8,
      "bias_pct": 3.1
     },
     "$300-450k": {
      "n": 3549,
      "median_abs_pct": 6.9,
-     "within_5": 38.4,
-     "within_10": 65.4,
-     "within_20": 89.3,
+     "within_5": 38.7,
+     "within_10": 65.5,
+     "within_20": 89.4,
      "bias_pct": 1.5
     },
     "$450-700k": {
      "n": 2417,
-     "median_abs_pct": 7.5,
-     "within_5": 36.6,
-     "within_10": 61.5,
+     "median_abs_pct": 7.4,
+     "within_5": 36.8,
+     "within_10": 61.6,
      "within_20": 85.6,
      "bias_pct": 0.2
     },
     "$700k+": {
      "n": 1367,
      "median_abs_pct": 10.9,
-     "within_5": 25.8,
+     "within_5": 25.9,
      "within_10": 47.1,
-     "within_20": 72.7,
-     "bias_pct": -4.0
+     "within_20": 72.9,
+     "bias_pct": -3.9
     },
     "under $200k": {
      "n": 558,
-     "median_abs_pct": 13.2,
-     "within_5": 23.7,
-     "within_10": 40.9,
-     "within_20": 65.8,
-     "bias_pct": 6.9
+     "median_abs_pct": 13.3,
+     "within_5": 23.5,
+     "within_10": 41.2,
+     "within_20": 65.9,
+     "bias_pct": 6.7
     }
    }
   },
@@ -423,8 +423,8 @@
    "all": {
     "n": 11885,
     "median_abs_pct": 7.6,
-    "within_5": 35.9,
-    "within_10": 60.4,
+    "within_5": 36.0,
+    "within_10": 60.6,
     "within_20": 83.0,
     "bias_pct": 0.9
    },
@@ -433,74 +433,74 @@
     "anoka": {
      "n": 1406,
      "median_abs_pct": 6.4,
-     "within_5": 41.0,
-     "within_10": 68.1,
-     "within_20": 87.6,
+     "within_5": 41.3,
+     "within_10": 68.7,
+     "within_20": 87.4,
      "bias_pct": 0.7
     },
     "carver": {
      "n": 520,
-     "median_abs_pct": 7.7,
-     "within_5": 35.6,
+     "median_abs_pct": 7.6,
+     "within_5": 35.4,
      "within_10": 60.8,
-     "within_20": 80.4,
-     "bias_pct": 0.6
+     "within_20": 80.6,
+     "bias_pct": 0.7
     },
     "dakota": {
      "n": 1851,
-     "median_abs_pct": 6.7,
-     "within_5": 40.8,
-     "within_10": 65.4,
-     "within_20": 86.1,
+     "median_abs_pct": 6.6,
+     "within_5": 41.1,
+     "within_10": 65.8,
+     "within_20": 86.0,
      "bias_pct": 1.2
     },
     "hennepin": {
      "n": 4600,
      "median_abs_pct": 8.3,
      "within_5": 32.7,
-     "within_10": 57.0,
-     "within_20": 81.6,
-     "bias_pct": 0.8
+     "within_10": 56.9,
+     "within_20": 81.8,
+     "bias_pct": 0.9
     },
     "ramsey": {
      "n": 1658,
-     "median_abs_pct": 9.0,
-     "within_5": 31.8,
-     "within_10": 54.4,
-     "within_20": 80.1,
-     "bias_pct": 1.1
+     "median_abs_pct": 8.9,
+     "within_5": 31.9,
+     "within_10": 54.6,
+     "within_20": 80.3,
+     "bias_pct": 1.2
     },
     "scott": {
      "n": 594,
      "median_abs_pct": 6.3,
-     "within_5": 42.6,
+     "within_5": 42.8,
      "within_10": 66.7,
-     "within_20": 84.2,
-     "bias_pct": 0.8
+     "within_20": 83.8,
+     "bias_pct": 0.7
     },
     "washington": {
      "n": 1256,
      "median_abs_pct": 7.4,
-     "within_5": 37.0,
-     "within_10": 61.9,
-     "within_20": 82.8,
-     "bias_pct": 1.0
+     "within_5": 36.9,
+     "within_10": 62.1,
+     "within_20": 82.6,
+     "bias_pct": 0.9
     }
    },
    "type": {
     "condo": {
      "n": 844,
      "median_abs_pct": 8.9,
-     "within_5": 30.2,
-     "within_10": 54.3,
+     "within_5": 30.7,
+     "within_10": 54.4,
      "within_20": 79.9,
      "bias_pct": 1.4
     },
     "house": {
      "n": 8949,
      "median_abs_pct": 7.9,
-     "within_5": 34.6,
-     "within_10": 58.8,
+     "within_5": 34.7,
+     "within_10": 58.9,
      "within_20": 81.8,
      "bias_pct": 1.0
     },
@@ -509,7 +509,7 @@
      "median_abs_pct": 6.0,
      "within_5": 43.5,
      "within_10": 70.1,
-     "within_20": 89.5,
+     "within_20": 89.4,
      "bias_pct": 0.6
     }
    },
@@ -518,41 +518,41 @@
      "n": 2062,
      "median_abs_pct": 8.0,
      "within_5": 34.2,
-     "within_10": 59.0,
-     "within_20": 82.1,
-     "bias_pct": 4.1
+     "within_10": 58.8,
+     "within_20": 82.2,
+     "bias_pct": 4.0
     },
     "$300-450k": {
      "n": 4338,
      "median_abs_pct": 6.4,
-     "within_5": 41.4,
-     "within_10": 68.4,
+     "within_5": 41.7,
+     "within_10": 68.7,
      "within_20": 89.8,
      "bias_pct": 1.1
     },
     "$450-700k": {
      "n": 3060,
      "median_abs_pct": 7.0,
-     "within_5": 38.6,
-     "within_10": 64.0,
-     "within_20": 86.7,
-     "bias_pct": 0.0
+     "within_5": 38.5,
+     "within_10": 64.2,
+     "within_20": 86.8,
+     "bias_pct": -0.1
     },
     "$700k+": {
      "n": 1683,
-     "median_abs_pct": 11.6,
-     "within_5": 25.4,
+     "median_abs_pct": 11.7,
+     "within_5": 25.0,
      "within_10": 45.4,
-     "within_20": 71.2,
-     "bias_pct": -5.8
+     "within_20": 71.3,
+     "bias_pct": -5.6
     },
     "under $200k": {
      "n": 742,
-     "median_abs_pct": 15.7,
-     "within_5": 20.8,
-     "within_10": 37.5,
-     "within_20": 57.0,
-     "bias_pct": 11.1
+     "median_abs_pct": 15.6,
+     "within_5": 21.3,
+     "within_10": 37.9,
+     "within_20": 57.1,
+     "bias_pct": 11.2
     }
    }
   },
@@ -696,274 +696,274 @@
   "worth_new": {
    "all": {
     "n": 11885,
-    "median_abs_pct": 7.1,
-    "within_5": 37.3,
-    "within_10": 62.5,
-    "within_20": 83.4,
-    "bias_pct": -0.4
+    "median_abs_pct": 7.2,
+    "within_5": 37.1,
+    "within_10": 62.3,
+    "within_20": 83.1,
+    "bias_pct": -0.7
    },
    "coverage_pct": 100.0,
    "county": {
     "anoka": {
      "n": 1406,
-     "median_abs_pct": 6.2,
-     "within_5": 41.1,
+     "median_abs_pct": 6.3,
+     "within_5": 41.2,
      "within_10": 68.3,
      "within_20": 87.6,
-     "bias_pct": -1.1
+     "bias_pct": -1.5
     },
     "carver": {
      "n": 520,
-     "median_abs_pct": 7.2,
-     "within_5": 36.2,
-     "within_10": 61.5,
+     "median_abs_pct": 7.3,
+     "within_5": 35.4,
+     "within_10": 61.7,
      "within_20": 79.2,
-     "bias_pct": -1.8
+     "bias_pct": -2.0
     },
     "dakota": {
      "n": 1851,
      "median_abs_pct": 6.1,
-     "within_5": 42.7,
+     "within_5": 42.8,
      "within_10": 68.1,
-     "within_20": 86.7,
-     "bias_pct": 0.2
+     "within_20": 86.4,
+     "bias_pct": -0.0
     },
     "hennepin": {
      "n": 4600,
      "median_abs_pct": 7.6,
-     "within_5": 35.6,
-     "within_10": 60.5,
-     "within_20": 82.8,
-     "bias_pct": -0.1
+     "within_5": 35.2,
+     "within_10": 60.2,
+     "within_20": 82.3,
+     "bias_pct": -0.5
     },
     "ramsey": {
      "n": 1658,
      "median_abs_pct": 8.9,
-     "within_5": 30.9,
-     "within_10": 55.4,
-     "within_20": 81.4,
-     "bias_pct": -0.2
+     "within_5": 31.0,
+     "within_10": 55.5,
+     "within_20": 81.3,
+     "bias_pct": -0.6
     },
     "scott": {
      "n": 594,
-     "median_abs_pct": 6.6,
-     "within_5": 40.1,
-     "within_10": 64.1,
-     "within_20": 81.8,
-     "bias_pct": -0.9
+     "median_abs_pct": 6.5,
+     "within_5": 40.7,
+     "within_10": 63.6,
+     "within_20": 80.8,
+     "bias_pct": -1.1
     },
     "washington": {
      "n": 1256,
-     "median_abs_pct": 6.8,
-     "within_5": 39.3,
-     "within_10": 63.9,
-     "within_20": 81.8,
-     "bias_pct": -0.8
+     "median_abs_pct": 7.0,
+     "within_5": 38.6,
+     "within_10": 63.5,
+     "within_20": 81.5,
+     "bias_pct": -1.1
     }
    },
    "type": {
     "condo": {
      "n": 844,
-     "median_abs_pct": 8.8,
-     "within_5": 29.1,
-     "within_10": 56.3,
-     "within_20": 80.2,
-     "bias_pct": 3.2
+     "median_abs_pct": 8.9,
+     "within_5": 29.3,
+     "within_10": 55.8,
+     "within_20": 79.6,
+     "bias_pct": 3.1
     },
     "house": {
      "n": 8949,
      "median_abs_pct": 7.5,
-     "within_5": 36.1,
-     "within_10": 60.4,
-     "within_20": 82.3,
-     "bias_pct": -1.2
+     "within_5": 35.9,
+     "within_10": 60.3,
+     "within_20": 81.9,
+     "bias_pct": -1.5
     },
     "townhome": {
      "n": 2092,
      "median_abs_pct": 5.6,
-     "within_5": 46.1,
-     "within_10": 73.8,
-     "within_20": 89.8,
-     "bias_pct": 1.1
+     "within_5": 45.7,
+     "within_10": 73.5,
+     "within_20": 89.7,
+     "bias_pct": 0.8
     }
    },
    "band": {
     "$200-300k": {
      "n": 2062,
-     "median_abs_pct": 7.3,
-     "within_5": 36.5,
-     "within_10": 62.9,
-     "within_20": 83.8,
-     "bias_pct": 3.1
+     "median_abs_pct": 7.4,
+     "within_5": 35.8,
+     "within_10": 61.9,
+     "within_20": 83.0,
+     "bias_pct": 2.7
     },
     "$300-450k": {
      "n": 4338,
-     "median_abs_pct": 6.0,
-     "within_5": 42.6,
-     "within_10": 70.7,
-     "within_20": 90.7,
-     "bias_pct": -0.4
+     "median_abs_pct": 6.1,
+     "within_5": 42.4,
+     "within_10": 70.6,
+     "within_20": 90.4,
+     "bias_pct": -0.6
     },
     "$450-700k": {
      "n": 3060,
      "median_abs_pct": 6.7,
-     "within_5": 40.3,
-     "within_10": 64.6,
-     "within_20": 85.2,
-     "bias_pct": -1.9
+     "within_5": 40.0,
+     "within_10": 64.7,
+     "within_20": 85.1,
+     "bias_pct": -2.1
     },
     "$700k+": {
      "n": 1683,
-     "median_abs_pct": 10.8,
-     "within_5": 26.9,
-     "within_10": 47.8,
-     "within_20": 72.4,
-     "bias_pct": -6.7
+     "median_abs_pct": 10.9,
+     "within_5": 27.0,
+     "within_10": 47.6,
+     "within_20": 72.2,
+     "bias_pct": -6.9
     },
     "under $200k": {
      "n": 742,
-     "median_abs_pct": 15.2,
-     "within_5": 20.5,
-     "within_10": 38.1,
-     "within_20": 57.7,
-     "bias_pct": 11.9
+     "median_abs_pct": 15.4,
+     "within_5": 21.3,
+     "within_10": 37.9,
+     "within_20": 57.8,
+     "bias_pct": 10.8
     }
    }
   },
   "expected": {
    "all": {
     "n": 11885,
-    "median_abs_pct": 2.5,
-    "within_5": 71.8,
-    "within_10": 88.4,
-    "within_20": 94.5,
+    "median_abs_pct": 2.4,
+    "within_5": 74.6,
+    "within_10": 88.9,
+    "within_20": 94.6,
     "bias_pct": 1.1
    },
    "coverage_pct": 100.0,
    "county": {
     "anoka": {
      "n": 1406,
-     "median_abs_pct": 2.2,
-     "within_5": 76.1,
-     "within_10": 90.3,
+     "median_abs_pct": 2.0,
+     "within_5": 79.5,
+     "within_10": 90.8,
      "within_20": 95.5,
-     "bias_pct": 0.9
+     "bias_pct": 0.8
     },
     "carver": {
      "n": 520,
-     "median_abs_pct": 2.5,
-     "within_5": 71.7,
+     "median_abs_pct": 2.0,
+     "within_5": 77.9,
      "within_10": 91.0,
      "within_20": 95.4,
-     "bias_pct": 1.3
+     "bias_pct": 1.2
     },
     "dakota": {
      "n": 1851,
-     "median_abs_pct": 2.3,
-     "within_5": 73.3,
-     "within_10": 89.7,
-     "within_20": 95.3,
+     "median_abs_pct": 2.2,
+     "within_5": 76.4,
+     "within_10": 90.3,
+     "within_20": 95.4,
      "bias_pct": 1.1
     },
     "hennepin": {
      "n": 4600,
-     "median_abs_pct": 2.7,
-     "within_5": 71.5,
-     "within_10": 87.8,
-     "within_20": 94.2,
+     "median_abs_pct": 2.6,
+     "within_5": 73.1,
+     "within_10": 88.3,
+     "within_20": 94.3,
      "bias_pct": 1.1
     },
     "ramsey": {
      "n": 1658,
-     "median_abs_pct": 2.8,
-     "within_5": 69.0,
-     "within_10": 86.7,
-     "within_20": 94.3,
-     "bias_pct": 1.0
+     "median_abs_pct": 2.7,
+     "within_5": 70.1,
+     "within_10": 86.8,
+     "within_20": 94.4,
+     "bias_pct": 1.1
     },
     "scott": {
      "n": 594,
-     "median_abs_pct": 2.5,
-     "within_5": 71.7,
-     "within_10": 90.2,
-     "within_20": 95.3,
-     "bias_pct": 1.4
+     "median_abs_pct": 2.1,
+     "within_5": 77.8,
+     "within_10": 91.1,
+     "within_20": 95.5,
+     "bias_pct": 1.2
     },
     "washington": {
      "n": 1256,
-     "median_abs_pct": 2.6,
-     "within_5": 69.8,
-     "within_10": 86.7,
+     "median_abs_pct": 2.3,
+     "within_5": 75.1,
+     "within_10": 87.5,
      "within_20": 93.2,
-     "bias_pct": 1.2
+     "bias_pct": 1.1
     }
    },
    "type": {
     "condo": {
      "n": 844,
-     "median_abs_pct": 3.6,
-     "within_5": 66.2,
-     "within_10": 86.6,
-     "within_20": 94.3,
-     "bias_pct": 2.9
+     "median_abs_pct": 3.4,
+     "within_5": 67.5,
+     "within_10": 86.7,
+     "within_20": 94.5,
+     "bias_pct": 2.7
     },
     "house": {
      "n": 8949,
-     "median_abs_pct": 2.6,
-     "within_5": 70.4,
-     "within_10": 87.1,
-     "within_20": 93.8,
-     "bias_pct": 1.0
+     "median_abs_pct": 2.4,
+     "within_5": 73.4,
+     "within_10": 87.8,
+     "within_20": 93.9,
+     "bias_pct": 0.8
     },
     "townhome": {
      "n": 2092,
-     "median_abs_pct": 2.0,
-     "within_5": 80.4,
-     "within_10": 94.4,
+     "median_abs_pct": 1.9,
+     "within_5": 82.6,
+     "within_10": 94.6,
      "within_20": 97.7,
-     "bias_pct": 1.3
+     "bias_pct": 1.2
     }
    },
    "band": {
     "$200-300k": {
      "n": 2062,
      "median_abs_pct": 2.6,
-     "within_5": 71.1,
-     "within_10": 85.1,
-     "within_20": 91.7,
+     "within_5": 71.2,
+     "within_10": 85.4,
+     "within_20": 91.9,
      "bias_pct": 1.2
     },
     "$300-450k": {
      "n": 4338,
-     "median_abs_pct": 2.2,
-     "within_5": 77.1,
-     "within_10": 91.8,
+     "median_abs_pct": 2.1,
+     "within_5": 78.5,
+     "within_10": 92.0,
      "within_20": 97.0,
      "bias_pct": 0.8
     },
     "$450-700k": {
      "n": 3060,
-     "median_abs_pct": 2.3,
-     "within_5": 75.0,
-     "within_10": 92.0,
+     "median_abs_pct": 2.0,
+     "within_5": 79.5,
+     "within_10": 92.2,
      "within_20": 97.4,
      "bias_pct": 1.0
     },
     "$700k+": {
      "n": 1683,
-     "median_abs_pct": 3.6,
-     "within_5": 61.7,
-     "within_10": 84.7,
-     "within_20": 93.0,
-     "bias_pct": 1.5
+     "median_abs_pct": 3.0,
+     "within_5": 68.7,
+     "within_10": 87.2,
+     "within_20": 93.2,
+     "bias_pct": 1.0
     },
     "under $200k": {
      "n": 742,
-     "median_abs_pct": 4.5,
-     "within_5": 53.0,
-     "within_10": 70.8,
+     "median_abs_pct": 4.3,
+     "within_5": 54.9,
+     "within_10": 70.4,
      "within_20": 79.9,
-     "bias_pct": 4.0
+     "bias_pct": 3.9
     }
    }
   }
@@ -1111,21 +1111,21 @@
    "worth_new": {
     "all": {
      "n": 192,
-     "median_abs_pct": 40.8,
-     "within_5": 3.1,
-     "within_10": 4.2,
-     "within_20": 10.4,
-     "bias_pct": 40.8
+     "median_abs_pct": 38.3,
+     "within_5": 4.2,
+     "within_10": 5.7,
+     "within_20": 15.6,
+     "bias_pct": 38.3
     },
     "coverage_pct": 100.0,
     "county": {
      "anoka": {
       "n": 9,
-      "median_abs_pct": 50.4,
-      "within_5": 0.0,
-      "within_10": 0.0,
-      "within_20": 22.2,
-      "bias_pct": 50.4
+      "median_abs_pct": 48.6,
+      "within_5": 11.1,
+      "within_10": 11.1,
+      "within_20": 33.3,
+      "bias_pct": 48.6
      },
      "carver": {
       "n": 4,
@@ -1137,43 +1137,43 @@
      },
      "dakota": {
       "n": 23,
-      "median_abs_pct": 36.3,
+      "median_abs_pct": 34.6,
       "within_5": 8.7,
       "within_10": 8.7,
-      "within_20": 13.0,
-      "bias_pct": 36.3
+      "within_20": 17.4,
+      "bias_pct": 34.6
      },
      "hennepin": {
       "n": 98,
-      "median_abs_pct": 43.4,
-      "within_5": 3.1,
-      "within_10": 3.1,
-      "within_20": 9.2,
-      "bias_pct": 43.4
+      "median_abs_pct": 41.1,
+      "within_5": 2.0,
+      "within_10": 4.1,
+      "within_20": 13.3,
+      "bias_pct": 41.1
      },
      "ramsey": {
       "n": 47,
-      "median_abs_pct": 38.0,
-      "within_5": 2.1,
-      "within_10": 6.4,
-      "within_20": 10.6,
-      "bias_pct": 38.0
+      "median_abs_pct": 32.5,
+      "within_5": 6.4,
+      "within_10": 8.5,
+      "within_20": 19.1,
+      "bias_pct": 32.5
      },
      "scott": {
       "n": 2,
-      "median_abs_pct": 29.1,
+      "median_abs_pct": 29.2,
       "within_5": 0.0,
       "within_10": 0.0,
       "within_20": 0.0,
-      "bias_pct": 29.1
+      "bias_pct": 29.2
      },
      "washington": {
       "n": 9,
-      "median_abs_pct": 48.8,
+      "median_abs_pct": 47.9,
       "within_5": 0.0,
       "within_10": 0.0,
       "within_20": 11.1,
-      "bias_pct": 48.8
+      "bias_pct": 47.9
      }
     },
     "type": {
@@ -1187,114 +1187,114 @@
      },
      "house": {
       "n": 146,
-      "median_abs_pct": 41.1,
-      "within_5": 2.7,
-      "within_10": 4.1,
-      "within_20": 10.3,
-      "bias_pct": 41.1
+      "median_abs_pct": 38.5,
+      "within_5": 4.1,
+      "within_10": 6.2,
+      "within_20": 16.4,
+      "bias_pct": 38.5
      },
      "townhome": {
       "n": 17,
-      "median_abs_pct": 31.2,
+      "median_abs_pct": 30.6,
       "within_5": 11.8,
       "within_10": 11.8,
-      "within_20": 23.5,
-      "bias_pct": 31.2
+      "within_20": 29.4,
+      "bias_pct": 30.6
      }
     },
     "band": {
      "$200-300k": {
       "n": 48,
-      "median_abs_pct": 33.9,
-      "within_5": 4.2,
-      "within_10": 4.2,
-      "within_20": 12.5,
-      "bias_pct": 33.9
+      "median_abs_pct": 32.5,
+      "within_5": 6.2,
+      "within_10": 6.2,
+      "within_20": 22.9,
+      "bias_pct": 32.5
      },
      "$300-450k": {
       "n": 31,
-      "median_abs_pct": 34.1,
+      "median_abs_pct": 32.9,
       "within_5": 3.2,
-      "within_10": 3.2,
-      "within_20": 12.9,
-      "bias_pct": 34.1
+      "within_10": 9.7,
+      "within_20": 19.4,
+      "bias_pct": 32.9
      },
      "$450-700k": {
       "n": 16,
-      "median_abs_pct": 34.3,
+      "median_abs_pct": 31.0,
       "within_5": 6.2,
       "within_10": 6.2,
-      "within_20": 18.8,
-      "bias_pct": 31.8
+      "within_20": 25.0,
+      "bias_pct": 28.5
      },
      "$700k+": {
       "n": 6,
-      "median_abs_pct": 41.8,
+      "median_abs_pct": 42.9,
       "within_5": 0.0,
       "within_10": 0.0,
       "within_20": 0.0,
-      "bias_pct": 41.8
+      "bias_pct": 42.9
      },
      "under $200k": {
       "n": 91,
-      "median_abs_pct": 56.5,
-      "within_5": 2.2,
+      "median_abs_pct": 53.6,
+      "within_5": 3.3,
       "within_10": 4.4,
-      "within_20": 7.7,
-      "bias_pct": 56.5
+      "within_20": 9.9,
+      "bias_pct": 53.6
      }
     }
    },
    "expected": {
     "all": {
      "n": 192,
-     "median_abs_pct": 4.1,
-     "within_5": 56.8,
-     "within_10": 81.2,
-     "within_20": 93.2,
-     "bias_pct": 0.9
+     "median_abs_pct": 3.2,
+     "within_5": 64.1,
+     "within_10": 78.1,
+     "within_20": 93.8,
+     "bias_pct": 1.2
     },
     "coverage_pct": 100.0,
     "county": {
      "anoka": {
       "n": 9,
-      "median_abs_pct": 1.4,
-      "within_5": 66.7,
+      "median_abs_pct": 1.2,
+      "within_5": 77.8,
       "within_10": 77.8,
       "within_20": 77.8,
-      "bias_pct": -0.8
+      "bias_pct": 0.3
      },
      "carver": {
       "n": 4,
-      "median_abs_pct": 8.0,
+      "median_abs_pct": 8.1,
       "within_5": 50.0,
       "within_10": 50.0,
       "within_20": 75.0,
-      "bias_pct": 8.0
+      "bias_pct": 8.1
      },
      "dakota": {
       "n": 23,
-      "median_abs_pct": 4.3,
-      "within_5": 56.5,
-      "within_10": 95.7,
+      "median_abs_pct": 3.5,
+      "within_5": 73.9,
+      "within_10": 91.3,
       "within_20": 95.7,
-      "bias_pct": 1.1
+      "bias_pct": 1.2
      },
      "hennepin": {
       "n": 98,
-      "median_abs_pct": 4.1,
-      "within_5": 57.1,
-      "within_10": 79.6,
+      "median_abs_pct": 3.1,
+      "within_5": 63.3,
+      "within_10": 76.5,
       "within_20": 96.9,
-      "bias_pct": 0.7
+      "bias_pct": 1.1
      },
      "ramsey": {
       "n": 47,
-      "median_abs_pct": 4.0,
-      "within_5": 55.3,
-      "within_10": 80.9,
-      "within_20": 89.4,
-      "bias_pct": 1.0
+      "median_abs_pct": 3.1,
+      "within_5": 59.6,
+      "within_10": 76.6,
+      "within_20": 91.5,
+      "bias_pct": 1.1
      },
      "scott": {
       "n": 2,
@@ -1306,60 +1306,60 @@
      },
      "washington": {
       "n": 9,
-      "median_abs_pct": 3.8,
-      "within_5": 66.7,
+      "median_abs_pct": 3.4,
+      "within_5": 77.8,
       "within_10": 77.8,
       "within_20": 88.9,
-      "bias_pct": 1.3
+      "bias_pct": 1.2
      }
     },
     "type": {
      "condo": {
       "n": 29,
-      "median_abs_pct": 3.8,
+      "median_abs_pct": 2.8,
       "within_5": 69.0,
-      "within_10": 96.6,
+      "within_10": 89.7,
       "within_20": 100.0,
       "bias_pct": 1.2
      },
      "house": {
       "n": 146,
-      "median_abs_pct": 4.9,
-      "within_5": 52.1,
-      "within_10": 76.0,
-      "within_20": 91.1,
-      "bias_pct": 0.6
+      "median_abs_pct": 3.5,
+      "within_5": 58.9,
+      "within_10": 73.3,
+      "within_20": 91.8,
+      "bias_pct": 1.2
      },
      "townhome": {
       "n": 17,
       "median_abs_pct": 2.9,
-      "within_5": 76.5,
+      "within_5": 100.0,
       "within_10": 100.0,
       "within_20": 100.0,
-      "bias_pct": 1.0
+      "bias_pct": 1.1
      }
     },
     "band": {
      "$200-300k": {
       "n": 48,
-      "median_abs_pct": 4.9,
-      "within_5": 56.2,
+      "median_abs_pct": 4.0,
+      "within_5": 58.3,
       "within_10": 75.0,
-      "within_20": 89.6,
-      "bias_pct": -0.8
+      "within_20": 91.7,
+      "bias_pct": -0.9
      },
      "$300-450k": {
       "n": 31,
       "median_abs_pct": 3.6,
-      "within_5": 58.1,
-      "within_10": 87.1,
+      "within_5": 67.7,
+      "within_10": 83.9,
       "within_20": 96.8,
       "bias_pct": 1.2
      },
      "$450-700k": {
       "n": 16,
-      "median_abs_pct": 4.2,
-      "within_5": 68.8,
+      "median_abs_pct": 3.5,
+      "within_5": 75.0,
       "within_10": 81.2,
       "within_20": 93.8,
       "bias_pct": 1.2
@@ -1374,11 +1374,11 @@
      },
      "under $200k": {
       "n": 91,
-      "median_abs_pct": 4.0,
-      "within_5": 57.1,
-      "within_10": 83.5,
+      "median_abs_pct": 2.7,
+      "within_5": 67.0,
+      "within_10": 78.0,
       "within_20": 93.4,
-      "bias_pct": 1.0
+      "bias_pct": 1.2
      }
     }
    }
@@ -1386,14 +1386,14 @@
  },
  "ask_model": {
   "beta": [
-   0.05978,
-   1.1671,
-   -0.14028,
-   -0.05198,
-   -0.09365,
-   0.32671,
-   -0.00326,
-   -0.04946
+   0.06918,
+   1.1937,
+   -0.18256,
+   -0.02642,
+   -0.10721,
+   0.3122,
+   -0.00298,
+   -0.0692
   ],
   "knots": [
    -0.3,
@@ -1415,58 +1415,58 @@
   "curve": [
    {
     "ask_vs_estimate": -0.393,
-    "n": 43,
-    "sale_vs_estimate_fit": -0.408,
-    "sale_vs_estimate_observed_median": -0.459,
-    "sale_vs_ask_fit": -0.023
+    "n": 36,
+    "sale_vs_estimate_fit": -0.41,
+    "sale_vs_estimate_observed_median": -0.463,
+    "sale_vs_ask_fit": -0.027
    },
    {
     "ask_vs_estimate": -0.33,
-    "n": 34,
-    "sale_vs_estimate_fit": -0.334,
-    "sale_vs_estimate_observed_median": -0.322,
-    "sale_vs_ask_fit": -0.007
+    "n": 36,
+    "sale_vs_estimate_fit": -0.335,
+    "sale_vs_estimate_observed_median": -0.316,
+    "sale_vs_ask_fit": -0.008
    },
    {
     "ask_vs_estimate": -0.259,
-    "n": 135,
-    "sale_vs_estimate_fit": -0.252,
-    "sale_vs_estimate_observed_median": -0.241,
-    "sale_vs_ask_fit": 0.01
+    "n": 118,
+    "sale_vs_estimate_fit": -0.251,
+    "sale_vs_estimate_observed_median": -0.242,
+    "sale_vs_ask_fit": 0.011
    },
    {
     "ask_vs_estimate": -0.181,
-    "n": 404,
+    "n": 395,
     "sale_vs_estimate_fit": -0.171,
     "sale_vs_estimate_observed_median": -0.163,
     "sale_vs_ask_fit": 0.012
    },
    {
     "ask_vs_estimate": -0.095,
-    "n": 2043,
+    "n": 2007,
     "sale_vs_estimate_fit": -0.084,
     "sale_vs_estimate_observed_median": -0.073,
     "sale_vs_ask_fit": 0.012
    },
    {
     "ask_vs_estimate": 0.0,
-    "n": 4674,
-    "sale_vs_estimate_fit": 0.01,
+    "n": 4606,
+    "sale_vs_estimate_fit": 0.011,
     "sale_vs_estimate_observed_median": 0.008,
-    "sale_vs_ask_fit": 0.01
+    "sale_vs_ask_fit": 0.011
    },
    {
     "ask_vs_estimate": 0.105,
-    "n": 2393,
+    "n": 2432,
     "sale_vs_estimate_fit": 0.103,
     "sale_vs_estimate_observed_median": 0.093,
     "sale_vs_ask_fit": -0.002
    },
    {
     "ask_vs_estimate": 0.221,
-    "n": 1364,
-    "sale_vs_estimate_fit": 0.224,
-    "sale_vs_estimate_observed_median": 0.292,
+    "n": 1460,
+    "sale_vs_estimate_fit": 0.223,
+    "sale_vs_estimate_observed_median": 0.293,
     "sale_vs_ask_fit": 0.002
    }
   ]
@@ -1476,7 +1476,7 @@
    "note": "8031 Tierneys Woods Curv, Bloomington: asking $499,900, the index said $921k (2026-10-11)",
    "ask": 499900,
    "baseline_comp": 1050623.1632018925,
-   "grid": 539000.0,
+   "grid": 538000.0,
    "condition": [
     -0.1407,
     [
@@ -1497,8 +1497,8 @@
       "cosmetic / personal touches",
       "bones / potential"
      ],
-     "adjusted": 543800.0,
-     "weight": 0.38
+     "adjusted": 541400.0,
+     "weight": 0.376
     },
     {
      "address": "8241 Pennsylvania Rd",
@@ -1506,8 +1506,8 @@
      "sqft": 5288,
      "year": 1979,
      "flags": [],
-     "adjusted": 409300.0,
-     "weight": 0.2
+     "adjusted": 409200.0,
+     "weight": 0.202
     },
     {
      "address": "7419 Hyde Park Dr",
@@ -1519,8 +1519,8 @@
       "roof \u22648 yrs",
       "finished basement"
      ],
-     "adjusted": 696400.0,
-     "weight": 0.081
+     "adjusted": 695000.0,
+     "weight": 0.082
     },
     {
      "address": "8748 Walton Oaks Dr",
@@ -1536,8 +1536,8 @@
       "bones / potential",
       "finished basement"
      ],
-     "adjusted": 486400.0,
-     "weight": 0.158
+     "adjusted": 486900.0,
+     "weight": 0.159
     },
     {
      "address": "8117 Telegraph Rd",
@@ -1548,7 +1548,7 @@
       "renovated",
       "finished basement"
      ],
-     "adjusted": 755600.0,
+     "adjusted": 758100.0,
      "weight": 0.102
     },
     {
@@ -1557,7 +1557,7 @@
      "sqft": 5314,
      "year": 1979,
      "flags": [],
-     "adjusted": 505600.0,
+     "adjusted": 503300.0,
      "weight": 0.078
     }
    ]
