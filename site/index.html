@@ -312,6 +312,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
  .pwf button{min-height:48px}
  .math summary,.ri summary{padding-block:12px}
 }
+.why-here{display:block;font:500 11px/1.3 var(--sans);color:var(--warn);letter-spacing:.01em;margin-top:2px;white-space:normal}
 </style>
 </head>
 <body>
@@ -606,7 +607,7 @@ function screener(){
  const ph=d=>{const e=EV[d.property_id];return e&&e[1]?`<img src="${esc(e[1])}" alt="" loading="lazy">`:"<span></span>"};
  const ln=d=>{const e=EV[d.property_id];return e&&e[2]?`<a href="${esc(e[2])}" target="_blank" rel="noopener">See the listing on Realtor.com →</a>`:""};
  V.innerHTML=`<div class="sc-wrap"><table class="sc"><thead><tr>${COLS.map(c=>`<th tabindex="0" data-k="${c[0]}" ${c[0]==sk?`aria-sort="${sd<0?"descending":"ascending"}"`:""}>${c[1]}</th>`).join("")}</tr></thead><tbody>
- ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc":""}"${c[0]=="under"?` style="${vsStyle(v)}"`:""}>${c[0]=="address"?`<button type="button" class="rb" aria-expanded="${open1==d.property_id}">${esc(v)}</button>`:c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
+ ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc":""}"${c[0]=="under"?` style="${vsStyle(v)}"`:""}>${c[0]=="address"?`<button type="button" class="rb" aria-expanded="${open1==d.property_id}">${esc(v)}${d.showcase&&!PW?`<span class="why-here">${esc(d.showcase)}</span>`:""}</button>`:c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
  ${open1==d.property_id?`<tr class="x"><td colspan="${COLS.length}">${panel(d)}</td></tr>`:""}`).join("")}
  ${rows.length>limit?`<tr class="more"><td colspan="${COLS.length}"><button id="more">Show more (${(rows.length-limit).toLocaleString()} left)</button></td></tr>`:""}
  </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td><td>${k(med(rows.map(r=>r.block_med)))}</td><td class="disc" style="${vsStyle(med(rows.map(under)))}">${fmt.under(med(rows.map(under)))}</td><td>${rows.filter(r=>TIER[r.tier]).length} need work</td><td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;

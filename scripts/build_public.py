@@ -35,7 +35,73 @@ def under(r):
     return None if r.get("room_pct") is None else math.floor(r["room_pct"] * 100 + 0.5)
 
 
-top = sorted((r for r in rows if under(r) is not None), key=under, reverse=True)[:TOP]
+# The free ten are a SHOWCASE, not the raw top of the sort (Aidan 2026-10-12: "a diverser / more
+# interesting 10 ... lets showcase our depth"). The raw top was nine condos. Each slot below picks the
+# listing with the most room among those that show off one layer of the product, preferring homes
+# whose records, story and neighbourhood are richest; no more than two from one city.
+def _depth_inputs():
+    rec = json.loads((PRIV / "records.json").read_text())
+    tl = {}
+    for f in (PRIV / "tl").glob("*.json"):
+        tl.update(json.loads(f.read_text()))
+    nb = {}
+    for f in (PRIV / "nb").glob("*.json"):
+        nb[f.stem] = json.loads(f.read_text()).get("lines", [])
+    comps = json.loads((PRIV / "comps.json").read_text())
+    return rec, tl, nb, comps
+
+_rec, _tl, _nb, _comps = _depth_inputs()
+
+def depth(r):
+    pid = r["property_id"]
+    t = _tl.get(pid, {})
+    story = len(t.get("assess", [])) + 2 * len(t.get("sales", [])) + len(t.get("list", []))
+    recs = 3 * len(_rec.get(pid, {}).get("items", []))
+    nbl = _nb.get(pid, [])
+    nbs = len(nbl) + 2 * sum(1 for l in nbl if l.get("tone") == "amber")
+    return story + recs + nbs + (3 if _comps.get(pid, {}).get("comps") else 0)
+
+def rtext(r):
+    return " ".join(i["text"] for i in _rec.get(r["property_id"], {}).get("items", [])).lower()
+
+def nbtext(r):
+    return " ".join(l.get("text", "") for l in _nb.get(r["property_id"], [])).lower()
+
+ranked = [r for r in rows if under(r) is not None]
+SLOTS = [   # the record-rich slots first, so the city cap doesn't starve them
+    ("Minneapolis code violations on record", lambda r: r["city"] == "Minneapolis" and "violation" in rtext(r) and under(r) > 0),
+    ("Saint Paul vacant list or complaints", lambda r: r["city"] == "Saint Paul" and ("vacant" in rtext(r) or "complaint" in rtext(r)) and under(r) > 0),
+    ("needs work, valued as-is", lambda r: r.get("tier") in ("heavy", "condemned") and under(r) > 0),
+    ("historic or a cleanup site nearby", lambda r: ("historic" in nbtext(r) or "mpca" in nbtext(r)) and under(r) > 0),
+    ("most room, a house", lambda r: r["type_group"] == "house" and under(r) > 0),
+    ("most room, a condo", lambda r: r["type_group"] == "condo" and under(r) > 0),
+    ("a townhome with room", lambda r: r["type_group"] == "townhome" and under(r) > 0),
+    ("a 2-4 unit building", lambda r: r["type_group"] == "multi" and under(r) > 0),
+    ("a suburb, over $600k", lambda r: r["city"] not in ("Minneapolis", "Saint Paul") and r["ask"] >= 600000 and under(r) > 0),
+    ("expect to pay over ask", lambda r: under(r) < 0),
+]
+top, used, per_city, per_type = [], set(), collections.Counter(), collections.Counter()
+# A showcase row must be one the records can stand behind: the records value within 30% of the ask.
+# (A $1.29M Columbia Heights condo whose records say ~$640k is a puzzle, not a showcase.)
+def credible(r):
+    w = r.get("worth_est") or r.get("arv")
+    return bool(w) and 0.7 <= w / r["ask"] <= 1.3
+fits = lambda r: r["property_id"] not in used and per_city[r["city"]] < 2 and per_type[r["type_group"]] < 3 and credible(r)
+def take(r, name):
+    r["showcase"] = name
+    top.append(r); used.add(r["property_id"]); per_city[r["city"]] += 1; per_type[r["type_group"]] += 1
+for name, ok in SLOTS:
+    pool = [r for r in ranked if fits(r) and ok(r)]
+    if not pool:
+        continue
+    # Room leads: keep the candidates within 2 points of the slot's best room (or most over ask),
+    # then the one with the richest records, story and neighbourhood wins.
+    sgn = -1 if name == "expect to pay over ask" else 1
+    best = max(sgn * under(r) for r in pool)
+    take(max((r for r in pool if sgn * under(r) >= best - 2), key=depth), name)
+for r in sorted(ranked, key=under, reverse=True):   # fill any empty slot with the next by room
+    if len(top) >= TOP: break
+    if fits(r): take(r, "most room")
 ids = {r["property_id"] for r in top}
 
 ev = json.loads((PRIV / "evidence.json").read_text())
