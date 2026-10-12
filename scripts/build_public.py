@@ -86,8 +86,13 @@ cities = [c for c, _ in collections.Counter(r["city"] for r in rows if r.get("ci
 # The accuracy line, read from the backtest (scripts/backtest.py), never typed.
 bt = json.loads((ROOT / "data" / "backtest.json").read_text())
 sl = bt["sale_list"]
+# The claim the backtest supports is the ORDER, not the point price: as a single number the
+# prediction is no closer than the ask itself (2.2% vs 1.8% median error), but sorted into
+# tenths by predicted room, the homes sold in that order. So the line states the tenths.
+dec = sl["deciles"]
 acc = {"n": sl["holdout_n"], "since": bt["holdout_from"], "median_abs_pct": sl["predicted"]["median_abs_pct"],
-       "within_5": sl["predicted"]["within_5"], "within_2": sl["predicted"]["within_2"]}
+       "within_5": sl["predicted"]["within_5"], "within_2": sl["predicted"]["within_2"],
+       "most_room_actual": dec[0]["actual_sale_vs_ask"], "least_room_actual": dec[-1]["actual_sale_vs_ask"]}
 cg = json.loads((ROOT / "data" / "condition_phrases.json").read_text())["groups"]
 method = {"sl_n": json.loads((ROOT / "data" / "sale_list_model.json").read_text())["n"], "groups": {g: v["effect"] for g, v in cg.items()}}
 (SITE / "meta.json").write_text(dump({"built": d["built"], "n": len(rows), "shown": len(top), "cities": cities, "price_usd": 100, "accuracy": acc, "method": method}))

@@ -788,7 +788,7 @@ if(pwq||paidq){qs.delete("pw");qs.delete("paid");history.replaceState(null,"",lo
 fetch("meta.json").then(r=>r.json()).then(m=>{
  // Written from data/backtest.json by build_public.py: never typed.
  METH=m.method||{};document.querySelectorAll("[data-m]").forEach(el=>{const k_=el.dataset.m,v=k_.startsWith("g:")?METH.groups?.[k_.slice(2)]:METH[k_];if(v!=null)el.textContent=k_.startsWith("g:")?Math.round(Math.abs(v)*100)+"%":v.toLocaleString()});
- const a=m.accuracy;if(a){$("#acc").innerHTML=`On the ${a.n.toLocaleString()} homes that sold since ${new Date(a.since+"T12:00").toLocaleDateString("en-US",{month:"long"})}, our predicted price was within 5% for <b>${Math.round(a.within_5)}%</b>, and off by a median ${a.median_abs_pct.toFixed(1)}%.`;$("#acc").hidden=false}
+ const a=m.accuracy;if(a){$("#acc").innerHTML=`On the ${a.n.toLocaleString()} homes that sold since ${new Date(a.since+"T12:00").toLocaleDateString("en-US",{month:"long"})}, the tenth we'd have ranked with the most room sold <b class="pos">${(Math.abs(a.most_room_actual)*100).toFixed(1)}% under</b> their ask on average; the tenth with the least sold <b class="neg">${(a.least_room_actual*100).toFixed(1)}% over</b>.`;$("#acc").hidden=false}
  $("#payN").textContent=m.n.toLocaleString();
  const c=m.cities;$("#payC").textContent=` across ${c.length>1?c.slice(0,-1).join(", ")+" and "+c[c.length-1]:c[0]}.`;
 });
