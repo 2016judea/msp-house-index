@@ -169,23 +169,25 @@ details.method summary{cursor:pointer;color:var(--ink)}
 .hist details ul{margin:6px 0 2px;padding-left:14px;font:12.5px/1.5 var(--mono);color:var(--mute)}
 .hist .now .y{color:var(--good)}.hist .now .y::before{border-color:var(--good);background:var(--good)}
 .hist b.b{color:var(--accent)}.hist b.g{color:var(--good)}
-.bm{display:flex;flex-direction:column;gap:6px}
-/* The block map: aerial photo, every lot line, filled by what the county appraises it at (sand = what the records say). */
-.bm-map{height:280px;border-radius:6px;overflow:hidden;border:1px solid var(--evline);background:var(--evbg)}
-.bm .sorts{width:100%;flex-wrap:wrap;overflow:visible}
-.bm-leg{display:flex;flex-direction:column;gap:4px;font:11px var(--mono);color:var(--mute)}
-.bm-leg .row5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
-.bm-leg .sw{display:flex;flex-direction:column;gap:3px;min-width:0}
-.bm-leg .sw i{display:block;height:10px;border:1px solid rgba(0,0,0,.12)}
-.bm-leg .sw:first-child i{border-radius:3px 0 0 3px}.bm-leg .sw:nth-child(5) i{border-radius:0 3px 3px 0}
-.bm-leg .sw span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px}
-.bm-leg .nd{display:flex;align-items:center;gap:6px}
-.bm-src{font:10.5px var(--sans);color:var(--mute);margin:0}.bm-src a{font-size:inherit}
-.bm-leg .nd i{width:14px;height:10px;border:1.5px dashed var(--mute);border-radius:2px}
-.bm-cap{font:12.5px var(--mono);color:var(--ink);margin:0;min-height:1.5em}
-.bm-own{font:600 12px var(--mono);background:#245a86;color:#fff;padding:2px 6px;border-radius:4px;white-space:nowrap;box-shadow:0 0 0 1.5px #fff;pointer-events:none}
-.bm-sale{font:500 10.5px var(--mono);background:var(--evbg);color:var(--evink);border:1px solid var(--evline);padding:0 4px;border-radius:3px;white-space:nowrap;pointer-events:none}
-@media (min-width:1024px){.bm-map{height:380px}}
+/* The block map: a terminal pane, always dark, in brickandmortar.dev's terminal tokens. Inside it terminal tones win;
+   amber still means worth a closer look (businesses), gold marks a recorded sale. */
+.bm{--t-g:#000C07;--t-s:#00110A;--t-l:#0C3A26;--t-grid:#0A2E1E;--t-ink:#B9E8CF;--t-mu:#5E8874;--t-ph:#00FF7F;--t-dim:#8CFFC4;--t-am:#E0A458;--t-au:#F5C518;
+ --tm:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Roboto Mono","DejaVu Sans Mono",monospace;
+ display:flex;flex-direction:column;gap:8px;background:var(--t-g);border:1px solid var(--t-l);border-radius:6px;padding:10px;font:12px/1.45 var(--tm);color:var(--t-ink);color-scheme:dark}
+.bm-hd{color:var(--t-mu);letter-spacing:.06em;text-transform:uppercase;font-size:11px}.bm-hd b{color:var(--t-ph);font-weight:500}
+.bm-tg{display:flex;flex-wrap:wrap;gap:2px 10px}
+.bm-tg button{font:12px var(--tm);background:none;border:0;padding:4px 0;color:var(--t-mu);cursor:pointer;letter-spacing:.04em;white-space:nowrap}
+.bm-tg button[aria-pressed="true"]{color:var(--t-ph)}
+.bm-tg button:focus-visible{outline:1px solid var(--t-ph);outline-offset:2px}
+.bm-map{position:relative;background:var(--t-s);border:1px solid var(--t-l);border-radius:3px;overflow:hidden}
+.bm-map svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.bm-map .lot{cursor:pointer}
+.bm-leg{display:flex;flex-direction:column;gap:3px;color:var(--t-mu);font-size:11px}
+.bm-ramp{display:flex;flex-wrap:wrap;gap:2px 12px}.bm-ramp span{white-space:nowrap}.bm-ramp i{font-style:normal;color:var(--t-ph);margin-right:4px}
+.bm-leg .am{color:var(--t-am)}.bm-leg .au{color:var(--t-au)}.bm-leg .hx{color:var(--t-dim)}
+.bm-ro{margin:0;display:grid;grid-template-columns:auto 1fr;gap:1px 12px;border-top:1px dashed var(--t-l);padding-top:6px;min-height:1.5em}
+.bm-ro dt{color:var(--t-mu)}.bm-ro dd{margin:0;color:var(--t-ink);overflow-wrap:anywhere}.bm-ro .hint{grid-column:1/-1;color:var(--t-mu)}
+.bm-src{font:10.5px var(--tm);color:var(--t-mu);margin:0}.bm-src a{color:var(--t-dim);font-size:inherit}
 @media (min-width:1024px){.hist .yr{grid-template-columns:84px 1fr}.hist .y{font-size:26px}.tl{margin:2px 0 0}}
 </style>
 </head>
@@ -222,7 +224,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
 <li><b>Last sale, brought forward.</b> The last recorded deed (if 2+ years ago) × how much that county's prices have moved since, measured against today's assessments.</li>
 </ul>
 <p><b>Houses that need work.</b> All three estimates are what the house is worth fixed up. When the public record or the listing says it needs work (a vacant building list, a vacant-building case, unfixed housing violations, or words like "major rehab" or "fire damage"), it gets a condition: light work, heavy rehab or condemned. Then we measure what the market pays for a house in that state: the same house bought and sold again within two years for more. Houses with heavy permitted work between the two sales were bought for a median <span data-c="heavy.ratio">0.46</span> of the resale price (<span data-c="heavy.n">113</span> flips); light work, <span data-c="light.ratio">0.75</span> (<span data-c="light.n">308</span> flips). <b>Worth as-is</b> is the middle estimate × that ratio, and the ranking uses it. <b>Repair cost</b> is the permit value those flips filed per square foot ($<span data-c="heavy.repair_ppsf">51</span>/sqft heavy, $<span data-c="light.repair_ppsf">4</span>/sqft light, Saint Paul permits) × this home's size. Permits run low, so it is shown, not subtracted.</p>
-<p><b>The block map.</b> Every lot within about 150 m of the home, drawn on the Metropolitan Council's spring 2025 aerial photo (public domain, via MnGeo) and coloured by what the county appraises it at: per finished square foot by default, so a big house doesn't just read as valuable, or the total. The colour breaks are the fifths of the lots in that frame, so dark means high <i>for this block</i>. Square feet come from the county file; Hennepin publishes none, so Minneapolis lots use the city assessor's 2025 file and Hennepin's suburbs open on total value. Condo units stacked on one lot show as one lot at the median unit. Recent sales are the county's last recorded deed since 2022 over $30k.</p>
+<p><b>The block map.</b> Every lot within about 150 m of the home, drawn as a diagram and shaded by what the county appraises it at: per finished square foot by default, so a big house doesn't just read as valuable, or the total. The colour breaks are the fifths of the lots in that frame, so bright means high <i>for this block</i>. Shops, offices and apartments are hatched, with the businesses on them from Overture Places. Square feet come from the county file; Hennepin publishes none, so Minneapolis lots use the city assessor's 2025 file and Hennepin's suburbs open on total value. Condo units stacked on one lot show as one lot at the median unit. Recent sales are the county's last recorded deed since 2022 over $30k.</p>
 <p><b>Agree</b> is 100% minus the spread of how far the ask sits below each estimate; a spread of 25 points scores 0%.</p>
 <p>The score is the average discount across all three (a missing one counts as zero), minus half the disagreement between them. Three estimates that agree beat one big gap.</p>
 <p>Not ranked: homes under contract, lots and land, teardowns, new builds the assessment hasn't caught, condo units that couldn't be matched to their own parcel, co-ops, multi-parcel listings, auctions and mobile homes. Listings from Realtor.com; parcels, assessments and deeds from the seven counties via MetroGIS; permits from Minneapolis and Saint Paul.</p>
@@ -437,117 +439,137 @@ function screener(){
  requestAnimationFrame(drawTL);
 }
 
-// ---- The block map: the aerial photo, every lot within ~150 m, filled by what the county appraises it at. ----
+// ---- The block map: every lot within ~150 m, drawn as a terminal diagram, filled by what the county appraises it at. ----
 // Lots come from site/map/<cell>.json (scripts/build_map.py); a row carries m = [cells, own cell, own lot].
-// One map lives across the table's re-renders: it is moved into the opened row's slot, never rebuilt for the same home.
-const BM={el:null,map:null,id:null,mode:null,fc:null,mk:[],own:null};
-let mlP=null;
-const loadML=()=>mlP??=new Promise((ok,no)=>{const l=document.createElement("link");l.rel="stylesheet";l.href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css";document.head.append(l);
- const s=document.createElement("script");s.src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js";s.onload=ok;s.onerror=no;document.head.append(s)});
+// Plain SVG, no map library and no tiles: a static diagram, so a one-finger swipe always scrolls the page. Tap to inspect.
+// One pane lives across the table's re-renders: it is moved into the opened row's slot, never refetched for the same home.
+const BM={el:null,id:null,mode:"ppsf",biz:true,F:null,B:null,own:null,sel:null};
 const CELLS={};
 const cell=k=>CELLS[k]??=fetch(`map/${k}.json`).then(r=>r.json());
 function dePoly(str){const pts=[];let i=0,x=0,y=0;
  while(i<str.length){for(const which of [0,1]){let b,sh=0,r=0;do{b=str.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5}while(b>=32);const v=r&1?~(r>>1):r>>1;if(which)y+=v;else x+=v}pts.push([x/1e5,y/1e5])}
  return pts}
-const SAND=["#f4e8c8","#e3c68e","#cb9d57","#9d6d2e","#5f4018"];
-const MODES=[["ppsf","$ per sq ft"],["emv","Total value"],["sales","Recent sales"]];
+// Phosphor intensity, near-ground to bright, and the character ramp that names each step in the legend.
+const PH=["#06301d","#0a5232","#0d7744","#11a35a","#00e070"],GL=["·","░","▒","▓","█"];
+const MODES=[["ppsf","$/SQFT"],["emv","TOTAL"],["sales","SALES"]];
 const mo=v=>{const y=Math.floor(v/100),m=v%100;return new Date(y,m-1,15).toLocaleDateString("en-US",{month:"short",year:"numeric"})};
+const K=n=>k(n).toUpperCase();
+const CATW={"atms":"ATM","church cathedral":"Church","landmark and historical building":"Historic building","community services non profits":"Community services","charity organization":"Charity","health and medical":"Health care","eat and drink":"Food and drink","cafe":"Coffee shop","coffee shop":"Coffee shop","automotive repair":"Car repair"};
+const catWords=c=>!c?"":CATW[c]||c[0].toUpperCase()+c.slice(1);
 function placeMap(){
  const slot=V.querySelector(".bm-slot");if(!slot)return;
  const d=ROWS.find(r=>r.property_id==slot.dataset.id);
  if(BM.id!=d.property_id)buildMap(d);
- slot.replaceWith(BM.el);BM.map?.resize()}
+ slot.replaceWith(BM.el);drawMap()}
 function buildMap(d){
- BM.map?.remove();BM.map=null;BM.mk=[];BM.id=d.property_id;BM.fc=null;
+ BM.id=d.property_id;BM.F=null;BM.sel=null;
  BM.el=document.createElement("div");BM.el.className="bm";
- BM.el.innerHTML=`<span class="lbl">The block: what the county appraises each lot at</span>
-  <div class="sorts"><span role="group" aria-label="Colour the lots by" style="display:contents">${MODES.map(m=>`<button type="button" data-m="${m[0]}" aria-pressed="false">${m[1]}</button>`).join("")}</span><button type="button" data-b="1" aria-pressed="true">Businesses</button></div>
-  <div class="bm-map" role="region" aria-label="Aerial map of the block, each lot coloured by its assessed value"></div><div class="bm-leg"></div><p class="bm-cap">Loading the block…</p>
-  <p class="bm-src">Photo: <a href="https://mnatlas.org/metadata/2025_7_county.html" target="_blank" rel="noopener">Metropolitan Council, spring 2025</a>, public domain, via MnGeo. Lots and values: county assessors via MetroGIS. Businesses: © Overture Maps Foundation. Map: MapLibre.</p>`;
- BM.el.querySelector(".sorts").onclick=e=>{const b=e.target.closest("button");if(b?.dataset.b){BM.biz=!BM.biz;b.setAttribute("aria-pressed",BM.biz);
-  if(BM.map?.getLayer("biz")){for(const l of ["biz","biz-name"])BM.map.setLayoutProperty(l,"visibility",BM.biz?"visible":"none");setMode(BM.mode)}window.va("event",{name:"map_biz",data:{on:BM.biz}});return}if(b){setMode(b.dataset.m);window.va("event",{name:"map_mode",data:{m:b.dataset.m}})}};
+ BM.el.innerHTML=`<div class="bm-hd"></div>
+  <div class="bm-tg">${MODES.map(m=>`<button type="button" data-m="${m[0]}" aria-pressed="false">[ ${m[1]} ]</button>`).join("")}<button type="button" data-b="1" aria-pressed="true">[ BUSINESSES ]</button></div>
+  <div class="bm-map" role="img" aria-label="Diagram of the block, each lot shaded by its assessed value"></div><div class="bm-leg"></div><dl class="bm-ro" aria-live="polite"><span class="hint">loading the block…</span></dl>
+  <p class="bm-src">LOTS + VALUES: COUNTY ASSESSORS VIA METROGIS · BUSINESSES: © OVERTURE MAPS FOUNDATION</p>`;
+ BM.el.querySelector(".bm-tg").onclick=e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.b){BM.biz=!BM.biz;window.va("event",{name:"map_biz",data:{on:BM.biz}})}else{BM.mode=b.dataset.m;window.va("event",{name:"map_mode",data:{m:BM.mode}})}drawMap()};
+ BM.el.querySelector(".bm-map").onclick=e=>{const t=e.target.closest("[data-i],[data-b]");if(!t)return;
+  BM.sel=t.dataset.b!=null?{b:+t.dataset.b}:{i:+t.dataset.i};drawMap()};
  const id=d.property_id,[ks,oc,oi]=d.m;
- Promise.all([loadML(),...ks.map(cell)]).then(([,...cs])=>{
+ Promise.all(ks.map(cell)).then(cs=>{
   if(BM.id!=id)return;
   const F=[],B=[],base=[];
-  cs.forEach((c,ci)=>{base[ci]=F.length;c.p.forEach((l,li)=>{const [ring,emv,sq,yb,sale,sv,addr,n,cls,pp]=l,own=ci==oc&&li==oi;
-   const parts=ring.split(" ").map(dePoly);
-   const geometry=parts[0].length==1?{type:"Point",coordinates:parts[0][0]}:parts.length==1?{type:"Polygon",coordinates:[[...parts[0],parts[0][0]]]}:{type:"MultiPolygon",coordinates:parts.map(r=>[[...r,r[0]]])};
-   const all=parts.flat(),cx=all.reduce((s,p)=>s+p[0],0)/all.length,cy=all.reduce((s,p)=>s+p[1],0)/all.length;
-   F.push({type:"Feature",id:F.length,geometry,properties:{emv,sq,yb,sale,sv,addr,n,cls:cls||"",own:own?1:0,ppsf:pp||0,cx,cy}})})});
-  // Businesses on non-home lots (Overture Places), each tied to the lot it stands on.
-  cs.forEach((c,ci)=>(c.b||[]).forEach(([lon,lat,name,cat,li])=>{const lot=base[ci]+li;(F[lot].properties.biz??=[]).push(name);
-   B.push({type:"Feature",id:B.length,geometry:{type:"Point",coordinates:[lon,lat]},properties:{name,cat:catWords(cat),lot}})}));
-  BM.fc={type:"FeatureCollection",features:F};BM.bz={type:"FeatureCollection",features:B};
-  const me=F.find(f=>f.properties.own)||F[0];BM.own=me;
-  const {cx,cy}=me.properties,dy=150/111320,dx=150/(111320*Math.cos(cy*Math.PI/180));
-  // The frame the breaks are drawn from: the lots within 150 m.
-  BM.frame=F.filter(f=>Math.abs(f.properties.cx-cx)<=dx&&Math.abs(f.properties.cy-cy)<=dy);
-  const box=BM.el.querySelector(".bm-map");
-  const map=BM.map=new maplibregl.Map({container:box,cooperativeGestures:true,attributionControl:false,dragRotate:false,pitchWithRotate:false,maxZoom:20,
-   bounds:[[cx-dx,cy-dy],[cx+dx,cy+dy]],
-   style:{version:8,glyphs:"https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",sources:{
-    biz:{type:"geojson",data:BM.bz},
-    photo:{type:"raster",tileSize:256,maxzoom:20,
-     tiles:["https://imageserver.gisdata.mn.gov/cgi-bin/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=met25&STYLES=&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=512&HEIGHT=512&FORMAT=image/jpeg"]},
-    lots:{type:"geojson",data:BM.fc}},
-    layers:[{id:"photo",type:"raster",source:"photo"},
-     {id:"fill",type:"fill",source:"lots",filter:["match",["geometry-type"],["Polygon","MultiPolygon"],true,false],paint:{"fill-color":"rgba(0,0,0,0)","fill-opacity":.62}},
-     {id:"edge-c",type:"line",source:"lots",filter:["all",["match",["geometry-type"],["Polygon","MultiPolygon"],true,false],["!=",["get","cls"],""]],paint:{"line-color":"#ffffff","line-width":["interpolate",["linear"],["zoom"],15,1,19,2.2],"line-dasharray":[2,1.4]}},
-     {id:"edge",type:"line",source:"lots",filter:["all",["match",["geometry-type"],["Polygon","MultiPolygon"],true,false],["==",["get","cls"],""]],paint:{"line-color":"#fff8e6","line-opacity":.7,"line-width":["interpolate",["linear"],["zoom"],15,.4,19,1.2]}},
-     {id:"dot",type:"circle",source:"lots",filter:["==",["geometry-type"],"Point"],paint:{"circle-radius":["interpolate",["linear"],["zoom"],15,2.5,19,7],"circle-color":"rgba(0,0,0,0)","circle-stroke-color":"#fff8e6","circle-stroke-width":1}},
-     {id:"sel",type:"line",source:"lots",filter:["==",["id"],-1],paint:{"line-color":"#fff","line-width":2.5}},
-     {id:"own-halo",type:"line",source:"lots",filter:["==",["get","own"],1],paint:{"line-color":"#fff","line-width":6.5,"line-opacity":.9}},
-     {id:"own",type:"line",source:"lots",filter:["==",["get","own"],1],paint:{"line-color":"#245a86","line-width":3.5}},
-     {id:"biz",type:"circle",source:"biz",paint:{"circle-radius":["interpolate",["linear"],["zoom"],15,2.5,19,5],"circle-color":"#ffffff","circle-stroke-color":"#16191a","circle-stroke-width":1.5}},
-     {id:"biz-name",type:"symbol",source:"biz",minzoom:16,layout:{"text-field":["get","name"],"text-font":["Open Sans Semibold"],"text-size":11,"text-anchor":"top","text-offset":[0,.6],"text-max-width":9,"text-optional":true},paint:{"text-color":"#ffffff","text-halo-color":"#16191a","text-halo-width":1.4}},
-     {id:"own-dot",type:"circle",source:"lots",filter:["all",["==",["geometry-type"],"Point"],["==",["get","own"],1]],paint:{"circle-radius":9,"circle-color":"rgba(0,0,0,0)","circle-stroke-color":"#245a86","circle-stroke-width":3.5}}]}});
-  map.addControl(new maplibregl.NavigationControl({showCompass:false}),"top-right");
-  map.on("click",e=>{const pad=10,bb=[[e.point.x-pad,e.point.y-pad],[e.point.x+pad,e.point.y+pad]];
-   const b=BM.biz?map.queryRenderedFeatures(bb,{layers:["biz","biz-name"]})[0]:null;
-   const f=b?{id:b.properties.lot}:map.queryRenderedFeatures(e.point,{layers:["fill","dot"]})[0];
-   map.setFilter("sel",["==",["id"],f?f.id:-1]);
-   BM.el.querySelector(".bm-cap").textContent=b?bizLine(b.properties):f?lotLine(BM.fc.features[f.id].properties):"Tap a lot or a business to read it."});
-  map.on("load",()=>{
-   // Square feet thin out (Hennepin publishes none outside Minneapolis): open on total value there.
-   const v=BM.frame.filter(f=>f.properties.emv>0),cov=v.filter(f=>f.properties.sq).length/(v.length||1);
-   BM.sqcov=cov;BM.biz=true;setMode(cov>=.5?"ppsf":"emv");BM.el.querySelector(".bm-cap").textContent="Tap a lot or a business to read it."});
- }).catch(()=>{BM.el.querySelector(".bm-cap").textContent="The map could not load."})}
-const CATW={"atms":"ATM","church cathedral":"Church","landmark and historical building":"Historic building","community services non profits":"Community services","charity organization":"Charity","health and medical":"Health care","eat and drink":"Food and drink","cafe":"Coffee shop","coffee shop":"Coffee shop","bar":"Bar","automotive repair":"Car repair","professional services":"Professional services"};
-const catWords=c=>!c?"":CATW[c]||c[0].toUpperCase()+c.slice(1);
-function bizLine(b){const p=BM.fc.features[b.lot].properties;
- return [b.name,b.cat,`on a lot appraised ${p.emv?k(p.emv*1000):"(no value)"}`,p.ppsf?`$${p.ppsf}/sq ft`:"",p.cls?`county class: ${p.cls.toLowerCase()}`:""].filter(Boolean).join(" · ")}
-function lotLine(p){
- const who=p.n>1?`${p.n} units at ${p.addr||"this lot"}`:(p.addr||"No address on record");
- const v=p.emv?`${p.n>1?"median unit ":""}appraised ${k(p.emv*1000)}`:"no assessed value";
- const s=p.ppsf?`$${p.ppsf}/sq ft${p.n>1?" (median unit)":` (${p.sq.toLocaleString()} sq ft)`}`:p.emv?"no finished sq ft on record":"";
- const sale=p.sale?(p.sv>30?`${p.n>1?"a unit ":""}last sold ${k(p.sv*1000)}, ${mo(p.sale)}`:`last deed ${mo(p.sale)} at $${Math.round(p.sv*1000).toLocaleString()}, not a market price`):"no sale on record";
- return [(p.own?"This home: ":"")+who,p.cls?p.cls:"",v,s,p.yb?`built ${p.yb}`:"",sale,p.biz?`here: ${p.biz.slice(0,4).join(", ")}${p.biz.length>4?` +${p.biz.length-4} more`:""}`:""].filter(Boolean).join(" · ")}
-function setMode(m){
- const map=BM.map;if(!map||!map.getLayer("fill"))return;BM.mode=m;
- BM.el.querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m==m));
- // Breaks come from the homes in frame, so one $40M office block can't flatten the street; other lots sit on the same scale.
- const prop=m=="ppsf"?"ppsf":"emv",homes=BM.frame.filter(f=>!f.properties.cls),src=homes.some(f=>f.properties[prop]>0)?homes:BM.frame,vals=src.map(f=>f.properties[prop]).filter(x=>x>0).sort((a,b)=>a-b);
- const q=f=>vals[Math.min(vals.length-1,Math.floor(f*vals.length))];
- const br=[...new Set([.2,.4,.6,.8].map(q))].filter(Boolean);
- const step=["step",["get",prop],SAND[0],...br.flatMap((b,i)=>[b,SAND[Math.round((i+1)*(SAND.length-1)/br.length)]])];
- const col=vals.length?["case",[">",["get",prop],0],step,"rgba(0,0,0,0)"]:"rgba(0,0,0,0)";
- map.setPaintProperty("fill","fill-color",col);map.setPaintProperty("dot","circle-color",col);
- // legend: real breaks from the lots in frame
- const f=v=>prop=="ppsf"?"$"+Math.round(v):k(v*1000),cols=[SAND[0],...br.map((b,i)=>SAND[Math.round((i+1)*(SAND.length-1)/br.length)])];
- const edges=[vals[0],...br,vals[vals.length-1]];
- const noSq=prop=="ppsf"&&BM.frame.some(x=>x.properties.emv>0&&!x.properties.sq);
- BM.el.querySelector(".bm-leg").innerHTML=vals.length?`<span>${prop=="ppsf"?"County value per finished sq ft":"County value of the whole lot"}, in fifths of the homes within 150 m</span><div class="row5">${cols.map((c,i)=>`<div class="sw"><i style="background:${c}"></i><span>${cols.length==1?f(edges[0])+"–"+f(edges[1]):!i?"under "+f(br[0]):i==cols.length-1?f(br[i-1])+"+":f(br[i-1])+"–"+f(br[i])}</span></div>`).join("")}</div>`+
-  `${noSq?`<div class="nd"><i></i>no finished sq ft on record${BM.sqcov<.5&&ROWS.find(r=>r.property_id==BM.id)?.county=="hennepin"?" (Hennepin publishes none outside Minneapolis)":""}</div>`:""}${BM.frame.some(x=>x.properties.cls)?`<div class="nd"><i style="border:1.5px dashed var(--ink);background:none"></i>dashed: not a home (shops, offices, apartments, churches)</div>`:""}${BM.biz&&BM.bz.features.length?`<div class="nd"><i style="width:10px;height:10px;border-radius:50%;background:#fff;border:1.5px solid #16191a"></i>a business, named once you zoom in</div>`:""}${m=="sales"?`<div class="nd" style="gap:6px">${(x=>x?`<span class="bm-sale">${k(x.sv*1000)} ’${String(Math.floor(x.sale/100)).slice(2)}</span>`:"")(BM.frame.map(f=>f.properties).find(p=>!p.own&&p.sale>=202201&&p.sv>30))} sold since 2022: price and year</div>`:""}`
-  :`<div class="nd"><i></i>no ${prop=="ppsf"?"finished sq ft":"assessed values"} on record here</div>`;
- // labels: the listing's ask always; sales since 2022 in that mode
- BM.mk.forEach(x=>x.remove());BM.mk=[];
- const d=ROWS.find(r=>r.property_id==BM.id),add=(el,p)=>BM.mk.push(new maplibregl.Marker({element:el,anchor:"center"}).setLngLat([p.cx,p.cy]).addTo(map));
- if(m=="sales")for(const x of BM.frame){const p=x.properties;if(p.own||!(p.sale>=202201&&p.sv>30))continue;const el=document.createElement("span");el.className="bm-sale";el.textContent=`${k(p.sv*1000)} ’${String(Math.floor(p.sale/100)).slice(2)}`;add(el,p)}
- const el=document.createElement("span");el.className="bm-own";el.textContent=`Asking ${k(d.ask)}`;
- // sits on the lot's top edge so the blue outline stays visible
- const top=BM.own.geometry.type=="Point"?BM.own.geometry.coordinates[1]:Math.max(...BM.own.geometry.coordinates.flat(Infinity).filter((_,i)=>i%2));
- BM.mk.push(new maplibregl.Marker({element:el,anchor:"bottom",offset:[0,-4]}).setLngLat([BM.own.properties.cx,top]).addTo(map))}
+  cs.forEach((c,ci)=>{base[ci]=F.length;c.p.forEach((l,li)=>{const [ring,emv,sq,yb,sale,sv,addr,n,cls,pp]=l;
+   const parts=ring.split(" ").map(dePoly),all=parts.flat();
+   F.push({parts,pt:parts[0].length==1,emv,sq,yb,sale,sv,addr,n,cls:cls||"",ppsf:pp||0,own:ci==oc&&li==oi,
+    cx:all.reduce((s,p)=>s+p[0],0)/all.length,cy:all.reduce((s,p)=>s+p[1],0)/all.length})})});
+  cs.forEach((c,ci)=>(c.b||[]).forEach(([lon,lat,name,cat,li])=>{const lot=base[ci]+li;(F[lot].biz??=[]).push(name);B.push({lon,lat,name,cat:catWords(cat),lot})}));
+  BM.F=F;BM.B=B;BM.own=F.find(f=>f.own)||F[0];
+  // Square feet thin out (Hennepin publishes none outside Minneapolis): open on total value there.
+  const v=F.filter(f=>f.emv>0&&inFrame(f)),cov=v.filter(f=>f.sq).length/(v.length||1);
+  BM.sqcov=cov;BM.mode=cov>=.5?"ppsf":"emv";drawMap()}).catch(()=>{BM.el.querySelector(".bm-ro").innerHTML=`<span class="hint">the block could not load</span>`})}
+const R=150,M_LAT=111320;
+const inFrame=f=>{const o=BM.own,dx=(f.cx-o.cx)*M_LAT*Math.cos(o.cy*Math.PI/180),dy=(f.cy-o.cy)*M_LAT;return Math.abs(dx)<=R&&Math.abs(dy)<=R};
+// Streets: the lots that share a street name line both sides of it, so their centroids run down the middle.
+function streets(F){const by={};
+ for(const f of F){const m=(f.addr||"").match(/^\d+\S*\s+(.+)$/);if(m&&!f.cls)(by[m[1]]??=[]).push(f)}
+ const out=[];
+ for(const [name,fs] of Object.entries(by)){if(fs.length<4)continue;
+  const mx=fs.reduce((s,f)=>s+f.X,0)/fs.length,my=fs.reduce((s,f)=>s+f.Y,0)/fs.length;
+  let sxx=0,syy=0,sxy=0;for(const f of fs){const a=f.X-mx,b=f.Y-my;sxx+=a*a;syy+=b*b;sxy+=a*b}
+  const ang=Math.atan2(2*sxy,sxx-syy)/2,l1=(sxx+syy)/2+Math.sqrt(((sxx-syy)/2)**2+sxy*sxy),l2=(sxx+syy)-l1;
+  if(l1<4*l2)continue; // not a line of lots
+  let deg=ang*180/Math.PI;if(deg>90)deg-=180;if(deg<-90)deg+=180;
+  const ux=Math.cos(ang),uy=Math.sin(ang),ts=fs.map(f=>(f.X-mx)*ux+(f.Y-my)*uy);
+  out.push({name:name.toUpperCase(),x:mx,y:my,deg,ux,uy,lo:Math.min(...ts),hi:Math.max(...ts),n:fs.length})}
+ return out.sort((a,b)=>b.n-a.n)}
+function drawMap(){
+ const box=BM.el?.querySelector(".bm-map");if(!box||!BM.F)return;
+ const W=Math.max(280,box.clientWidth),wide=W>=600,RX=wide?190:R,RY=R,H=Math.round(W*RY/RX*(wide?.82:1));
+ const o=BM.own,cosl=Math.cos(o.cy*Math.PI/180),s=Math.min(W/(2*RX),H/(2*RY));
+ const P=([lon,lat])=>[W/2+(lon-o.cx)*M_LAT*cosl*s,H/2-(lat-o.cy)*M_LAT*s];
+ const F=BM.F;for(const f of F)[f.X,f.Y]=P([f.cx,f.cy]);
+ const fr=F.filter(inFrame),prop=BM.mode=="ppsf"?"ppsf":"emv";
+ // Breaks: fifths of the homes in frame, so one office block can't flatten the street; other lots sit on the same scale.
+ const src=fr.filter(f=>!f.cls&&f[prop]>0).length?fr.filter(f=>!f.cls):fr,vals=src.map(f=>f[prop]).filter(x=>x>0).sort((a,b)=>a-b);
+ const br=[...new Set([.2,.4,.6,.8].map(q=>vals[Math.min(vals.length-1,Math.floor(q*vals.length))]))].filter(Boolean);
+ const lvl=v=>{let i=0;while(i<br.length&&v>=br[i])i++;return Math.round(i*(PH.length-1)/Math.max(1,br.length))};
+ const fmtv=v=>prop=="ppsf"?"$"+Math.round(v):K(v*1000);
+ let g=`<defs><pattern id="bmh" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#8CFFC4" stroke-width="1.2" stroke-opacity=".55"/></pattern></defs>`;
+ g+=`<rect width="${W}" height="${H}" fill="#00110A"/>`;
+ const step=25*s;for(let x=W/2%step;x<W;x+=step)g+=`<line x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="0" y2="${H}" stroke="#0A2E1E" stroke-width="1"/>`;
+ for(let y=H/2%step;y<H;y+=step)g+=`<line y1="${y.toFixed(1)}" y2="${y.toFixed(1)}" x1="0" x2="${W}" stroke="#0A2E1E" stroke-width="1"/>`;
+ const path=f=>f.parts.map(r=>"M"+r.map(p=>P(p).map(v=>v.toFixed(1)).join(",")).join("L")+"Z").join("");
+ F.forEach((f,i)=>{const v=f[prop],fill=v>0&&vals.length?PH[lvl(v)]:"none";
+  if(f.pt){const [x,y]=P(f.parts[0][0]);g+=`<rect class="lot" data-i="${i}" x="${x-3}" y="${y-3}" width="6" height="6" fill="${fill=="none"?"#00110A":fill}" stroke="#8CFFC4" stroke-opacity=".6" stroke-width=".8"/>`;return}
+  const dd=path(f);
+  g+=`<path class="lot" data-i="${i}" d="${dd}" fill="${fill}" fill-opacity="${fill=="none"?0:.82}" stroke="#8CFFC4" stroke-opacity=".38" stroke-width=".7"${f.cls?` stroke-dasharray="3 2"`:""}/>`;
+  if(f.cls)g+=`<path d="${dd}" fill="url(#bmh)" pointer-events="none"/>`});
+ // the lot just tapped, then the listing's own lot on top
+ const sel=BM.sel?.i!=null?F[BM.sel.i]:BM.sel?.b!=null?F[BM.B[BM.sel.b].lot]:null;
+ if(sel&&!sel.pt)g+=`<path d="${path(sel)}" fill="none" stroke="#B9E8CF" stroke-width="2" pointer-events="none"/>`;
+ if(!o.pt)g+=`<path d="${path(o)}" fill="none" stroke="#00FF7F" stroke-width="2.5" style="filter:drop-shadow(0 0 3px #00FF7F)" pointer-events="none"/>`;
+ else{const [x,y]=P(o.parts[0][0]);g+=`<rect x="${x-6}" y="${y-6}" width="12" height="12" fill="none" stroke="#00FF7F" stroke-width="2.5" pointer-events="none"/>`}
+ // labels, placed greedily so none overlap: the callout first, then streets, sales, businesses
+ const placed=[],fits=(x,y,w,h)=>x>=2&&y>=2&&x+w<=W-2&&y+h<=H-2&&!placed.some(r=>x<r[0]+r[2]&&x+w>r[0]&&y<r[1]+r[3]&&y+h>r[1]);
+ const cw=7.2,L=[];
+ const d=ROWS.find(r=>r.property_id==BM.id),call=`▸ ${(d.address||o.addr||"").toUpperCase()}  ASK ${K(d.ask)}`;
+ let top=Infinity;for(const p of o.parts.flat())top=Math.min(top,P(p)[1]);
+ let cwid=call.length*cw+12,cx0=Math.min(Math.max(4,o.X-cwid/2),W-cwid-4),cy0=Math.max(4,top-26);
+ if(cwid>W-8){cwid=W-8;cx0=4}
+ placed.push([cx0,cy0,cwid,20]);
+ const CALL=(`<rect x="${cx0}" y="${cy0}" width="${cwid}" height="20" fill="#000C07" stroke="#00FF7F" stroke-width="1"/><text x="${cx0+6}" y="${cy0+14}" fill="#00FF7F" font-size="12" textLength="${call.length*cw>cwid-12?cwid-12:""}" lengthAdjust="spacingAndGlyphs">${esc(call)}</text>`.replace(' textLength=""',""));
+ for(const st of streets(fr.filter(f=>!f.pt))){const w=st.name.length*6.2+4,h=12;
+  // slide along the street until the name finds clear space
+  const rect=(x,y)=>Math.abs(st.deg)<35?[x-w/2,y-h/2,w,h]:Math.abs(st.deg)>55?[x-h/2,y-w/2,h,w]:[x-w/2,y-w/2,w,w];
+  let at=null;for(const t of [0,30,-30,60,-60,90,-90,120,-120,150,-150]){if(t<st.lo||t>st.hi)continue;const x=st.x+t*st.ux,y=st.y+t*st.uy,r=rect(x,y);if(fits(...r)){at=[x,y];placed.push(r);break}}
+  if(!at)continue;const [sx,sy]=at;
+  L.push(`<text x="${sx}" y="${sy}" transform="rotate(${st.deg.toFixed(1)} ${sx} ${sy})" text-anchor="middle" dominant-baseline="middle" fill="#5E8874" font-size="10" letter-spacing=".08em" paint-order="stroke" stroke="#00110A" stroke-width="3" pointer-events="none">${esc(st.name)}</text>`)}
+ if(BM.mode=="sales")for(const f of fr){if(f.own||!(f.sale>=202201&&f.sv>30))continue;
+  const t=`${K(f.sv*1000)} '${String(Math.floor(f.sale/100)).slice(2)}`,w=t.length*6.6+8,h=15;if(!fits(f.X-w/2,f.Y-h/2,w,h))continue;placed.push([f.X-w/2,f.Y-h/2,w,h]);
+  L.push(`<rect x="${f.X-w/2}" y="${f.Y-h/2}" width="${w}" height="${h}" fill="#000C07" stroke="#F5C518" stroke-width=".8" pointer-events="none"/><text x="${f.X}" y="${f.Y+3.8}" text-anchor="middle" fill="#F5C518" font-size="11" pointer-events="none">${t}</text>`)}
+ if(BM.biz)BM.B.forEach((b,i)=>{const [x,y]=P([b.lon,b.lat]);if(x<0||y<0||x>W||y>H)return;
+  L.push(`<text x="${x}" y="${y+4}" text-anchor="middle" fill="#E0A458" font-size="11" pointer-events="none">◆</text><circle data-b="${i}" cx="${x}" cy="${y}" r="10" fill="transparent" style="cursor:pointer"/>`);
+  const nm=b.name.length>22?b.name.slice(0,21)+"…":b.name,w=nm.length*6+4,h=12;
+  if(fits(x+7,y-6,w,h)){placed.push([x+7,y-6,w,h]);L.push(`<text x="${x+8}" y="${y+3.5}" fill="#E0A458" font-size="10" paint-order="stroke" stroke="#00110A" stroke-width="3" pointer-events="none">${esc(nm)}</text>`)}});
+ box.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">${g}${L.join("")}${CALL}</svg>`;
+ // header, toggles, legend, readout
+ BM.el.querySelector(".bm-hd").innerHTML=`<b>■</b> PARCELS · ${R}M · ${BM.mode=="ppsf"?"ASSESSED $/SQFT":BM.mode=="emv"?"ASSESSED TOTAL":"RECENT SALES ON ASSESSED TOTAL"} · ${fr.length} LOTS`;
+ BM.el.querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m==BM.mode||(b.dataset.m=="emv"&&BM.mode=="sales"&&false)));
+ BM.el.querySelector("[data-b]").setAttribute("aria-pressed",BM.biz);
+ const n=br.length+1,lab=i=>n==1?`${fmtv(vals[0])}–${fmtv(vals[vals.length-1])}`:!i?`<${fmtv(br[0])}`:i==n-1?`${fmtv(br[i-1])}+`:`${fmtv(br[i-1])}–${fmtv(br[i])}`;
+ const noSq=prop=="ppsf"&&fr.some(f=>f.emv>0&&!f.sq);
+ BM.el.querySelector(".bm-leg").innerHTML=vals.length?`<div>${prop=="ppsf"?"$/SQFT":"TOTAL"}, IN FIFTHS OF THE HOMES IN FRAME</div><div class="bm-ramp">${Array.from({length:n},(_,i)=>`<span><i>${GL[Math.round(i*(PH.length-1)/Math.max(1,n-1))].repeat(2)}</i>${lab(i)}</span>`).join("")}</div>`+
+  `${noSq?`<div>□□ NO FINISHED SQFT ON RECORD${BM.sqcov<.5&&d.county=="hennepin"?" (HENNEPIN PUBLISHES NONE OUTSIDE MINNEAPOLIS)":""}</div>`:""}${fr.some(f=>f.cls)?`<div><span class="hx">╱╱</span> NOT A HOME: SHOPS, OFFICES, APARTMENTS, CHURCHES</div>`:""}${BM.biz&&BM.B.length?`<div><span class="am">◆</span> A BUSINESS ON THAT LOT</div>`:""}${BM.mode=="sales"?`<div><span class="au">[$ 'YY]</span> SOLD SINCE 2022, PRICE AND YEAR</div>`:""}`
+  :`<div>□□ NO ${prop=="ppsf"?"FINISHED SQFT":"ASSESSED VALUES"} ON RECORD HERE</div>`;
+ BM.el.querySelector(".bm-ro").innerHTML=readout();}
+function readout(){
+ const kv=r=>r.filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join("");
+ if(BM.sel?.b!=null){const b=BM.B[BM.sel.b],p=BM.F[b.lot];
+  return kv([["NAME",b.name],["WHAT",b.cat||"–"],["LOT",p.addr],["CLASS",p.cls],["ASSESSED",p.emv?K(p.emv*1000):"none on record"],["$/SQFT",p.ppsf?"$"+p.ppsf:"–"]])}
+ const p=BM.sel?.i!=null?BM.F[BM.sel.i]:null;if(!p)return `<span class="hint">tap a lot or a ◆ to read it</span>`;
+ return kv([["LOT",(p.own?"THIS HOME · ":"")+(p.n>1?`${p.n} UNITS AT `:"")+(p.addr||"no address on record").toUpperCase()],["CLASS",p.cls],
+  ["ASSESSED",p.emv?`${K(p.emv*1000)}${p.n>1?" (MEDIAN UNIT)":""}`:"none on record"],["$/SQFT",p.ppsf?`$${p.ppsf}${p.n>1?" (MEDIAN UNIT)":` · ${p.sq.toLocaleString()} SQFT`}`:"no finished sqft on record"],
+  ["BUILT",p.yb?String(p.yb):""],["LAST SALE",p.sale?(p.sv>30?`${K(p.sv*1000)} · ${mo(p.sale).toUpperCase()}${p.n>1?" (A UNIT)":""}`:`DEED ${mo(p.sale).toUpperCase()} AT $${Math.round(p.sv*1000).toLocaleString()}, NOT A MARKET PRICE`):"none on record"],
+  ["HERE",p.biz?(u=>u.slice(0,6).join(", ")+(u.length>6?` +${u.length-6}`:""))([...new Set(p.biz)]):""]])}
+addEventListener("resize",()=>{clearTimeout(BM.rt);BM.rt=setTimeout(drawMap,150)});
 function apply(){
  const city=$("#city").value,price=+$("#price").value||Infinity,beds=+$("#beds").value||0;
  const t=document.querySelector("#types [data-t][aria-pressed=true]")?.dataset.t||"";

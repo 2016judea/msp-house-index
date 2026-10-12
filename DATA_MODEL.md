@@ -295,5 +295,25 @@ not joined here. FEMA flood zone is already on the record list (`build_records.p
 | not a home | 34,100 lots | county `is_dwelling` false (commercial, industrial, apartments 4+, churches, parks); drawn with a dashed line |
 | businesses on them | 22,677 | **Overture Places** (CDLA-Permissive-2.0), confidence ≥ 0.5, point in a non-home lot only, so a home-based registration never names a house. **Google ratings/status not shown**: bricks' RIGHTS_WITHHELD class, and a static file here is redistribution. **MN SOS bulk not used**: non-commercial licence |
 | aerial photo | 7-county, spring 2025, leaf-off, 30 cm | Metropolitan Council via MnGeo WMS (`met25`), **public domain** (Minn. Stat. ch. 13, per its metadata); attributed under the map |
+| ~~aerial photo~~ | dropped 2026-10-11 | Aidan chose a terminal diagram over the photo the same evening ("diagrams in plain terminal tones make navigating and understanding easier"). Street names are placed along the line of lots that share one, since the parcel file has no roads |
 
 Payload: 32.0 MB in 9,553 cell files of 400 m; an opened row fetches 1-4 of them (median 9 KB).
+
+### Reality check for neighborhood (2026-10-11, `scripts/build_neighborhood.py` → `private/nb/<property_id>.json`)
+
+Of 7,262 ranked listings; 6,987 get a file. Every layer is `open-public-record` in bricks
+`layer.licence`; the build asserts it.
+
+| field | filled | source / note |
+|---|---|---|
+| zoning district + code sentence | 1,777 (every Mpls + StP listing but 4) | the cities' own district polygons (Mpls land-use districts, StP zoning). Purpose quoted verbatim, section cited: Mpls Title 20 §530 (July 2023 edition), StP §66.212-213 (Ord 23-43). Other districts: code + link. **Suburbs unfilled**: bricks `zoning_district` is the county's property-use class ("RESIDENTIAL", "1A/1B/4BB"), not zoning, so it is not used |
+| historic | 27 (25 the lot or building itself) | Mpls HPC landmarks, StP historic sites, by PIN or within 40 m. **No historic *districts*** in either layer |
+| cleanup sites ≤200 m | 1,805 | MPCA WIMN, cleanup activities only (leak sites, brownfields, Superfund, site assessment…); tanks, waste generators, stormwater and air permits dropped. **Status is the site-level `active_flag`** (80% of sites read active); MPCA's per-activity API, which says which leak site is closed, bot-walls after a burst, so lines say "MPCA file active" and link the site page. Amber = nearest within 100 m |
+| lead service line | 703 (Mpls houses and multis ~100%; condos 10 of 415) | Mpls Service Line Inventory, classification decoded by the service's own coded-value domain (1 Lead, 2 Non-Lead, 3 Unknown, 4 GRR). **Saint Paul's inventory is not in bricks** |
+| permits ≤400 m, 2 yr, vs city median | 1,777 | Mpls `Res`+`Commercial` permits Sep 2024–Sep 2026 (count only, no value); StP `Building Permit` Jul 2023–Jun 2025 with declared value. Median over 2,500 sampled homes per city: Mpls 117, StP 101. **Suburbs unfilled** |
+| new dwellings, demolitions ≤400 m | 773 / 643 (shown only when >0; city median is 0 for both) | Mpls `dwellingUnitsNew` and `Wrecking` permits; StP new-dwellings and demolition layers |
+| block owned from elsewhere | 6,858 | not homesteaded AND tax bill to another address (each alone misfires: escrow servicers and PO boxes on homesteads; builders' spec homes). Dakota publishes no mailing address: homestead only, said on the line. Names and addresses never leave the script. Median block 8% |
+| transit ≤400 m | 3,045 | Metro Transit GTFS 2026-08-29 stops |
+| busiest road ≤100 m | 721 | MnDOT AADT, latest year per count location. The point is the counted segment's midpoint, so this under-finds roads; stated on the line |
+
+Payload: 8.6 MB across 6,987 files, median 461 B, max 4.9 KB; one file is fetched per opened row.

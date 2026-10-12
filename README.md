@@ -48,10 +48,10 @@ violations, "major rehab", "fire damage"…) gets a tier, and its value becomes
 the same house bought and resold within 2 years (`scripts/build_condition.py`,
 `data/condition.json`, method in `DATA_MODEL.md`).
 
-**Block map.** Each opened row shows the Metropolitan Council's spring 2025 aerial
-photo (public domain, via MnGeo) with every lot within ~150 m drawn on top and filled
-by what the county appraises it at, per finished sq ft or in total, in fifths of the
-homes in frame. Shops, offices and apartments get a dashed line and the businesses on
+**Block map.** Each opened row has a terminal-style diagram (plain SVG, in
+brickandmortar.dev's terminal tones) of every lot within ~150 m, shaded by what the
+county appraises it at, per finished sq ft or in total, in fifths of the homes in
+frame. Shops, offices and apartments get a dashed line and the businesses on
 them (Overture Places). `make map` rebuilds `site/map/` (~32 MB, 400 m cells, loaded
 only when a row opens).
 
