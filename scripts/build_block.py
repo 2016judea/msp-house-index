@@ -31,7 +31,7 @@ group by 1
 """).fetchall()
 DIRS = {"Ne": "NE", "Nw": "NW", "Se": "SE", "Sw": "SW", "N": "N", "S": "S", "E": "E", "W": "W"}
 name = lambda st: " ".join(DIRS.get(w, w) for w in st.title().split())
-blk = {r[0]: {"block_med": round(r[1]), "block_n": r[2], "block_name": f"{r[5] * 100}s {name(r[4])}"} for r in rows}
+blk = {r[0]: {"block_med": round(r[1]), "block_n": r[2], "block_name": (f"{r[5] * 100}s " if r[5] else "1–99 ") + name(r[4])} for r in rows}
 p = ROOT / "site/data.json"
 d = json.loads(p.read_text())
 for r in d["rows"]:
