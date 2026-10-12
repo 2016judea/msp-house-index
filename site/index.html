@@ -427,7 +427,7 @@ function story(d){
 // ---- The property's story: one chart over time, then the history year by year. ----
 // Every sentence is a template over a record in tl/<shard>.json or records.json; no model writes any of it.
 const TL={},tlLoading={};
-function loadTL(id){if(PW)return loadDet(id);const s=id.slice(-2);if(TL[s]||tlLoading[s])return;tlLoading[s]=1;fetch(`tl/${s}.json`).then(r=>r.json()).then(j=>{TL[s]=j;if(open1)screener()}).catch(()=>{})}
+function loadTL(id){if(PW)return loadDet(id);const s=id.slice(-2);if(TL[s]||tlLoading[s])return;tlLoading[s]=1;fetch(`tl/${s}.json`,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(j=>{TL[s]=j;if(open1)screener()}).catch(()=>{TL[s]={};if(open1)screener()}).finally(()=>{tlLoading[s]=0})}
 const tlOf=id=>(TL[id.slice(-2)]||{})[id];
 const usd=n=>"$"+Math.round(n).toLocaleString();
 const mon=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"});
@@ -541,7 +541,8 @@ function drawTL(){
  box.querySelectorAll(".hit").forEach(h=>{const f=e=>{e.stopPropagation();cap.textContent=M[+h.dataset.m].cap;box.querySelectorAll(".on").forEach(x=>x.classList.remove("on"));box.querySelector(`:not(.hit)[data-m="${h.dataset.m}"]`)?.classList.add("on")};h.addEventListener("click",f);h.addEventListener("mouseenter",f)})}
 function storyTL(d){
  const t=tlOf(d.property_id);loadTL(d.property_id);
- if(!t)return `<div class="tl" data-id="${d.property_id}"></div><p class="lbl">Loading the history…</p>`;
+ if(!t){const loaded=PW?(d.property_id in DETX):!!TL[d.property_id.slice(-2)];
+  return loaded?`<p class="lbl">No sales, assessments or listing history on record for this home.</p>`:`<div class="tl" data-id="${d.property_id}"></div><p class="lbl">Loading the history…</p>`}
  const E=events(d,t),by=[];
  for(const e of E){const g=by[by.length-1];if(g&&g.y==e.y)g.e.push(e);else by.push({y:e.y,e:[e]})}
  const li=e=>e.more?`<li class="${e.cls}"><details><summary>${e.html}</summary>${e.more.means?`<p class="means">${esc(e.more.means)}</p>`:""}${e.more.lines?`<ul>${e.more.lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</details></li>`:`<li class="${e.cls}">${e.html}</li>`;
