@@ -48,3 +48,13 @@ The product changed under the v1 drafts: homes that need work are now valued as-
 - The counsellor openers name the Oct 24–25 Home Stretch workshops. Send by about Oct 20, or reword them to the past tense.
 - The MnREIA opener names the Oct 19 happy hour.
 - The MnREIA Facebook post names the Nov 3 meeting.
+
+## v3: room to negotiate (2026-10-12)
+
+The index now ranks by **room to negotiate**: for each listing it predicts the sale price from how recent closed sales landed against their ask, and ranks by ask minus that prediction. Sales land within a few percent of ask whatever the records say, so "worth $X, N% under value" is gone from every draft. The records value shows up only as evidence ("Records say it's worth about…").
+
+- **Hooks** state how a home is likely to sell against its ask: "150 days listed, 4 cuts, likely to sell 4% under its $120k ask". When the best home in an area sells at or over ask, `hook_check` flags it as `NO ROOM`.
+- **The tested claim** is read from `data/backtest.json` (`sale_list.deciles`) and goes to reporters, lenders and investor hosts. It says that, of homes sold since July, the tenth ranked with the most room sold under ask, and the tenth with the least sold over.
+- **Needs-work hooks** no longer use the as-is ratios. They name the needs-work home with the most room, plus the record that marks it.
+- **Passwords are minted.** `render_drafts.py --issue` calls `scripts/issue_password.py` per `password_label` and caches the results in `drafts/.passwords.json`. Each draft carries the password and a `/?pw=` link. A label gets logged in `private/comp_passwords.csv` when it's issued, and appears in unlock logs only after the next deploy ships `passes.json`.
+- **Archives:** v2 drafts are in `drafts/_v2/` and v1 drafts in `drafts/_v1/`.
