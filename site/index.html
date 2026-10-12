@@ -819,7 +819,7 @@ function boot(d,full){
  $("#city").innerHTML=`<option value="">All cities</option>`+[...new Set(ROWS.map(r=>r.city))].sort().map(c=>`<option>${esc(c)}</option>`).join("");
  const upd=`Updated ${new Date(d.built+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}.`;
  $("#sub").innerHTML=full?`<span class="unl">Full directory unlocked</span>${ROWS.length.toLocaleString()} homes for sale, ranked by room to negotiate. ${upd}`
-  :`The ${ROWS.length} homes with the most room to negotiate, of every listing in the 7-county metro. ${upd}`;
+  :`${ROWS.length} homes from across the 7-county metro, one for each kind of thing we dig up. ${upd}`;
  $("#filters").hidden=!full;$("#pay").hidden=full;if(full)$("#paid").hidden=true;
  apply();
 }
