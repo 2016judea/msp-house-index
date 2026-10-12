@@ -375,7 +375,8 @@ for pid in sorted(cities):
         nd = A.get(f"{pre}_newdw", {})
         nn = nd.get("n", 0)
         mn2 = city_med[(f"{pre}_newdw", zc)][0]
-        units = f" ({nd.get('v') or 0:.0f} homes)" if pre == "mpls" and nn else ""
+        nu = round(nd.get("v") or 0)
+        units = f" ({nu} homes)" if pre == "mpls" and nn and nu != nn else ""
         if nn:
           add("newdw", f"{nn} new-home permit{'s' if nn != 1 else ''} nearby{units}{' in 2 years' if pre == 'mpls' else ', Jul 2023–Jun 2025'} ({'city median: none' if not mn2 else f'city median {mn2:.0f}'})", "sand",
             [f"Permits for new dwellings within 400 m, {win}; nearest {fmt_m(nd['nearest'])}.", f"City median is the same count around {ns:,} {zc} homes."],

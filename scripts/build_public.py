@@ -53,7 +53,7 @@ PER_LISTING = []
 extra = {n: json.loads((PRIV / f"{n}.json").read_text()) for n in PER_LISTING}
 # Or a directory of one file per listing, private/<name>/<property_id>.json: the top 10's ship
 # as site/<name>/<property_id>.json. The page reads either kind with layer(name, id).
-PER_LISTING_DIRS = []
+PER_LISTING_DIRS = ["nb"]  # scripts/build_neighborhood.py
 for n in PER_LISTING_DIRS:
     extra[n] = {f.stem: json.loads(f.read_text()) for f in (PRIV / n).glob("*.json")}
 

@@ -184,7 +184,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
 .bm-map .lot{cursor:pointer}
 .bm-leg{display:flex;flex-direction:column;gap:3px;color:var(--t-mu);font-size:11px}
 .bm-ramp{display:flex;flex-wrap:wrap;gap:2px 12px}.bm-ramp span{white-space:nowrap}.bm-ramp i{font-style:normal;color:var(--t-ph);margin-right:4px}
-.bm-leg .am{color:var(--t-am)}.bm-leg .au{color:var(--t-au)}.bm-leg .hx{color:var(--t-dim)}
+.bm-leg .am{color:var(--t-am)}.bm-leg .mc{color:#FFB000}.bm-leg .au{color:var(--t-au)}.bm-leg .hx{color:var(--t-dim)}
 .bm-ro{margin:0;display:grid;grid-template-columns:auto 1fr;gap:1px 12px;border-top:1px dashed var(--t-l);padding-top:6px;min-height:1.5em}
 .bm-ro dt{color:var(--t-mu)}.bm-ro dd{margin:0;color:var(--t-ink);overflow-wrap:anywhere}.bm-ro .hint{grid-column:1/-1;color:var(--t-mu)}
 .bm-src{font:10.5px var(--tm);color:var(--t-mu);margin:0}.bm-src a{color:var(--t-dim);font-size:inherit}
@@ -229,6 +229,18 @@ details.method summary{cursor:pointer;color:var(--ink)}
 [hidden]{display:none!important}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .unl{display:inline-block;font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--good);background:var(--goodbg);border-radius:4px;padding:2px 7px;margin-right:6px}
+/* Neighborhood: one plain line per fact, each opens to its specifics and source. Sand = what the records say, amber = worth a closer look. */
+.nb{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nb li{background:var(--evbg);border:1px solid var(--evline);border-left-width:3px;border-radius:4px;color:var(--ink)}
+.nb li.amber{background:var(--warnbg);border-color:var(--warn)}
+.nb summary{cursor:pointer;list-style:none;padding:8px 10px;font-size:14.5px;line-height:1.4;display:flex;gap:8px;justify-content:space-between;align-items:baseline}
+.nb summary::-webkit-details-marker{display:none}
+.nb summary::after{content:"▸";color:var(--mute);font-size:12px;flex:none}.nb details[open] summary::after{content:"▾"}
+.nb li.amber summary{color:var(--ink)}.nb li.amber summary b{color:var(--warn)}
+.nb .nbd{padding:0 10px 9px;font:12.5px/1.5 var(--sans);color:var(--mute)}
+.nb .nbd ul{margin:0 0 6px;padding-left:16px}.nb .nbd li{background:none;border:0;color:var(--mute)}
+.nb .nbd p{margin:0;font:11.5px var(--mono);color:var(--mute)}.nb .nbd a{color:var(--accent)}
+.nb-hd{margin-top:14px}
 </style>
 </head>
 <body>
@@ -469,6 +481,7 @@ function panel(d){
   <div class="vals">${tile("Asking",d.ask)}${tile("County says"+fx,d.est_cal)}${tile("Similar homes sold"+(tiered?" (fixed up)":""),d.est_comp)}${tile("Last sale"+(tiered?", brought forward":""),d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}${tiered&&d.repair_est?`<div class="repair"><span>Repair cost</span><b>${k(d.repair_est)}</b><span>permits filed say, ${d.repair_n} flips</span></div>`:""}<div class="worth ${vsCls(u)}"><span>${tiered?"Worth as-is":"Worth about"}</span><b>${k(worth(d))}</b><span>${tiered?`${k(mid(d))} fixed up × ${d.asis_ratio.toFixed(2)}`:"middle of the estimates"}</span></div></div>
   ${chips(d)?`<div>${chips(d)}</div>`:""}
   ${d.m?`<div class="bm-slot" data-id="${d.property_id}"></div>`:""}
+  <div class="nb-slot" data-id="${d.property_id}">${nbHTML(d.property_id)}</div>
   ${story(d)}
   <div class="lbl">The story of this house</div>
   ${storyTL(d)}
@@ -496,6 +509,15 @@ function screener(){
  requestAnimationFrame(drawTL);
 }
 
+// ---- Neighborhood: facts about the parcel and counts around it (scripts/build_neighborhood.py → private/nb, gated like every
+// per-listing layer). Crime and demographics are left out on purpose (fair housing; DATA_MODEL.md, Neighborhood).
+const NB={};
+function nbHTML(id){
+ if(!(id in NB)){NB[id]=undefined;layer("nb",id).then(x=>{NB[id]=x||{lines:[]};const sl=V.querySelector(`.nb-slot[data-id="${id}"]`);if(sl)sl.innerHTML=nbHTML(id);if(BM.id==id)drawMap()});return `<div class="lbl nb-hd">Neighborhood</div><p class="lbl">Loading…</p>`}
+ const x=NB[id];if(x===undefined)return `<div class="lbl nb-hd">Neighborhood</div><p class="lbl">Loading…</p>`;
+ if(!x.lines.length)return "";
+ const src=s=>{const nm=esc(s.name),dt=s.date?`, as of ${new Date(s.date+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}`:"";return `<p>Source: ${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">${nm}</a>`:nm}${dt}</p>`};
+ return `<div class="lbl nb-hd">Neighborhood</div><ul class="nb">${x.lines.map(l=>`<li class="${l.tone=="amber"?"amber":"sand"}" data-k="${l.k}"><details><summary><span>${esc(l.text)}</span></summary><div class="nbd"><ul>${l.detail.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>${src(l.src)}</div></details></li>`).join("")}</ul>`}
 // ---- The block map: every lot within ~150 m, drawn as a terminal diagram, filled by what the county appraises it at. ----
 // Lots come from site/map/<cell>.json (scripts/build_map.py); a row carries m = [cells, own cell, own lot].
 // Plain SVG, no map library and no tiles: a static diagram, so a one-finger swipe always scrolls the page. Tap to inspect.
@@ -527,8 +549,8 @@ function buildMap(d){
   <p class="bm-src">LOTS + VALUES: COUNTY ASSESSORS VIA METROGIS · BUSINESSES: © OVERTURE MAPS FOUNDATION</p>`;
  BM.el.querySelector(".bm-tg").onclick=e=>{const b=e.target.closest("button");if(!b)return;
   if(b.dataset.b){BM.biz=!BM.biz;window.va("event",{name:"map_biz",data:{on:BM.biz}})}else{BM.mode=b.dataset.m;window.va("event",{name:"map_mode",data:{m:BM.mode}})}drawMap()};
- BM.el.querySelector(".bm-map").onclick=e=>{const t=e.target.closest("[data-i],[data-b]");if(!t)return;
-  BM.sel=t.dataset.b!=null?{b:+t.dataset.b}:{i:+t.dataset.i};drawMap()};
+ BM.el.querySelector(".bm-map").onclick=e=>{const t=e.target.closest("[data-i],[data-b],[data-mc]");if(!t)return;
+  BM.sel=t.dataset.mc!=null?{c:+t.dataset.mc}:t.dataset.b!=null?{b:+t.dataset.b}:{i:+t.dataset.i};drawMap()};
  const id=d.property_id,[ks,oc,oi]=d.m;
  Promise.all(ks.map(cell)).then(cs=>{
   if(BM.id!=id)return;
@@ -606,6 +628,11 @@ function drawMap(){
   L.push(`<text x="${x}" y="${y+4}" text-anchor="middle" fill="#E0A458" font-size="11" pointer-events="none">◆</text><circle data-b="${i}" cx="${x}" cy="${y}" r="10" fill="transparent" style="cursor:pointer"/>`);
   const nm=b.name.length>22?b.name.slice(0,21)+"…":b.name,w=nm.length*6+4,h=12;
   if(fits(x+7,y-6,w,h)){placed.push([x+7,y-6,w,h]);L.push(`<text x="${x+8}" y="${y+3.5}" fill="#E0A458" font-size="10" paint-order="stroke" stroke="#00110A" stroke-width="3" pointer-events="none">${esc(nm)}</text>`)}});
+ // MPCA cleanup sites from the Neighborhood layer: amber triangles, tap to read.
+ const MC=NB[BM.id]?.layers?.mpca||[];
+ MC.forEach(([lon,lat,name,m],i)=>{const [x,y]=P([lon,lat]);if(x<0||y<0||x>W||y>H)return;
+  L.push(`<path d="M${x} ${y-8}L${x+7.5} ${y+5}L${x-7.5} ${y+5}Z" fill="#FFB000" stroke="#00110A" stroke-width="1.5" pointer-events="none"/><text x="${x}" y="${y+3.5}" text-anchor="middle" fill="#00110A" font-size="9" font-weight="700" pointer-events="none">!</text><circle data-mc="${i}" cx="${x}" cy="${y}" r="12" fill="transparent" style="cursor:pointer"/>`)});
+ BM.mc=MC.filter(([lon,lat])=>{const [x,y]=P([lon,lat]);return x>=0&&y>=0&&x<=W&&y<=H}).length;
  box.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">${g}${L.join("")}${CALL}</svg>`;
  // header, toggles, legend, readout
  BM.el.querySelector(".bm-hd").innerHTML=`<b>■</b> PARCELS · ${R}M · ${BM.mode=="ppsf"?"ASSESSED $/SQFT":BM.mode=="emv"?"ASSESSED TOTAL":"RECENT SALES ON ASSESSED TOTAL"} · ${fr.length} LOTS`;
@@ -614,11 +641,12 @@ function drawMap(){
  const n=br.length+1,lab=i=>n==1?`${fmtv(vals[0])}–${fmtv(vals[vals.length-1])}`:!i?`<${fmtv(br[0])}`:i==n-1?`${fmtv(br[i-1])}+`:`${fmtv(br[i-1])}–${fmtv(br[i])}`;
  const noSq=prop=="ppsf"&&fr.some(f=>f.emv>0&&!f.sq);
  BM.el.querySelector(".bm-leg").innerHTML=vals.length?`<div>${prop=="ppsf"?"$/SQFT":"TOTAL"}, IN FIFTHS OF THE HOMES IN FRAME</div><div class="bm-ramp">${Array.from({length:n},(_,i)=>`<span><i>${GL[Math.round(i*(PH.length-1)/Math.max(1,n-1))].repeat(2)}</i>${lab(i)}</span>`).join("")}</div>`+
-  `${noSq?`<div>□□ NO FINISHED SQFT ON RECORD${BM.sqcov<.5&&d.county=="hennepin"?" (HENNEPIN PUBLISHES NONE OUTSIDE MINNEAPOLIS)":""}</div>`:""}${fr.some(f=>f.cls)?`<div><span class="hx">╱╱</span> NOT A HOME: SHOPS, OFFICES, APARTMENTS, CHURCHES</div>`:""}${BM.biz&&BM.B.length?`<div><span class="am">◆</span> A BUSINESS ON THAT LOT</div>`:""}${BM.mode=="sales"?`<div><span class="au">[$ 'YY]</span> SOLD SINCE 2022, PRICE AND YEAR</div>`:""}`
+  `${noSq?`<div>□□ NO FINISHED SQFT ON RECORD${BM.sqcov<.5&&d.county=="hennepin"?" (HENNEPIN PUBLISHES NONE OUTSIDE MINNEAPOLIS)":""}</div>`:""}${fr.some(f=>f.cls)?`<div><span class="hx">╱╱</span> NOT A HOME: SHOPS, OFFICES, APARTMENTS, CHURCHES</div>`:""}${BM.biz&&BM.B.length?`<div><span class="am">◆</span> A BUSINESS ON THAT LOT</div>`:""}${BM.mode=="sales"?`<div><span class="au">[$ 'YY]</span> SOLD SINCE 2022, PRICE AND YEAR</div>`:""}${BM.mc?`<div><span class="mc">▲</span> MPCA CLEANUP SITE (SEE NEIGHBORHOOD)</div>`:""}`
   :`<div>□□ NO ${prop=="ppsf"?"FINISHED SQFT":"ASSESSED VALUES"} ON RECORD HERE</div>`;
  BM.el.querySelector(".bm-ro").innerHTML=readout();}
 function readout(){
  const kv=r=>r.filter(x=>x[1]).map(([a,b])=>`<dt>${a}</dt><dd>${esc(b)}</dd>`).join("");
+ if(BM.sel?.c!=null){const c=(NB[BM.id]?.layers?.mpca||[])[BM.sel.c];if(c)return kv([["NAME",c[2]],["WHAT","MPCA CLEANUP SITE"],["DISTANCE",`${Math.round(c[3]/10)*10} M FROM THIS HOME`]])}
  if(BM.sel?.b!=null){const b=BM.B[BM.sel.b],p=BM.F[b.lot];
   return kv([["NAME",b.name],["WHAT",b.cat||"–"],["LOT",p.addr],["CLASS",p.cls],["ASSESSED",p.emv?K(p.emv*1000):"none on record"],["$/SQFT",p.ppsf?"$"+p.ppsf:"–"]])}
  const p=BM.sel?.i!=null?BM.F[BM.sel.i]:null;if(!p)return `<span class="hint">tap a lot or a ◆ to read it</span>`;

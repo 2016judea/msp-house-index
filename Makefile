@@ -15,6 +15,7 @@ build:
 	$(PY) scripts/build_records.py
 	$(PY) scripts/build_timeline.py
 	$(PY) scripts/build_map.py
+	$(PY) scripts/build_neighborhood.py
 	$(PY) scripts/build_public.py
 map:
 	$(PY) scripts/build_map.py
