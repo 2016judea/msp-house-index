@@ -44,10 +44,21 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .sc tr.open td{background:var(--soft)}
 .sc td.disc{font-weight:600}
 .sc tr.x td{white-space:normal;text-align:left;background:var(--soft);padding:10px}
-.xin{display:grid;grid-template-columns:150px 1fr;gap:12px;max-width:640px;position:sticky;left:10px}
-.xin img{width:150px;height:112px;object-fit:cover;border-radius:6px}
-.xin ul{margin:0;padding-left:16px;font:12.5px/1.45 var(--sans)}
-.xin a{font:12.5px var(--sans);color:var(--accent)}
+/* The opened row: answer first (how far below, what it's worth), the math folded away. */
+.xin{display:grid;grid-template-columns:1fr;gap:12px;width:calc(100vw - 54px);max-width:640px;position:sticky;left:10px;font-family:var(--sans)}
+.xin img{width:100%;aspect-ratio:4/3;max-height:220px;object-fit:cover;border-radius:6px}
+.xb{display:flex;flex-direction:column;gap:10px;min-width:0}
+.verdict{display:flex;flex-direction:column;gap:2px}
+.verdict b{font:700 26px/1 var(--cond)}
+.verdict span{font-size:14px;color:var(--ink)}
+.vals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.vals div{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:1px}
+.vals span{font-size:11.5px;color:var(--mute);line-height:1.2}
+.vals b{font:600 15px var(--mono)}
+.trail{font-size:13.5px}
+.xin a{font-size:13.5px;color:var(--accent)}
+.math summary{cursor:pointer;font-size:12.5px;color:var(--mute)}
+.math ul{margin:6px 0 0;padding-left:16px;font:12px/1.45 var(--sans);color:var(--mute)}
 .sc tfoot td{position:sticky;bottom:0;background:var(--soft);font-weight:600;border-top:2px solid var(--ink)}
 .sc tr.more td{text-align:left;position:static}
 .sc tr.more button{position:sticky;left:10px;font:500 13px var(--sans);padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
@@ -64,9 +75,8 @@ details.method{color:var(--mute);font-size:13.5px}
  .sc-wrap{max-height:calc(100vh - 250px)}
  .sc{font-size:13.5px}
  .sc th:nth-child(2),.sc td:nth-child(2){max-width:300px}
- .xin{grid-template-columns:280px 1fr;max-width:1100px}
- .xin img{width:280px;height:210px}
- .xin ul{font-size:13.5px}
+ .xin{grid-template-columns:280px 1fr;width:auto;max-width:980px}
+ .xin img{width:280px;height:210px;max-height:none}
 }
 details.method summary{cursor:pointer;color:var(--ink)}
 </style>
@@ -93,7 +103,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
       <button aria-pressed="false" data-x="1">Hide distressed</button>
     </div>
   </div>
-  <p class="how"><b>A spreadsheet you sort.</b> Tap any column header to sort by it (tap again to flip the order). Tap a row to open its photo and the math behind each number. The address column stays put while you scroll sideways.</p>
+  <p class="how"><b>Tap a column to sort. Tap a home to see it.</b></p>
   <div id="view"></div>
 <details class="method"><summary>How the ranking works</summary>
 <p>Each home gets up to three estimates of value, each a join on public records you can check:</p>
@@ -121,6 +131,19 @@ const chips=d=>{const s=(d.signals||[]).map(x=>x.replace(/^listing text: /,"").r
 const V=$("#view");let ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
 const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["under","Below value",under],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
 const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,under:v=>v==null?"–":v+"%",agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
+function panel(d){
+ const u=under(d),e=EV[d.property_id];
+ const ph=e&&e[1]?`<img src="${e[1].replace(/"/g,"&quot;")}" alt="" loading="lazy">`:"";
+ const tile=(name,v)=>`<div><span>${name}</span><b>${k(v)}</b></div>`;
+ const cut=d.original_ask&&d.original_ask>d.ask?`Listed at ${k(d.original_ask)}, now ${k(d.ask)} · ${d.n_cuts} price cut${d.n_cuts==1?"":"s"} · ${d.dom} days`:`${d.dom} days on the market, no price cuts`;
+ return `<div class="xin">${ph}<div class="xb">
+  <div class="verdict"><b class="${u<0?"neg":"pos"}">${u==null?"–":Math.abs(u)+"% "+(u<0?"above":"below")+" value"}</b><span>Asking ${k(d.ask)} · worth about ${k(mid(d))}</span></div>
+  <div class="vals">${tile("County says",d.est_cal)}${tile("Similar homes sold",d.est_comp)}${tile("Last sale, today",d.est_deed)}</div>
+  <div class="trail">${cut}</div>
+  ${chips(d)?`<div>${chips(d)}</div>`:""}
+  ${e&&e[2]?`<a href="${e[2].replace(/"/g,"&quot;")}" target="_blank" rel="noopener">See it on Realtor.com →</a>`:""}
+  <details class="math"><summary>How we got these numbers</summary><ul>${e?(e[0]||[]).map(x=>`<li>${esc(x)}</li>`).join(""):"<li>Loading…</li>"}</ul></details>
+ </div></div>`}
 function screener(){
  const f=COLS.find(c=>c[0]==sk)[2];
  const rows=[...view].sort((a,b)=>{let x=f(a),y=f(b);if(x==null)return 1;if(y==null)return -1;return (x>y?1:x<y?-1:0)*sd});
@@ -130,7 +153,7 @@ function screener(){
  const ln=d=>{const e=EV[d.property_id];return e&&e[2]?`<a href="${esc(e[2])}" target="_blank" rel="noopener">See the listing on Realtor.com →</a>`:""};
  V.innerHTML=`<div class="sc-wrap"><table class="sc"><thead><tr>${COLS.map(c=>`<th tabindex="0" data-k="${c[0]}" ${c[0]==sk?`aria-sort="${sd<0?"descending":"ascending"}"`:""}>${c[1]}</th>`).join("")}</tr></thead><tbody>
  ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}" tabindex="0">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc pos":c[0]=="drop"&&v?"neg":""}">${c[0]=="address"||c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
- ${open1==d.property_id?`<tr class="x"><td colspan="${COLS.length}"><div class="xin">${ph(d)}<div><div>${chips(d)}</div><ul>${ev(d)}</ul>${ln(d)}</div></div></td></tr>`:""}`).join("")}
+ ${open1==d.property_id?`<tr class="x"><td colspan="${COLS.length}">${panel(d)}</td></tr>`:""}`).join("")}
  ${rows.length>limit?`<tr class="more"><td colspan="${COLS.length}"><button id="more">Show more (${(rows.length-limit).toLocaleString()} left)</button></td></tr>`:""}
  </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td>${(m=>`<td class="${m<0?"neg":"pos"}">${m??"–"}%</td>`)(med(rows.map(under)))}<td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;
  V.querySelectorAll("th").forEach(th=>{const go=()=>{const kk=th.dataset.k;if(sk==kk)sd=-sd;else{sk=kk;sd=["rank","address","city","ask"].includes(kk)?1:-1}limit=150;window.va("event",{name:"sort",data:{col:kk}});screener()};th.onclick=go;th.onkeydown=e=>{if(e.key=="Enter")go()}});
@@ -151,7 +174,7 @@ $("#types").addEventListener("click",e=>{const b=e.target.closest("button");if(!
 fetch("data.json").then(r=>r.json()).then(d=>{
  ROWS=d.rows;
  $("#city").insertAdjacentHTML("beforeend",[...new Set(ROWS.map(r=>r.city))].sort().map(c=>`<option>${esc(c)}</option>`).join(""));
- $("#sub").textContent=`${d.total_listings.toLocaleString()} homes for sale in the 7-county metro on ${d.built}. ${ROWS.length.toLocaleString()} could be valued cleanly; they're ranked by how far the ask sits below three separate estimates of value.`;
+ $("#sub").textContent=`${ROWS.length.toLocaleString()} homes for sale, ranked by how far below value they're asking. Updated ${new Date(d.built+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}.`;
  apply();
  fetch("evidence.json").then(r=>r.json()).then(e=>{EV=e;if(open1)screener()});
 });
