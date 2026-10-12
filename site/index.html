@@ -2,80 +2,83 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Twin Cities Under-Ask Index</title>
 <meta name="description" content="Every home for sale in the 7-county Twin Cities metro, ranked by how far the asking price sits below what similar homes sold for and what the county says it is worth.">
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
-:root{--bg:#f6f4ef;--card:#fff;--ink:#1d1d1b;--mute:#6b6a65;--line:#e4e1d8;--good:#1f7a4d;--goodbg:#e6f2ea;--warn:#9a5b00;--warnbg:#fbf0dc;--bad:#a33;--accent:#1f4e79}
-@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--ink:#ecebe6;--mute:#9d9b94;--line:#2e2d2a;--good:#5cc38c;--goodbg:#173323;--warn:#e0a54a;--warnbg:#3a2c14;--bad:#e57373;--accent:#8ab4e0}}
+/* Ported verbatim from the approved prototype (artifact FaN7kAgze46gQ8LW2BgKDs, Screener tab, 2026-10-11). */
+:root{--bg:#f2f3f1;--card:#fff;--ink:#16191a;--mute:#646b6e;--line:#dcdfdd;--soft:#eef0ee;--accent:#245a86;--good:#17784a;--goodbg:#e1f1e8;--bad:#b2402c;--badbg:#f8e6e1;--warn:#93600a;--warnbg:#faefd9;
+--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--cond:"IBM Plex Sans Condensed","Arial Narrow",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111414;--card:#1a1e1f;--ink:#e7ebec;--mute:#949c9f;--line:#2b3133;--soft:#202627;--accent:#7cb0dc;--good:#5cc590;--goodbg:#15302a;--bad:#ec8a74;--badbg:#3a1f19;--warn:#e3aa52;--warnbg:#382a12;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111414;--card:#1a1e1f;--ink:#e7ebec;--mute:#949c9f;--line:#2b3133;--soft:#202627;--accent:#7cb0dc;--good:#5cc590;--goodbg:#15302a;--bad:#ec8a74;--badbg:#3a1f19;--warn:#e3aa52;--warnbg:#382a12;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-header{padding:18px 16px 8px;max-width:880px;margin:0 auto}
-h1{font-size:21px;margin:0 0 4px;letter-spacing:-.01em}
-.sub{color:var(--mute);font-size:13.5px;margin:0}
-.filters{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 16px}
-.frow{max-width:880px;margin:0 auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-select,input{font-size:16px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);min-width:0}
-select{flex:1 1 30%}
-.chips{display:flex;gap:6px;overflow-x:auto;width:100%;padding-top:6px;scrollbar-width:none}
-.chip{flex:none;font-size:13.5px;padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
-.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.count{font-size:12.5px;color:var(--mute);max-width:880px;margin:6px auto 0}
-main{max-width:880px;margin:0 auto;padding:8px 16px 40px}
-.row{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:8px 0;overflow:hidden}
-.top{display:grid;grid-template-columns:30px 1fr auto;gap:8px;padding:12px 12px 10px;cursor:pointer;align-items:start}
-.rk{font-weight:700;color:var(--mute);font-size:13px;padding-top:2px}
-.addr{font-weight:600;font-size:15.5px}
-.meta{color:var(--mute);font-size:13px}
-.price{text-align:right;white-space:nowrap}
-.ask{font-weight:700;font-size:16px}
-.disc{display:inline-block;margin-top:3px;font-size:12.5px;font-weight:700;color:var(--good);background:var(--goodbg);padding:2px 7px;border-radius:6px}
-.why{grid-column:2 / 4;font-size:13.5px;color:var(--ink);opacity:.86}
-.sigs{grid-column:2 / 4;display:flex;flex-wrap:wrap;gap:4px}
-.sig{font-size:11.5px;padding:2px 7px;border-radius:5px;background:var(--warnbg);color:var(--warn)}
-.ev{display:none;border-top:1px solid var(--line);padding:10px 12px 12px 50px;font-size:13.5px}
-.row.open .ev{display:block}
-.ev img{width:100%;max-width:420px;border-radius:8px;display:block;margin:0 0 8px}
-.ev ul{margin:0 0 8px;padding-left:18px}
-.ev li{margin:3px 0}
-.ev a{color:var(--accent)}
-.ests{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 8px}
-.est{border:1px solid var(--line);border-radius:8px;padding:6px 8px}
-.est b{display:block;font-size:15px}
-.est span{font-size:11.5px;color:var(--mute)}
-.more{display:block;margin:14px auto;padding:10px 18px;font-size:15px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
-details.method{max-width:880px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font-size:13.5px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 var(--sans);padding-inline:16px;padding-block:14px 48px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font:700 22px/1.1 var(--cond);margin:0;letter-spacing:.01em}
+.lede{margin:3px 0 0;color:var(--mute);font-size:13.5px}
+button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,tr:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.how{font-size:13.5px;color:var(--mute);margin:0;padding:10px 12px;background:var(--soft);border-radius:8px}
+.how b{color:var(--ink);font-weight:600}
+.pos{color:var(--good)}.neg{color:var(--bad)}
+.chip{display:inline-block;font-size:11.5px;padding:2px 7px;border-radius:4px;background:var(--warnbg);color:var(--warn);margin:2px 4px 0 0}
+/* filters: the live site's controls, in the prototype's tokens */
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters select{flex:1 1 30%;min-width:0;font:16px var(--sans);padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.sorts{display:flex;gap:6px;overflow-x:auto;width:100%;scrollbar-width:none}
+.sorts button{flex:none;font:500 12.5px var(--sans);padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.sorts button[aria-pressed="true"]{border-color:var(--ink);background:var(--soft);font-weight:600}
+/* 1 SCREENER */
+.sc-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card);max-height:70vh}
+.sc{border-collapse:separate;border-spacing:0;font:13px var(--mono);font-variant-numeric:tabular-nums;min-width:860px;width:100%}
+.sc th{position:sticky;top:0;background:var(--soft);font:600 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--mute);text-align:right;padding:8px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;z-index:2;user-select:none}
+.sc th[aria-sort]{color:var(--ink)}
+.sc th[aria-sort="descending"]::after{content:" ▼"}.sc th[aria-sort="ascending"]::after{content:" ▲"}
+.sc td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.sc th:nth-child(2),.sc td:nth-child(2){position:sticky;left:0;text-align:left;background:var(--card);z-index:1;max-width:170px;overflow:hidden;text-overflow:ellipsis;font-family:var(--sans);font-weight:500;box-shadow:1px 0 0 var(--line)}
+.sc th:nth-child(2){background:var(--soft);z-index:3}
+.sc tr.row{cursor:pointer}.sc tr.row:hover td{background:var(--soft)}
+.sc tr.open td{background:var(--soft)}
+.sc td.disc{font-weight:600}
+.sc tr.x td{white-space:normal;text-align:left;background:var(--soft);padding:10px}
+.xin{display:grid;grid-template-columns:150px 1fr;gap:12px;max-width:640px;position:sticky;left:10px}
+.xin img{width:150px;height:112px;object-fit:cover;border-radius:6px}
+.xin ul{margin:0;padding-left:16px;font:12.5px/1.45 var(--sans)}
+.xin a{font:12.5px var(--sans);color:var(--accent)}
+.sc tfoot td{position:sticky;bottom:0;background:var(--soft);font-weight:600;border-top:2px solid var(--ink)}
+.sc tr.more td{text-align:left;position:static}
+.sc tr.more button{position:sticky;left:10px;font:500 13px var(--sans);padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+details.method{color:var(--mute);font-size:13.5px}
 details.method summary{cursor:pointer;color:var(--ink)}
-@media (max-width:420px){.ev{padding-left:12px}.why,.sigs{grid-column:1 / 4}}
 </style>
 </head>
 <body>
-<header>
-  <h1>Twin Cities homes asking less than they're worth</h1>
-  <p class="sub" id="sub">Every home for sale in the 7-county metro, ranked by how far the ask sits below three separate estimates of value. Tap a home to see the math.</p>
-</header>
-<div class="filters">
-  <div class="frow">
+<div class="wrap">
+  <header>
+    <h1>Twin Cities homes asking less than they're worth</h1>
+    <p class="lede" id="sub">Every home for sale in the 7-county metro, ranked by how far the ask sits below three separate estimates of value.</p>
+  </header>
+  <div class="filters">
     <select id="city" aria-label="City"><option value="">All cities</option></select>
     <select id="price" aria-label="Max price">
       <option value="">Any price</option><option value="200000">Under $200k</option><option value="300000">Under $300k</option>
       <option value="400000">Under $400k</option><option value="500000">Under $500k</option><option value="750000">Under $750k</option><option value="1000000">Under $1M</option>
     </select>
     <select id="beds" aria-label="Beds"><option value="">Any beds</option><option value="1">1+ bd</option><option value="2">2+ bd</option><option value="3">3+ bd</option><option value="4">4+ bd</option></select>
-    <div class="chips" id="types">
-      <button class="chip" aria-pressed="true" data-t="">All</button>
-      <button class="chip" aria-pressed="false" data-t="house">Houses</button>
-      <button class="chip" aria-pressed="false" data-t="townhome">Townhomes</button>
-      <button class="chip" aria-pressed="false" data-t="condo">Condos</button>
-      <button class="chip" aria-pressed="false" data-t="multi">Multi-family</button>
-      <button class="chip" aria-pressed="false" data-x="1">Hide distressed</button>
+    <div class="sorts" id="types">
+      <button aria-pressed="true" data-t="">All</button>
+      <button aria-pressed="false" data-t="house">Houses</button>
+      <button aria-pressed="false" data-t="townhome">Townhomes</button>
+      <button aria-pressed="false" data-t="condo">Condos</button>
+      <button aria-pressed="false" data-t="multi">Multi-family</button>
+      <button aria-pressed="false" data-x="1">Hide distressed</button>
     </div>
   </div>
-  <div class="count" id="count"></div>
-</div>
-<main id="list"></main>
+  <p class="how"><b>A spreadsheet you sort.</b> Tap any column header to sort by it (tap again to flip the order). Tap a row to open its photo and the math behind each number. The address column stays put while you scroll sideways.</p>
+  <div id="view"></div>
 <details class="method"><summary>How the ranking works</summary>
 <p>Each home gets up to three estimates of value, each a join on public records you can check:</p>
 <ul>
@@ -86,58 +89,55 @@ details.method summary{cursor:pointer;color:var(--ink)}
 <p>The score is the average discount across all three (a missing one counts as zero), minus half the disagreement between them. Three estimates that agree beat one big gap.</p>
 <p>Not ranked: homes under contract, lots and land, teardowns, new builds the assessment hasn't caught, condo units that couldn't be matched to their own parcel, co-ops, multi-parcel listings, auctions and mobile homes. Listings from Realtor.com; parcels, assessments and deeds from the seven counties via MetroGIS; permits from Minneapolis and Saint Paul.</p>
 </details>
+
+</div>
 <script>
 const $=s=>document.querySelector(s);
-const fmt=n=>n==null?"—":n>=1e6?"$"+(n/1e6).toFixed(2)+"M":"$"+Math.round(n/1e3)+"k";
-let ROWS=[],EV={},shown=0,view=[];
-const PAGE=60;
-function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function disc(r){const e=[r.est_cal,r.est_comp,r.est_deed].filter(Boolean);if(!e.length)return null;const m=e.sort((a,b)=>a-b)[Math.floor(e.length/2)];return 1-r.ask/m}
-function card(r){
-  const d=disc(r);
-  const sig=(r.signals||[]).map(s=>`<span class="sig">${esc(s.length>70?s.slice(0,68)+"…":s)}</span>`).join("");
-  const est=[["County",r.est_cal],["Comps",r.est_comp],["Last sale",r.est_deed]].map(([k,v])=>`<div class="est"><span>${k}</span><b>${fmt(v)}</b></div>`).join("");
-  return `<article class="row" data-id="${r.property_id}">
-  <div class="top" role="button" tabindex="0" aria-expanded="false">
-    <div class="rk">${r.rank}</div>
-    <div><div class="addr">${esc(r.address)}</div><div class="meta">${esc(r.city)} · ${r.beds??"–"} bd · ${r.baths??"–"} ba · ${r.sqft?r.sqft.toLocaleString()+" sqft":""}${r.year_built?" · "+r.year_built:""}</div></div>
-    <div class="price"><div class="ask">${fmt(r.ask)}</div>${d!=null?`<span class="disc">${Math.round(d*100)}% under</span>`:""}</div>
-    <div class="why">${esc(r.why)}</div>
-    ${sig?`<div class="sigs">${sig}</div>`:""}
-  </div>
-  <div class="ev"><div class="ests">${est}</div><div class="evb">Loading…</div></div></article>`}
-function fillEv(row){const r=ROWS.find(x=>x.property_id===row.dataset.id),e=EV[row.dataset.id];if(!e)return false;const [evidence,photo,url]=e;
-  row.querySelector(".evb").innerHTML=`${photo?`<img loading="lazy" alt="" src="${esc(photo)}">`:""}
-    <ul>${(evidence||[]).map(x=>`<li>${esc(x)}</li>`).join("")}${(r.signals||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-    <a href="${esc(url)}" target="_blank" rel="noopener">See the listing on Realtor.com →</a>`;return true}
-const loadEv=()=>fetch("evidence.json").then(r=>r.json()).then(d=>{EV=d;document.querySelectorAll(".row.open").forEach(fillEv)});
+const k=n=>n==null?"–":(n<0?"−":"")+"$"+(Math.abs(n)>=1e6?(Math.abs(n)/1e6).toFixed(2)+"M":Math.round(Math.abs(n)/1e3)+"k");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ests=d=>[d.est_cal,d.est_comp,d.est_deed].filter(Boolean);
+const val=d=>{const e=ests(d);return e.reduce((s,x)=>s+x,0)/e.length};
+const mid=d=>{const e=ests(d).sort((a,b)=>a-b),n=e.length;return n%2?e[(n-1)/2]:(e[n/2-1]+e[n/2])/2};
+// The median of the estimates, so one bad estimate cannot carry a home to the top.
+const under=d=>ests(d).length?Math.round((1-d.ask/mid(d))*100):null;
+const drop=d=>d.original_ask&&d.original_ask>d.ask?Math.round((d.ask/d.original_ask-1)*100):0;
+const chips=d=>{const s=(d.signals||[]).map(x=>x.replace(/^listing text: /,"").replace(/ \(as of.*\)| CE\d+ \(.*\)/,""));if(d.hoa)s.push("HOA $"+d.hoa+"/mo");return s.map(x=>`<span class="chip">${esc(x)}</span>`).join("")};
+const V=$("#view");let ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
+const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["under","Below value",under],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
+const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,under:v=>v==null?"–":v+"%",agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
+function screener(){
+ const f=COLS.find(c=>c[0]==sk)[2];
+ const rows=[...view].sort((a,b)=>{let x=f(a),y=f(b);if(x==null)return 1;if(y==null)return -1;return (x>y?1:x<y?-1:0)*sd});
+ const med=a=>{a=a.filter(x=>x!=null).sort((p,q)=>p-q);return a[Math.floor(a.length/2)]};
+ const ev=d=>{const e=EV[d.property_id];if(!e)return `<li>Loading…</li>`;return (e[0]||[]).map(x=>`<li>${esc(x)}</li>`).join("")};
+ const ph=d=>{const e=EV[d.property_id];return e&&e[1]?`<img src="${esc(e[1])}" alt="" loading="lazy">`:"<span></span>"};
+ const ln=d=>{const e=EV[d.property_id];return e&&e[2]?`<a href="${esc(e[2])}" target="_blank" rel="noopener">See the listing on Realtor.com →</a>`:""};
+ V.innerHTML=`<div class="sc-wrap"><table class="sc"><thead><tr>${COLS.map(c=>`<th tabindex="0" data-k="${c[0]}" ${c[0]==sk?`aria-sort="${sd<0?"descending":"ascending"}"`:""}>${c[1]}</th>`).join("")}</tr></thead><tbody>
+ ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}" tabindex="0">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc pos":c[0]=="drop"&&v?"neg":""}">${c[0]=="address"||c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
+ ${open1==d.property_id?`<tr class="x"><td colspan="${COLS.length}"><div class="xin">${ph(d)}<div><div>${chips(d)}</div><ul>${ev(d)}</ul>${ln(d)}</div></div></td></tr>`:""}`).join("")}
+ ${rows.length>limit?`<tr class="more"><td colspan="${COLS.length}"><button id="more">Show more (${(rows.length-limit).toLocaleString()} left)</button></td></tr>`:""}
+ </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td><td class="pos">${med(rows.map(under))??"–"}%</td><td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;
+ V.querySelectorAll("th").forEach(th=>{const go=()=>{const kk=th.dataset.k;if(sk==kk)sd=-sd;else{sk=kk;sd=["rank","address","city","ask"].includes(kk)?1:-1}limit=150;window.va("event",{name:"sort",data:{col:kk}});screener()};th.onclick=go;th.onkeydown=e=>{if(e.key=="Enter")go()}});
+ V.querySelectorAll("tr.row").forEach(tr=>{const go=()=>{const id=tr.dataset.r;open1=open1==id?null:id;if(open1)window.va("event",{name:"expand",data:{id}});screener()};tr.onclick=go;tr.onkeydown=e=>{if(e.key=="Enter")go()}});
+ $("#more")?.addEventListener("click",()=>{limit+=150;screener()});
+}
 function apply(){
-  const city=$("#city").value,price=+$("#price").value||Infinity,beds=+$("#beds").value||0;
-  const t=document.querySelector("#types [data-t][aria-pressed=true]")?.dataset.t||"";
-  const hideFix=document.querySelector("#types [data-x]").getAttribute("aria-pressed")==="true";
-  view=ROWS.filter(r=>(!city||r.city===city)&&r.ask<=price&&(r.beds||0)>=beds&&(!t||r.type_group===t)&&(!hideFix||!r.distressed));
-  shown=0;$("#list").innerHTML="";more();
-  $("#count").textContent=`${view.length.toLocaleString()} ranked homes${city?" in "+city:""}`;
+ const city=$("#city").value,price=+$("#price").value||Infinity,beds=+$("#beds").value||0;
+ const t=document.querySelector("#types [data-t][aria-pressed=true]")?.dataset.t||"";
+ const hide=document.querySelector("#types [data-x]").getAttribute("aria-pressed")==="true";
+ view=ROWS.filter(r=>(!city||r.city===city)&&r.ask<=price&&(r.beds||0)>=beds&&(!t||r.type_group===t)&&(!hide||!r.distressed));
+ limit=150;open1=null;screener();
 }
-function more(){
-  const html=view.slice(shown,shown+PAGE).map(card).join("");
-  document.querySelector(".more")?.remove();
-  $("#list").insertAdjacentHTML("beforeend",html);shown+=PAGE;
-  if(shown<view.length){const b=document.createElement("button");b.className="more";b.textContent=`Show more (${(view.length-shown).toLocaleString()} left)`;b.onclick=more;$("#list").append(b)}
-}
-$("#list").addEventListener("click",e=>{const top=e.target.closest(".top");if(!top)return;const row=top.parentElement;row.classList.toggle("open");top.setAttribute("aria-expanded",row.classList.contains("open"));if(row.classList.contains("open"))fillEv(row);if(row.classList.contains("open"))window.va("event",{name:"expand",data:{id:row.dataset.id}})});
-$("#list").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList.contains("top"))e.target.click()});
 for(const id of ["city","price","beds"])$("#"+id).addEventListener("change",apply);
-$("#types").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
-  if(b.dataset.x){b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true")}
-  else document.querySelectorAll("#types [data-t]").forEach(c=>c.setAttribute("aria-pressed",c===b?"true":"false"));apply()});
+$("#types").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.x)b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+ else document.querySelectorAll("#types [data-t]").forEach(c=>c.setAttribute("aria-pressed",c===b?"true":"false"));apply()});
 fetch("data.json").then(r=>r.json()).then(d=>{
-  ROWS=d.rows;
-  const cities=[...new Set(ROWS.map(r=>r.city))].sort();
-  $("#city").insertAdjacentHTML("beforeend",cities.map(c=>`<option>${esc(c)}</option>`).join(""));
-  $("#sub").textContent=`${d.total_listings.toLocaleString()} homes for sale in the 7-county metro on ${d.built}. ${ROWS.length.toLocaleString()} could be valued cleanly; they're ranked by how far the ask sits below three separate estimates of value. Tap a home to see the math.`;
-  apply();
-  loadEv();
+ ROWS=d.rows;
+ $("#city").insertAdjacentHTML("beforeend",[...new Set(ROWS.map(r=>r.city))].sort().map(c=>`<option>${esc(c)}</option>`).join(""));
+ $("#sub").textContent=`${d.total_listings.toLocaleString()} homes for sale in the 7-county metro on ${d.built}. ${ROWS.length.toLocaleString()} could be valued cleanly; they're ranked by how far the ask sits below three separate estimates of value.`;
+ apply();
+ fetch("evidence.json").then(r=>r.json()).then(e=>{EV=e;if(open1)screener()});
 });
 </script>
 </body>

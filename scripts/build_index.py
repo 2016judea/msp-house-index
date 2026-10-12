@@ -146,6 +146,10 @@ def main():
     sold = load_sold()
     con.execute("create table L as select * from read_json_auto(?)", [str(_dump(listings, "listings"))])
     con.execute("create table S as select * from read_json_auto(?)", [str(_dump(sold, "sold"))])
+    # A sold row whose $/sqft is outside any Twin Cities home is a data error (a
+    # whole building's price on one unit, a sqft typo); left in, one such comp put a
+    # Hopkins condo at $3,720/sqft and $4M. Drop them before they become comps.
+    con.execute("delete from S where sqft is null or sqft < 300 or price / sqft not between 30 and 1000")
     xy = "ST_Transform(ST_Point(lon, lat), 'EPSG:4326', 'EPSG:26915', always_xy := true)"
     con.execute(f"alter table L add column pt geometry; update L set pt = {xy} where lat is not null")
     con.execute(f"alter table S add column pt geometry; update S set pt = {xy}")
@@ -332,7 +336,7 @@ def main():
     con.execute(f"copy (select * exclude (permits, cases) from OUT order by rank nulls last) to '{D / 'index.csv'}' (header)")
     site = ROOT / "site"
     site.mkdir(exist_ok=True)
-    keep = ["rank", "property_id", "url", "address", "city", "zip", "county", "type_group", "beds", "baths", "sqft", "year_built", "ask",
+    keep = ["rank", "property_id", "url", "address", "city", "zip", "county", "type_group", "beds", "baths", "sqft", "year_built", "ask", "original_ask",
             "dom", "n_cuts", "cut_pct", "pending", "score", "est_cal", "est_comp", "est_deed", "est_avm", "agree", "why", "exclusion",
             "evidence", "signals", "photo", "distressed", "hoa"]
     ranked = [{k: r.get(k) for k in keep if r.get(k) not in (None, [], "", False)} for r in out if r["rank_ok"]]
