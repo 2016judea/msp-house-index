@@ -2,6 +2,8 @@
 
 **Live:** https://msp-house-index.vercel.app
 
+> **2026-10-12:** the index now ranks by **room to negotiate**: the asking price minus what homes like it actually closed at (`SaleListModel`). The three estimates below are kept as evidence ("Records say it's worth"). Method and backtests: `DATA_MODEL.md`, "Valuation" and "Room to negotiate".
+
 Every home for sale in the seven-county Minneapolis–Saint Paul metro, joined to
 its county parcel, valued three independent ways, and ranked by how far the
 asking price sits below what it's worth. The site shows the ten furthest below
