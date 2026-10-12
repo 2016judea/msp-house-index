@@ -106,3 +106,32 @@ Listing ──1:1── Property ──1:N── Parcel (normally 1; >1 = multi-
 | score | discount weighted by agreement and by how many estimates exist |
 | why | one plain line a person can check |
 | exclusion_reason | why a row is not ranked (lot-only, teardown, multi-parcel, condo/building mismatch, no value) |
+
+---
+
+## Reality check (added 2026-10-11, after probing; 14,462 unique listings)
+
+| field | filled | source / note |
+|---|---|---|
+| listing, ask, list date, status, type, beds/baths/sqft/lot/year | 14,462 (sqft 13,531) | Realtor.com `home_search`, all 7 counties |
+| original ask, price cuts, relist | 13,577 / 5,823 with a cut | Realtor `property_history` (NorthstarMLS events) |
+| apn / pin | **0 from Realtor** (`tax_record.apn` null) → 14,371 by join | point-in-parcel + house number/street + **unit number** (MetroGIS `SUB_ID1`); 1,285 of 1,470 condos resolved to their own unit |
+| EMV total / land / building | 14,362 | MetroGIS current snapshot via bricks `closed_system.duckdb` |
+| assessment date | by county | Hennepin, Dakota, Scott, Washington, Carver: Jan 2 2026; Ramsey, Anoka: Jan 2 2025 (MetroGIS `MKT_YEAR`) |
+| units on parcel | partial | counted from identical-centroid parcels; Hennepin `NUM_UNITS` is 0 on houses |
+| arm's-length flag | **Hennepin only** | `sale_code = WARRANTY DEED`; other counties publish no code, so single-parcel deed + ratio band 0.5–2.0 stand in |
+| sale/EMV ratio by area × tier | 13,304 | 32,621 qualifying 2025–26 deeds across all 7 counties; every county publishes sales |
+| comp value | 12,694 | 49,444 Realtor closed sales, last 12 months (county records carry no finished sqft for Hennepin) |
+| last deed, indexed | 6,897 | county deed ≥2 years old, county × condo index |
+| **portal AVMs** | **513 of 14,462 (3.5%)** | Realtor's `estimates.current_values` is null for almost every MN listing. **Unfilled**; shown where present, not relied on |
+| permits after assessment | 203 listings | Minneapolis live (CCS_Permits); **Saint Paul only through 2025-06-30** (its register stopped); **no permits for the other ~100 cities** |
+| code violations | 362 listings | Minneapolis vacant-building and nuisance cases only |
+| vacant / condemned | 17 + Mpls VBR cases | Saint Paul vacant list current; **Minneapolis condemned/boarded layers in bricks end 2013–2016, not used** |
+| deed-risk flag | 290 | bricks `deed_risk_parcels.csv` (no Dakota) |
+| condition / effective year | **unfilled** | no public source; listing-text keywords stand in as a signal, never as a number |
+| finished sqft from the county | Hennepin **0**, others ~80% | so comps use MLS sqft |
+
+**Call: build, not reframe.** Every field the score depends on (ask, EMV,
+local ratio, comps) fills for ≥88% of listings. The unfilled fields (portal AVMs,
+suburban permits, condition) are signals, and their absence is stated on the row
+rather than imputed.

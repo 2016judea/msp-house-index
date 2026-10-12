@@ -4,3 +4,7 @@ node_modules/
 __pycache__/
 *.pyc
 .venv/
+data/*.jsonl
+data/*.duckdb
+data/_tmp_*
+data/*.log

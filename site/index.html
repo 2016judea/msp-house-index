@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twin Cities Under-Ask Index</title>
+<meta name="description" content="Every home for sale in the 7-county Twin Cities metro, ranked by how far the asking price sits below what similar homes sold for and what the county says it is worth.">
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1d1d1b;--mute:#6b6a65;--line:#e4e1d8;--good:#1f7a4d;--goodbg:#e6f2ea;--warn:#9a5b00;--warnbg:#fbf0dc;--bad:#a33;--accent:#1f4e79}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--ink:#ecebe6;--mute:#9d9b94;--line:#2e2d2a;--good:#5cc38c;--goodbg:#173323;--warn:#e0a54a;--warnbg:#3a2c14;--bad:#e57373;--accent:#8ab4e0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+header{padding:18px 16px 8px;max-width:880px;margin:0 auto}
+h1{font-size:21px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--mute);font-size:13.5px;margin:0}
+.filters{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 16px}
+.frow{max-width:880px;margin:0 auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+select,input{font-size:16px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);min-width:0}
+select{flex:1 1 30%}
+.chips{display:flex;gap:6px;overflow-x:auto;width:100%;padding-top:6px;scrollbar-width:none}
+.chip{flex:none;font-size:13.5px;padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.count{font-size:12.5px;color:var(--mute);max-width:880px;margin:6px auto 0}
+main{max-width:880px;margin:0 auto;padding:8px 16px 40px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:8px 0;overflow:hidden}
+.top{display:grid;grid-template-columns:30px 1fr auto;gap:8px;padding:12px 12px 10px;cursor:pointer;align-items:start}
+.rk{font-weight:700;color:var(--mute);font-size:13px;padding-top:2px}
+.addr{font-weight:600;font-size:15.5px}
+.meta{color:var(--mute);font-size:13px}
+.price{text-align:right;white-space:nowrap}
+.ask{font-weight:700;font-size:16px}
+.disc{display:inline-block;margin-top:3px;font-size:12.5px;font-weight:700;color:var(--good);background:var(--goodbg);padding:2px 7px;border-radius:6px}
+.why{grid-column:2 / 4;font-size:13.5px;color:var(--ink);opacity:.86}
+.sigs{grid-column:2 / 4;display:flex;flex-wrap:wrap;gap:4px}
+.sig{font-size:11.5px;padding:2px 7px;border-radius:5px;background:var(--warnbg);color:var(--warn)}
+.ev{display:none;border-top:1px solid var(--line);padding:10px 12px 12px 50px;font-size:13.5px}
+.row.open .ev{display:block}
+.ev img{width:100%;max-width:420px;border-radius:8px;display:block;margin:0 0 8px}
+.ev ul{margin:0 0 8px;padding-left:18px}
+.ev li{margin:3px 0}
+.ev a{color:var(--accent)}
+.ests{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 8px}
+.est{border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.est b{display:block;font-size:15px}
+.est span{font-size:11.5px;color:var(--mute)}
+.more{display:block;margin:14px auto;padding:10px 18px;font-size:15px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+details.method{max-width:880px;margin:0 auto;padding:0 16px 30px;color:var(--mute);font-size:13.5px}
+details.method summary{cursor:pointer;color:var(--ink)}
+@media (max-width:420px){.ev{padding-left:12px}.why,.sigs{grid-column:1 / 4}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Twin Cities homes asking less than they're worth</h1>
+  <p class="sub" id="sub">Every home for sale in the 7-county metro, ranked by how far the ask sits below three separate estimates of value. Tap a home to see the math.</p>
+</header>
+<div class="filters">
+  <div class="frow">
+    <select id="city" aria-label="City"><option value="">All cities</option></select>
+    <select id="price" aria-label="Max price">
+      <option value="">Any price</option><option value="200000">Under $200k</option><option value="300000">Under $300k</option>
+      <option value="400000">Under $400k</option><option value="500000">Under $500k</option><option value="750000">Under $750k</option><option value="1000000">Under $1M</option>
+    </select>
+    <select id="beds" aria-label="Beds"><option value="">Any beds</option><option value="1">1+ bd</option><option value="2">2+ bd</option><option value="3">3+ bd</option><option value="4">4+ bd</option></select>
+    <div class="chips" id="types">
+      <button class="chip" aria-pressed="true" data-t="">All</button>
+      <button class="chip" aria-pressed="false" data-t="house">Houses</button>
+      <button class="chip" aria-pressed="false" data-t="townhome">Townhomes</button>
+      <button class="chip" aria-pressed="false" data-t="condo">Condos</button>
+      <button class="chip" aria-pressed="false" data-t="multi">Multi-family</button>
+      <button class="chip" aria-pressed="false" data-x="1">Hide distressed</button>
+    </div>
+  </div>
+  <div class="count" id="count"></div>
+</div>
+<main id="list"></main>
+<details class="method"><summary>How the ranking works</summary>
+<p>Each home gets up to three estimates of value, each a join on public records you can check:</p>
+<ul>
+<li><b>County, corrected.</b> The county's assessed market value × the median sale-to-assessment ratio of the 30 nearest recorded sales at a similar assessed value. Assessors run low on expensive homes and high on cheap ones, so the raw assessment is never used alone.</li>
+<li><b>Comparable sales.</b> Median price per square foot of up to 10 similar homes (same kind, ±25% size, built within 25 years) that closed in the last year within 2 miles, × this home's square feet.</li>
+<li><b>Last sale, brought forward.</b> The last recorded deed (if 2+ years ago) × how much that county's prices have moved since, measured against today's assessments.</li>
+</ul>
+<p>The score is the average discount across all three (a missing one counts as zero), minus half the disagreement between them. Three estimates that agree beat one big gap.</p>
+<p>Not ranked: homes under contract, lots and land, teardowns, new builds the assessment hasn't caught, condo units that couldn't be matched to their own parcel, co-ops, multi-parcel listings, auctions and mobile homes. Listings from Realtor.com; parcels, assessments and deeds from the seven counties via MetroGIS; permits from Minneapolis and Saint Paul.</p>
+</details>
+<script>
+const $=s=>document.querySelector(s);
+const fmt=n=>n==null?"—":n>=1e6?"$"+(n/1e6).toFixed(2)+"M":"$"+Math.round(n/1e3)+"k";
+let ROWS=[],EV={},shown=0,view=[];
+const PAGE=60;
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function disc(r){const e=[r.est_cal,r.est_comp,r.est_deed].filter(Boolean);if(!e.length)return null;const m=e.sort((a,b)=>a-b)[Math.floor(e.length/2)];return 1-r.ask/m}
+function card(r){
+  const d=disc(r);
+  const sig=(r.signals||[]).map(s=>`<span class="sig">${esc(s.length>70?s.slice(0,68)+"…":s)}</span>`).join("");
+  const est=[["County",r.est_cal],["Comps",r.est_comp],["Last sale",r.est_deed]].map(([k,v])=>`<div class="est"><span>${k}</span><b>${fmt(v)}</b></div>`).join("");
+  return `<article class="row" data-id="${r.property_id}">
+  <div class="top" role="button" tabindex="0" aria-expanded="false">
+    <div class="rk">${r.rank}</div>
+    <div><div class="addr">${esc(r.address)}</div><div class="meta">${esc(r.city)} · ${r.beds??"–"} bd · ${r.baths??"–"} ba · ${r.sqft?r.sqft.toLocaleString()+" sqft":""}${r.year_built?" · "+r.year_built:""}</div></div>
+    <div class="price"><div class="ask">${fmt(r.ask)}</div>${d!=null?`<span class="disc">${Math.round(d*100)}% under</span>`:""}</div>
+    <div class="why">${esc(r.why)}</div>
+    ${sig?`<div class="sigs">${sig}</div>`:""}
+  </div>
+  <div class="ev"><div class="ests">${est}</div><div class="evb">Loading…</div></div></article>`}
+function fillEv(row){const r=ROWS.find(x=>x.property_id===row.dataset.id),e=EV[row.dataset.id];if(!e)return false;const [evidence,photo,url]=e;
+  row.querySelector(".evb").innerHTML=`${photo?`<img loading="lazy" alt="" src="${esc(photo)}">`:""}
+    <ul>${(evidence||[]).map(x=>`<li>${esc(x)}</li>`).join("")}${(r.signals||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+    <a href="${esc(url)}" target="_blank" rel="noopener">See the listing on Realtor.com →</a>`;return true}
+const loadEv=()=>fetch("evidence.json").then(r=>r.json()).then(d=>{EV=d;document.querySelectorAll(".row.open").forEach(fillEv)});
+function apply(){
+  const city=$("#city").value,price=+$("#price").value||Infinity,beds=+$("#beds").value||0;
+  const t=document.querySelector("#types [data-t][aria-pressed=true]")?.dataset.t||"";
+  const hideFix=document.querySelector("#types [data-x]").getAttribute("aria-pressed")==="true";
+  view=ROWS.filter(r=>(!city||r.city===city)&&r.ask<=price&&(r.beds||0)>=beds&&(!t||r.type_group===t)&&(!hideFix||!r.distressed));
+  shown=0;$("#list").innerHTML="";more();
+  $("#count").textContent=`${view.length.toLocaleString()} ranked homes${city?" in "+city:""}`;
+}
+function more(){
+  const html=view.slice(shown,shown+PAGE).map(card).join("");
+  document.querySelector(".more")?.remove();
+  $("#list").insertAdjacentHTML("beforeend",html);shown+=PAGE;
+  if(shown<view.length){const b=document.createElement("button");b.className="more";b.textContent=`Show more (${(view.length-shown).toLocaleString()} left)`;b.onclick=more;$("#list").append(b)}
+}
+$("#list").addEventListener("click",e=>{const top=e.target.closest(".top");if(!top)return;const row=top.parentElement;row.classList.toggle("open");top.setAttribute("aria-expanded",row.classList.contains("open"));if(row.classList.contains("open"))fillEv(row);if(row.classList.contains("open"))window.va("event",{name:"expand",data:{id:row.dataset.id}})});
+$("#list").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList.contains("top"))e.target.click()});
+for(const id of ["city","price","beds"])$("#"+id).addEventListener("change",apply);
+$("#types").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  if(b.dataset.x){b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true")}
+  else document.querySelectorAll("#types [data-t]").forEach(c=>c.setAttribute("aria-pressed",c===b?"true":"false"));apply()});
+fetch("data.json").then(r=>r.json()).then(d=>{
+  ROWS=d.rows;
+  const cities=[...new Set(ROWS.map(r=>r.city))].sort();
+  $("#city").insertAdjacentHTML("beforeend",cities.map(c=>`<option>${esc(c)}</option>`).join(""));
+  $("#sub").textContent=`${d.total_listings.toLocaleString()} homes for sale in the 7-county metro on ${d.built}. ${ROWS.length.toLocaleString()} could be valued cleanly; they're ranked by how far the ask sits below three separate estimates of value. Tap a home to see the math.`;
+  apply();
+  loadEv();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"buildCommand":"echo build","outputDirectory":".","headers":[{"source":"/data.json","headers":[{"key":"Cache-Control","value":"public, max-age=300"}]}]}
