@@ -26,3 +26,25 @@ Reddit and Facebook are replies to specific threads and group posts. They are no
 That makes 59 emails across 5 segments. Each address was found published on the person's own page or their organisation's, and none were guessed from a pattern. The URL where each one was seen is in the ledger.
 
 Log `sent_on` and `reply_kind` in the ledger as touches go out. Silence counts as a finding only after three touches (`distribution-channel` rule 5).
+
+## v2: what changed (2026-10-11)
+
+The product changed under the v1 drafts: homes that need work are now valued as-is (buy÷resale from 421 recorded flips), each home opens to its value cards, timeline, violations, block map and neighbourhood facts, and the full directory is $100 behind a password. The v1 hooks were ranks from before rehab pricing, so several stopped being true. Example: the two Frogtown houses on Sherburne were #1 and #2 and now rank around #1,400 and #1,900.
+
+**The offer.** Each recipient gets their own free password to the full directory, plus one line asking what's wrong and what's missing. Price talk stops at "it's normally $100".
+
+**Drafts come from a script.** `python outreach/render_drafts.py` reads `ledger.csv` and the full index in `private/`, and writes every draft again. Each draft is four parts: the reader's own record (the hand-written `opener` column), one sentence on the index, a hook paragraph computed from the data for that reader's area or property (`focus` column), and the password plus the ask. Re-run it after any rebuild, including the valuation upgrade, and every number follows the data. The `hook_check` column records what each hook found, and flags any home that is no longer ranked. The old drafts are in `drafts/_v1/`.
+
+**Passwords (`make_passwords`).** `scripts/issue_password.py` doesn't exist yet, so the drafts carry `{{PASSWORD}}`. Each ledger row has a `password_label` (`comp:<name-slug>`). Once the script lands, run `python outreach/render_drafts.py --issue`. It calls the script once per label, expects the password on the last line of stdout, and caches it in `drafts/.passwords.json`, so a re-render never mints a second password.
+
+**Community rules, re-checked.** These replies go in existing threads and are never new posts.
+- r/TwinCities and r/saintpaul (no commerce or advertising): a link to a paid tool is commerce now. The reply answers the question with no link, and the password goes by DM only if they ask. The DM text sits under each draft.
+- r/FirstTimeHomeBuyer (no self-promotion): the reply answers from the records and never names the tool.
+- r/realestateinvesting and r/RealEstate: still excluded.
+- Facebook groups: join and read the rules first, and skip the group if promo posts are barred.
+
+**Time-sensitive** (the `time_sensitive` column):
+- The r/TwinCities market-temperature thread archives about Oct 14. Reply by Oct 13 or drop it.
+- The counsellor openers name the Oct 24–25 Home Stretch workshops. Send by about Oct 20, or reword them to the past tense.
+- The MnREIA opener names the Oct 19 happy hour.
+- The MnREIA Facebook post names the Nov 3 meeting.
