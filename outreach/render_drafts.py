@@ -222,7 +222,8 @@ def hook(f, rows, d, bt, with_claim):
             s += f" Records say it's worth about {money(r['worth_est'])}"
             s += ", but homes like it are selling at their ask." if abs(r["room_pct"]) < 0.02 and r["worth_est"] > r["ask"] * 1.1 else "."
         if area and "label" in f:
-            s += f" Most room in {label}: {home_line(area[0], work)}"
+            prep = "among" if re.search(r"homes|houses|units|condos|foreclosures", label) else "in"
+            s += f" Most room {prep} {label}: {home_line(area[0], work)}"
         return s, f"own listing #{r['rank']} ({pct(r['room_pct'])} {'under' if r['room_pct'] >= 0 else 'over'} ask)"
 
     # area
