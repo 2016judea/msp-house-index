@@ -302,11 +302,12 @@ details.method summary{cursor:pointer;color:var(--ink)}
 @media (pointer:coarse){
  .sc th{padding-block:15px}.sc td{padding-block:13px}
  .sorts button{min-height:44px;padding-inline:12px}
- .filters select{min-height:44px}
+ /* Safari draws native selects at 25px whatever the padding; drawn by hand they take the height. */
+ .filters select{min-height:44px;-webkit-appearance:none;appearance:none;padding-right:28px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 fill=%27none%27 stroke=%27%23646b6e%27 stroke-width=%271.5%27/%3E%3C/svg%3E") no-repeat right 10px center}
  .bm-tg button{min-height:44px}
  .hist summary{padding-block:6px}
- .nb .nbd a,.bm-src a{display:inline-block;padding-block:12px}
- .xph a,.xin a.out{display:inline-block;padding-block:12px}
+ .nb .nbd a,.bm-src a{display:inline-block;padding-block:13px}
+ .xph a,.xin a.out{display:inline-block;padding-block:13px}
  .pwf button{min-height:48px}
  .math summary,.ri summary{padding-block:12px}
 }
