@@ -554,7 +554,8 @@ const rsz=(u,w)=>u.replace(/-w\d+_h\d+(\.\w+)$/,`-w${w}_h${w*3/4}$1`);
 const pic=(u,sizes,ws)=>`<img src="${esc(rsz(u,ws[1]||ws[0]))}" srcset="${ws.map(w=>`${esc(rsz(u,w))} ${w}w`).join(", ")}" sizes="${sizes}" width="480" height="360" alt="" loading="lazy" decoding="async">`;
 // ---- Sections of the opened row: each heavy layer behind a header that opens and shuts. State survives re-renders;
 // a closed section never builds its body, so the block map's cells and the story chart load only when opened.
-const SEC=matchMedia("(min-width:1024px)").matches?{comps:1,story:1,map:1,nb:1}:{comps:1};
+// Every section opens by default on every screen; only the arithmetic stays folded (Aidan 10/12: "add them back").
+const SEC={comps:1,story:1,map:1,nb:1};
 const SECS=[["comps","Comparable sales"],["story","The story of this house"],["map","The block"],["nb","Neighborhood"],["math","How we got these numbers"]];
 // The line under each header says what is inside; null hides a section whose layer came back empty.
 function secSum(n,d){const id=d.property_id;
