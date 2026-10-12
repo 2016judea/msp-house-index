@@ -8,3 +8,7 @@ data/*.jsonl
 data/*.duckdb
 data/_tmp_*
 data/*.log
+
+# outreach: personal contact details stay local
+outreach/ledger.csv
+outreach/drafts/
