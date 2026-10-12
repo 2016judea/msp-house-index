@@ -56,6 +56,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .vals span{font-size:11.5px;color:var(--mute);line-height:1.2}
 .vals b{font:600 15px var(--mono)}
 .trail{font-size:13.5px}
+.rec{display:flex;flex-direction:column;gap:4px}
+.rec ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.rec li{display:grid;grid-template-columns:72px 1fr;gap:8px;font-size:13.5px;line-height:1.35}
+.rec .rd{font:12px var(--mono);color:var(--mute);padding-top:1px}
+.rec summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:2px}
+.rec details ul{margin-top:4px}
+.lbl{font:500 10.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
 .xin a{font-size:13.5px;color:var(--accent)}
 .math summary{cursor:pointer;font-size:12.5px;color:var(--mute)}
 .math ul{margin:6px 0 0;padding-left:16px;font:12px/1.45 var(--sans);color:var(--mute)}
@@ -127,10 +134,14 @@ const mid=d=>{const e=ests(d).sort((a,b)=>a-b),n=e.length;return n%2?e[(n-1)/2]:
 // The median of the estimates, so one bad estimate cannot carry a home to the top.
 const under=d=>ests(d).length?Math.round((1-d.ask/mid(d))*100):null;
 const drop=d=>d.original_ask&&d.original_ask>d.ask?Math.round((d.ask/d.original_ask-1)*100):0;
-const chips=d=>{const s=(d.signals||[]).map(x=>x.replace(/^listing text: /,"").replace(/ \(as of.*\)| CE\d+ \(.*\)/,""));if(d.hoa)s.push("HOA $"+d.hoa+"/mo");return s.map(x=>`<span class="chip">${esc(x)}</span>`).join("")};
-const V=$("#view");let ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
+const chips=d=>{const s=[...((REC[d.property_id]||{}).tags||[]),...(d.signals||[]).filter(x=>!/vacant building list|^Minneapolis .* case /.test(x))].map(x=>x.replace(/^listing text: /,"").replace(/ \(as of.*\)| CE\d+ \(.*\)/,""));if(d.hoa)s.push("HOA $"+d.hoa+"/mo");return s.map(x=>`<span class="chip">${esc(x)}</span>`).join("")};
+const V=$("#view");let REC={},ROWS=[],EV={},view=[],sk="under",sd=-1,open1=null,limit=150;
 const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","City",d=>d.city],["ask","Asking",d=>d.ask],["est_cal","County",d=>d.est_cal],["est_comp","Comps",d=>d.est_comp],["est_deed","Last sale",d=>d.est_deed],["under","Below value",under],["agree","Agree",d=>d.agree],["dom","Days",d=>d.dom],["n_cuts","Cuts",d=>d.n_cuts],["drop","Dropped",drop],["beds","Beds",d=>d.beds],["sqft","Sq ft",d=>d.sqft]];
 const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,under:v=>v==null?"–":v+"%",agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
+function recs(d){
+ const it=(REC[d.property_id]||{}).items||[];if(!it.length)return "";
+ const li=i=>`<li><span class="rd">${i.date?new Date(i.date+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"}):""}</span><span>${esc(i.text)}</span></li>`;
+ return `<div class="rec"><span class="lbl">On the public record</span><ul>${it.slice(0,4).map(li).join("")}</ul>${it.length>4?`<details><summary>${it.length-4} more</summary><ul>${it.slice(4).map(li).join("")}</ul></details>`:""}</div>`}
 function panel(d){
  const u=under(d),e=EV[d.property_id];
  const ph=e&&e[1]?`<img src="${e[1].replace(/"/g,"&quot;")}" alt="" loading="lazy">`:"";
@@ -139,8 +150,9 @@ function panel(d){
  return `<div class="xin">${ph}<div class="xb">
   <div class="verdict"><b class="${u<0?"neg":"pos"}">${u==null?"–":Math.abs(u)+"% "+(u<0?"above":"below")+" value"}</b><span>Asking ${k(d.ask)} · worth about ${k(mid(d))}</span></div>
   <div class="vals">${tile("County says",d.est_cal)}${tile("Similar homes sold",d.est_comp)}${tile("Last sale, today",d.est_deed)}</div>
-  <div class="trail">${cut}</div>
   ${chips(d)?`<div>${chips(d)}</div>`:""}
+  <div class="trail">${cut}</div>
+  ${recs(d)}
   ${e&&e[2]?`<a href="${e[2].replace(/"/g,"&quot;")}" target="_blank" rel="noopener">See it on Realtor.com →</a>`:""}
   <details class="math"><summary>How we got these numbers</summary><ul>${e?(e[0]||[]).map(x=>`<li>${esc(x)}</li>`).join(""):"<li>Loading…</li>"}</ul></details>
  </div></div>`}
@@ -177,6 +189,7 @@ fetch("data.json").then(r=>r.json()).then(d=>{
  $("#sub").textContent=`${ROWS.length.toLocaleString()} homes for sale, ranked by how far below value they're asking. Updated ${new Date(d.built+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}.`;
  apply();
  fetch("evidence.json").then(r=>r.json()).then(e=>{EV=e;if(open1)screener()});
+ fetch("records.json").then(r=>r.json()).then(e=>{REC=e;if(open1)screener()});
 });
 </script>
 </body>

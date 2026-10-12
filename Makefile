@@ -9,5 +9,6 @@ county:
 	$(PY) scripts/build_county.py
 build:
 	$(PY) scripts/build_index.py
+	$(PY) scripts/build_records.py
 deploy:
 	$(PY) scripts/deploy.py
