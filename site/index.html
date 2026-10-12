@@ -8,7 +8,12 @@
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="data.json" as="fetch" crossorigin>
+<link rel="preload" href="meta.json" as="fetch" crossorigin>
+<!-- Fonts load without blocking the first paint (display=swap); the system stack stands in for a few hundred ms. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap"></noscript>
 <style>
 /* Ported verbatim from the approved prototype (artifact FaN7kAgze46gQ8LW2BgKDs, Screener tab, 2026-10-11). */
 :root{--bg:#f2f3f1;--card:#fff;--ink:#16191a;--mute:#646b6e;--line:#dcdfdd;--soft:#eef0ee;--accent:#245a86;--good:#17784a;--goodbg:#e1f1e8;--bad:#b2402c;--badbg:#f8e6e1;--warn:#93600a;--warnbg:#faefd9;--askbg:#e3edf6;--evbg:#f3efe6;--evline:#dcd3c0;--evink:#5b4a2b;
@@ -20,7 +25,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 var(--sans);pa
 .wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
 h1{font:700 22px/1.1 var(--cond);margin:0;letter-spacing:.01em}
 .lede{margin:3px 0 0;color:var(--mute);font-size:13.5px}
-button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,tr:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,tr:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* The address is the row's button: plain text at rest, a focus ring for the keyboard. */
+.sc .rb{all:unset;cursor:pointer;display:block;overflow:hidden;text-overflow:ellipsis}
+.sc .rb:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 .how{font-size:13.5px;color:var(--mute);margin:0;padding:10px 12px;background:var(--soft);border-radius:8px}
 .how b{color:var(--ink);font-weight:600}
 .key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--mute)}
@@ -33,17 +41,21 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,t
 .key .k-risk::before{background:var(--warnbg);border-color:var(--warn)}
 h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .pos{color:var(--good)}.neg{color:var(--bad)}
-.chip{display:inline-block;font-size:11.5px;padding:2px 7px;border-radius:4px;background:var(--warnbg);color:var(--warn);margin:2px 4px 0 0}
+.chip{display:inline-block;font-size:12px;padding:2px 7px;border-radius:4px;background:var(--warnbg);color:var(--warn);margin:2px 4px 0 0}
 /* filters: the live site's controls, in the prototype's tokens */
 .filters{display:flex;flex-wrap:wrap;gap:6px}
 .filters select{flex:1 1 30%;min-width:0;font:16px var(--sans);padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .sorts{display:flex;gap:6px;overflow-x:auto;width:100%;scrollbar-width:none}
-.sorts button{flex:none;font:500 12.5px var(--sans);padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.sorts button{flex:none;font:500 13px var(--sans);padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
 .sorts button[aria-pressed="true"]{border-color:var(--ink);background:var(--soft);font-weight:600}
 /* 1 SCREENER */
-.sc-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card);max-height:70vh}
+/* Phone and tablet: the table flows with the page, so a thumb-flick always scrolls the page (no box inside the page
+   to get caught in). It still pans sideways, with the address column pinned. Desktop gets the capped, sticky-header box below. */
+.sc-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card);overscroll-behavior-x:contain}
+/* The ten free rows' height (measured), held before data.json lands so nothing below jumps. */
+#view:empty{min-height:534px}
 .sc{border-collapse:separate;border-spacing:0;font:13px var(--mono);font-variant-numeric:tabular-nums;min-width:860px;width:100%}
-.sc th{position:sticky;top:0;background:var(--soft);font:600 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--mute);text-align:right;padding:8px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;z-index:2;user-select:none}
+.sc th{position:sticky;top:0;background:var(--soft);font:600 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--mute);text-align:right;padding:8px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;z-index:2;user-select:none}
 .sc th[aria-sort]{color:var(--ink)}
 .sc th[aria-sort="descending"]::after{content:" ▼"}.sc th[aria-sort="ascending"]::after{content:" ▲"}
 .sc td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -53,11 +65,27 @@ h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .sc td.disc{font-weight:600}
 .sc tr.x td{white-space:normal;text-align:left;background:var(--soft);padding:10px}
 /* The opened row: answer first (how far below, what it's worth), the math folded away. */
-.xin{display:grid;grid-template-columns:1fr;gap:12px;width:calc(100vw - 54px);max-width:640px;position:sticky;left:10px;font-family:var(--sans)}
-.xin img{width:100%;aspect-ratio:4/3;max-height:220px;object-fit:cover;border-radius:6px}
+.xin{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;width:calc(100vw - 54px);max-width:640px;position:sticky;left:10px;font-family:var(--sans)}
+/* Phone order: the verdict and the cards, then the photo, the why, and each heavy section behind its own header. */
+.xtop,.xwhy{display:flex;flex-direction:column;gap:10px;min-width:0}
+.xph{margin:0;display:flex;flex-direction:column;gap:6px}
+.xph img{display:block;width:100%;height:auto;aspect-ratio:4/3;max-height:200px;object-fit:cover;border-radius:6px}
+.secs{display:flex;flex-direction:column;gap:8px;min-width:0}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:8px;min-width:0}
+.sec-t{margin:0;font:inherit}
+.sec-h{all:unset;box-sizing:border-box;width:100%;min-height:52px;padding:8px 14px 8px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;cursor:pointer;color:var(--ink);border-radius:8px}
+.sec-h:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sec-h::after{content:"";grid-column:2;grid-row:1/span 2;width:8px;height:8px;border:solid var(--mute);border-width:0 2px 2px 0;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.sec-h[aria-expanded="true"]::after{transform:translateY(2px) rotate(-135deg)}
+.sec-l{font:600 15px/1.25 var(--sans)}
+.sec-s{font-size:13px;line-height:1.3;color:var(--mute)}
+.sec-s:empty{display:none}
+.sec-b{padding:2px 10px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.sec[data-sec="map"] .sec-b{padding:2px 6px 8px}
+.sec .tl{margin:2px 0 0}
 .xb{display:flex;flex-direction:column;gap:10px;min-width:0}
 .verdict{display:flex;flex-direction:column;gap:2px}
-.verdict b{font:700 26px/1 var(--cond)}
+.verdict b{font:700 26px/1.05 var(--cond)}
 .verdict span{font-size:14px;color:var(--ink)}
 .vals{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 /* Three roles, three colours: the price (blue), the evidence (one shared sand), our value (green). */
@@ -70,7 +98,7 @@ h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .xin .vals > .repair{grid-column:1/-1;border-color:var(--warn);background:var(--warnbg)}.vals .repair b{color:var(--warn)}
 @media (min-width:1024px){.vals{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))}.xin .vals > div:first-child,.xin .vals > .worth,.xin .vals > .repair{grid-column:auto}}
 .vals div{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:1px}
-.vals span{font-size:11.5px;color:var(--mute);line-height:1.2}
+.vals span{font-size:12px;color:var(--mute);line-height:1.2}
 .vals b{font:600 15px var(--mono)}
 .vals div:not(:first-child):not(.worth):not(.repair) b{color:var(--evink)}
 /* The story behind each number, visible without unfolding: worth, agree, condition, the listing. */
@@ -80,14 +108,15 @@ h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .story .blk.risk{border-left:3px solid var(--warn);padding-left:10px}.story .blk.risk .lbl{color:var(--warn)}
 .story .blk.price{border-left:3px solid var(--accent);padding-left:10px}.story .blk.price .lbl{color:var(--accent)}
 .story .eg{display:grid;grid-template-columns:auto auto auto auto;justify-content:start;gap:2px 14px;font:12.5px var(--mono);font-variant-numeric:tabular-nums}
-.story .eg span{white-space:nowrap}.story .eg .h{font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.story .eg span{white-space:nowrap}.story .eg .h{font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
 .story .eg .n{text-align:right}
 .story .ev{color:var(--evink)}
 .story p{margin:0;color:var(--mute);font-size:12.5px;line-height:1.4}
 /* Formulas sit one tap away: facts stay visible, the arithmetic behind an (i). Hover on desktop, tap on a phone. */
 .story .blk{position:relative}
 .lrow{display:flex;align-items:center;gap:6px}
-.info{flex:none;width:24px;height:24px;margin:-4px 0;padding:0;border:0;border-radius:50%;background:none;color:var(--mute);font:15px/24px var(--sans);cursor:pointer}
+.info{flex:none;position:relative;width:24px;height:24px;margin:-4px 0;padding:0;border:0;border-radius:50%;background:none;color:var(--mute);font:15px/24px var(--sans);cursor:pointer}
+.info::before{content:"";position:absolute;inset:-10px}
 .info:hover,.info[aria-expanded="true"]{color:var(--ink);background:var(--card)}
 .ipop{display:none;flex-direction:column;gap:6px;margin-top:2px;padding:8px 10px;background:var(--card);border:1px solid var(--line);border-radius:6px;max-width:100%}
 .ipop.on{display:flex}
@@ -106,7 +135,7 @@ h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .rec .rd{font:12px var(--mono);color:var(--mute);padding-top:1px}
 .rec summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:2px}
 .rec details ul{margin-top:4px}
-.lbl{font:500 10.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+.lbl{font:500 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
 .xin a{font-size:13.5px;color:var(--accent)}
 .math summary{cursor:pointer;font-size:12.5px;color:var(--mute)}
 .math ul{margin:6px 0 0;padding-left:16px;font:12px/1.45 var(--sans);color:var(--mute)}
@@ -120,8 +149,9 @@ h1 .hp{color:var(--accent)}h1 .hv{color:var(--good)}
 .sc tr.row:hover td,.sc tr.open td{filter:brightness(.96)}
 .sc tfoot td{position:sticky;bottom:0;background:var(--soft);font-weight:600;border-top:2px solid var(--ink)}
 .sc tr.more td{text-align:left;position:static}
-.sc tr.more button{position:sticky;left:10px;font:500 13px var(--sans);padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.sc tr.more button{position:sticky;left:10px;font:500 14px var(--sans);padding:12px 14px;min-height:44px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
 details.method{color:var(--mute);font-size:13.5px}
+details.method summary{padding:12px 0;min-height:44px;box-sizing:border-box}
 /* Wide screens: use the width. The table fills the window, the controls sit on one line,
    and the table runs to the bottom of the screen instead of stopping at 70%. (Aidan, 10/11: "SOOO much unused space") */
 @media (min-width:1024px){
@@ -132,10 +162,17 @@ details.method{color:var(--mute);font-size:13.5px}
  .sorts{width:auto;flex:1}
  .how{padding:8px 12px}
  .sc-wrap{max-height:calc(100vh - 250px)}
+ /* A home is open: let the page scroll it, rather than a box inside the page. */
+ .sc-wrap:has(tr.x){max-height:none}
+ #view:empty{min-height:399px}
  .sc{font-size:13.5px}
  .sc th:nth-child(2),.sc td:nth-child(2){max-width:300px}
- .xin{grid-template-columns:280px 1fr;width:auto;max-width:980px}
- .xin img{width:280px;height:210px;max-height:none}
+ /* The opened row uses the whole table width: photo beside the verdict, then the sections two abreast. */
+ .xin{grid-template-columns:300px minmax(0,1fr);grid-template-areas:"ph top" "ph why" "secs secs";align-items:start;width:auto;max-width:none;column-gap:20px}
+ .xtop{grid-area:top}.xwhy{grid-area:why}.xph{grid-area:ph}.secs{grid-area:secs}
+ .xph img{width:300px;height:225px;max-height:none}
+ .secs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:12px}
+ .sec[data-sec="comps"]{grid-column:1/-1}
 }
 details.method summary{cursor:pointer;color:var(--ink)}
 /* The story: a chart edge to edge, then the years down a thin rule. */
@@ -143,7 +180,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
 .tl svg{display:block;overflow:visible}
 .tl .gr{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
 .tl .bl{stroke:var(--mute);stroke-width:1;opacity:.5}
-.tl .ax{font:10.5px var(--mono);fill:var(--mute)}
+.tl .ax{font:11px var(--mono);fill:var(--mute)}
 .tl .aa{fill:var(--evink);opacity:.09}
 .tl .al{fill:none;stroke:var(--evink);stroke-width:1.5;opacity:.75}
 .tl .ad{fill:var(--evink)}
@@ -174,26 +211,26 @@ details.method summary{cursor:pointer;color:var(--ink)}
 .bm{--t-g:#000C07;--t-s:#00110A;--t-l:#0C3A26;--t-grid:#0A2E1E;--t-ink:#B9E8CF;--t-mu:#5E8874;--t-ph:#00FF7F;--t-dim:#8CFFC4;--t-am:#E0A458;--t-au:#F5C518;
  --tm:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Roboto Mono","DejaVu Sans Mono",monospace;
  display:flex;flex-direction:column;gap:8px;background:var(--t-g);border:1px solid var(--t-l);border-radius:6px;padding:10px;font:12px/1.45 var(--tm);color:var(--t-ink);color-scheme:dark}
-.bm-hd{color:var(--t-mu);letter-spacing:.06em;text-transform:uppercase;font-size:11px}.bm-hd b{color:var(--t-ph);font-weight:500}
+.bm-hd{color:var(--t-mu);letter-spacing:.06em;text-transform:uppercase;font-size:12px}.bm-hd b{color:var(--t-ph);font-weight:500}
 .bm-tg{display:flex;flex-wrap:wrap;gap:2px 10px}
-.bm-tg button{font:12px var(--tm);background:none;border:0;padding:4px 0;color:var(--t-mu);cursor:pointer;letter-spacing:.04em;white-space:nowrap}
+.bm-tg button{font:12px var(--tm);background:none;border:0;padding:4px 0;min-height:32px;color:var(--t-mu);cursor:pointer;letter-spacing:.04em;white-space:nowrap}
 .bm-tg button[aria-pressed="true"]{color:var(--t-ph)}
 .bm-tg button:focus-visible{outline:1px solid var(--t-ph);outline-offset:2px}
 .bm-map{position:relative;background:var(--t-s);border:1px solid var(--t-l);border-radius:3px;overflow:hidden}
 .bm-map svg{display:block;width:100%;height:auto;touch-action:pan-y}
 .bm-map .lot{cursor:pointer}
-.bm-leg{display:flex;flex-direction:column;gap:3px;color:var(--t-mu);font-size:11px}
+.bm-leg{display:flex;flex-direction:column;gap:3px;color:var(--t-mu);font-size:12px}
 .bm-ramp{display:flex;flex-wrap:wrap;gap:2px 12px}.bm-ramp span{white-space:nowrap}.bm-ramp i{font-style:normal;color:var(--t-ph);margin-right:4px}
 .bm-leg .am{color:var(--t-am)}.bm-leg .mc{color:#FFB000}.bm-leg .au{color:var(--t-au)}.bm-leg .hx{color:var(--t-dim)}
 .bm-ro{margin:0;display:grid;grid-template-columns:auto 1fr;gap:1px 12px;border-top:1px dashed var(--t-l);padding-top:6px;min-height:1.5em}
 .bm-ro dt{color:var(--t-mu)}.bm-ro dd{margin:0;color:var(--t-ink);overflow-wrap:anywhere}.bm-ro .hint{grid-column:1/-1;color:var(--t-mu)}
-.bm-src{font:10.5px var(--tm);color:var(--t-mu);margin:0}.bm-src a{color:var(--t-dim);font-size:inherit}
+.bm-src{font:12px var(--tm);color:var(--t-mu);margin:0}.bm-src a{color:var(--t-dim);font-size:inherit}
 @media (min-width:1024px){.hist .yr{grid-template-columns:84px 1fr}.hist .y{font-size:26px}.tl{margin:2px 0 0}}
 /* The offer: ten free, the rest for $100. Neutral ink, so it never borrows a colour role
    (blue price, sand records, green value, amber risk) from the table above it. */
 .pay{margin-top:4px;border-radius:14px;background:var(--ink);color:var(--bg);padding:22px 18px 20px;position:relative;overflow:hidden}
 .pay::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--bg) 9%,transparent),transparent 60%);pointer-events:none}
-.pay-k{margin:0 0 8px;font:600 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.65}
+.pay-k{margin:0 0 8px;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.65}
 .pay-h{margin:0;font:700 30px/1.08 var(--cond);letter-spacing:.005em}
 .pay-h .n{font-variant-numeric:tabular-nums}
 .pay-c{display:block;margin-top:10px;font:400 12.5px/1.5 var(--sans);opacity:.72;letter-spacing:0;text-wrap:pretty}
@@ -228,36 +265,51 @@ details.method summary{cursor:pointer;color:var(--ink)}
 }
 [hidden]{display:none!important}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.unl{display:inline-block;font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--good);background:var(--goodbg);border-radius:4px;padding:2px 7px;margin-right:6px}
+.unl{display:inline-block;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--good);background:var(--goodbg);border-radius:4px;padding:2px 7px;margin-right:6px}
 /* Neighborhood: one plain line per fact, each opens to its specifics and source. Sand = what the records say, amber = worth a closer look. */
 .nb{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .nb li{background:var(--evbg);border:1px solid var(--evline);border-left-width:3px;border-radius:4px;color:var(--ink)}
 .nb li.amber{background:var(--warnbg);border-color:var(--warn)}
-.nb summary{cursor:pointer;list-style:none;padding:8px 10px;font-size:14.5px;line-height:1.4;display:flex;gap:8px;justify-content:space-between;align-items:baseline}
+.nb summary{cursor:pointer;list-style:none;padding:11px 10px;min-height:44px;box-sizing:border-box;font-size:14.5px;line-height:1.4;display:flex;gap:8px;justify-content:space-between;align-items:baseline}
 .nb summary::-webkit-details-marker{display:none}
 .nb summary::after{content:"▸";color:var(--mute);font-size:12px;flex:none}.nb details[open] summary::after{content:"▾"}
 .nb li.amber summary{color:var(--ink)}.nb li.amber summary b{color:var(--warn)}
+.nb .look{flex:none;font:600 12px var(--mono);letter-spacing:.04em;color:var(--warn);white-space:nowrap}
 .nb .nbd{padding:0 10px 9px;font:12.5px/1.5 var(--sans);color:var(--mute)}
 .nb .nbd ul{margin:0 0 6px;padding-left:16px}.nb .nbd li{background:none;border:0;color:var(--mute)}
-.nb .nbd p{margin:0;font:11.5px var(--mono);color:var(--mute)}.nb .nbd a{color:var(--accent)}
+.nb .nbd p{margin:0;font:12px var(--mono);color:var(--mute)}.nb .nbd a{color:var(--accent)}
 .nb-hd{margin-top:14px}
 /* Comp grid: all records (sand); green and red stay reserved for the predicted sale against the ask. Phone: a sideways row of cards; desktop: a table. */
-.acc{margin:4px 0 0;font-size:13px;color:var(--mute)}.acc b{color:var(--good);font-weight:600}
+.acc{margin:4px 0 0;font-size:13px;color:var(--mute)}
+/* Reserve the accuracy line's height before meta.json lands, so the page does not jump (Lighthouse CLS). */
+#acc:empty{min-height:55px}@media (min-width:600px){#acc:empty{min-height:37px}}@media (min-width:1024px){#acc:empty{min-height:19px}}.acc b{color:var(--good);font-weight:600}
 .cg-v{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--evbg);border:1px solid var(--evline);border-radius:6px;padding:7px 9px;font-size:13px;color:var(--mute)}
 .cg-v b{font:600 17px var(--mono);color:var(--evink)}
-.cg-cards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-top:6px;overscroll-behavior-x:contain}
+.cg-cards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;margin-top:6px;overscroll-behavior-x:contain;touch-action:pan-x pan-y}
 .cg-c{flex:0 0 82%;max-width:280px;scroll-snap-align:start;background:var(--evbg);border:1px solid var(--evline);border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--evink)}
-.cg-c img,.cg-tab img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px;max-height:none}
+.cg-c img,.cg-tab img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:4px;max-height:none}
 .cg-c .a{font-weight:600;color:var(--ink);font-size:13.5px}.cg-c .p{font:600 14px var(--mono);color:var(--evink)}
 .cg-c ul,.cg-tab ul{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
-.cg-c li,.cg-tab li{font-size:11.5px;line-height:1.35;color:var(--mute)}.cg-c li b,.cg-tab li b{font:600 11.5px var(--mono);color:var(--ink)}
+.cg-c li,.cg-tab li{font-size:12px;line-height:1.35;color:var(--mute)}.cg-c li b,.cg-tab li b{font:600 12px var(--mono);color:var(--ink)}
 .cg-adj{border-top:1px dashed var(--evline);padding-top:4px;display:flex;justify-content:space-between;font-size:12px}.cg-adj b{font:600 14px var(--mono);color:var(--evink)}
-.cg-f{display:flex;flex-wrap:wrap;gap:3px}.cg-f span{font-size:10.5px;padding:1px 5px;border-radius:3px;background:var(--card);border:1px solid var(--evline)}
+.cg-f{display:flex;flex-wrap:wrap;gap:3px}.cg-f span{font-size:12px;padding:1px 5px;border-radius:3px;background:var(--card);border:1px solid var(--evline)}
 .cg-tab{display:none;width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px}
-.cg-tab th{font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--mute);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+.cg-tab th{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--mute);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
 .cg-tab td{vertical-align:top;padding:6px;border-bottom:1px solid var(--evline);background:var(--evbg);color:var(--evink);white-space:normal;text-align:left}
 .cg-tab td.n{font:600 13px var(--mono);white-space:nowrap}.cg-tab td.g{color:var(--ink)}
-@media (min-width:1024px){.cg-cards{display:none}.cg-tab{display:table}.cg-tab td:first-child{width:92px}}
+@media (min-width:1024px){.cg-cards{display:none}.cg-tab{display:table}.cg-tab td:first-child{width:120px}}
+/* Fingers: every control at least 44px tall (Apple's minimum), without changing how it looks at rest. */
+@media (pointer:coarse){
+ .sc th{padding-block:15px}.sc td{padding-block:13px}
+ .sorts button{min-height:44px;padding-inline:12px}
+ .filters select{min-height:44px}
+ .bm-tg button{min-height:44px}
+ .hist summary{padding-block:6px}
+ .nb .nbd a,.bm-src a{display:inline-block;padding-block:12px}
+ .xph a,.xin a.out{display:inline-block;padding-block:12px}
+ .pwf button{min-height:48px}
+ .math summary,.ri summary{padding-block:12px}
+}
 </style>
 </head>
 <body>
@@ -265,7 +317,7 @@ details.method summary{cursor:pointer;color:var(--ink)}
   <header>
     <h1>What every Twin Cities home will <span class="hv">really sell for</span>, and your room to negotiate</h1>
     <p class="lede" id="sub">Every home for sale in the 7-county metro, against how homes like it actually closed.</p>
-    <p class="acc" id="acc" hidden></p>
+    <p class="acc" id="acc"></p>
   </header>
   <div class="filters" id="filters" hidden>
     <select id="city" aria-label="City"><option value="">All cities</option></select>
@@ -355,7 +407,7 @@ function story(d){
  // Worth: which estimates it was computed from, and which were missing.
  const hv=have.filter(x=>x[1]);
  const wf=`<p>Records say it's worth the middle of the estimates${hv.length==2?" (with two, the average of the two)":""}: ${k(m)}.</p>${tiered?`<p>That is what it would be worth fixed up. Houses in this condition sold for ${Math.round(d.asis_ratio*100)}% of their fixed-up price (${d.asis_n} flips we measured), so ${k(m)} × ${d.asis_ratio.toFixed(2)} = ${k(d.worth)}.</p>`:""}${d.est_avm?`<p>Realtor.com's own estimate (${k(d.est_avm)}) counts in the score and Agree, not in this middle.</p>`:""}`;
- const lf=`<p>Predicted from how ${METH.sl_n||"20,000+"} closed Twin Cities sales went against their last asking price, given what this listing shows now: ${d.dom??"?"} days listed, ${d.n_cuts||0} price cut${d.n_cuts==1?"":"s"}, the ask against the records value, area, price, type, season, the listing's words and HOA. Homes like this sold for ${((d.sl_ratio-1)*100).toFixed(1)}% against their ask.</p><p>The records value is evidence, not the price: on closed sales a home asking far under the records still sold near its ask.</p>`;
+ const lf=`<p>Predicted from how ${METH.sl_n?METH.sl_n.toLocaleString():"20,000+"} closed Twin Cities sales went against their last asking price, given what this listing shows now: ${d.dom??"?"} days listed, ${d.n_cuts||0} price cut${d.n_cuts==1?"":"s"}, the ask against the records value, area, price, type, season, the listing's words and HOA. Homes like this sold for ${((d.sl_ratio-1)*100).toFixed(1)}% against their ask.</p><p>The records value is evidence, not the price: on closed sales a home asking far under the records still sold near its ask.</p>`;
  const u=under(d);
  const lk=d.sl_ratio?`<div class="blk val ihost">${info(`Likely sells for ${k(worth(d))}`,lf)}<p>${u>0?`${k(d.room)} of room under the ${k(d.ask)} ask.`:u<0?`Expect to pay ${k(-d.room)} over the ${k(d.ask)} ask.`:`About the ${k(d.ask)} ask.`}</p></div>`:"";
  const w=lk+`<div class="blk ihost">${info(`Records say it's worth${tiered?" as-is":""} ${k(d.worth_est)}`,wf)}
@@ -494,25 +546,57 @@ function storyTL(d){
  return `<div class="tl" data-id="${d.property_id}"></div>
  <ol class="hist">${by.map(g=>`<li class="yr"><span class="y">${g.y}</span><ul>${g.e.map(li).join("")}</ul></li>`).join("")}
  <li class="yr now"><span class="y">Today</span><ul><li class="price">Asking <b class="b">${k(d.ask)}</b>; ${tw}</li></ul></li></ol>`}
+// Realtor photo URLs carry their size (…-w480_h360.jpg); ask for the one the slot needs.
+const rsz=(u,w)=>u.replace(/-w\d+_h\d+(\.\w+)$/,`-w${w}_h${w*3/4}$1`);
+const pic=(u,sizes,ws)=>`<img src="${esc(rsz(u,ws[1]||ws[0]))}" srcset="${ws.map(w=>`${esc(rsz(u,w))} ${w}w`).join(", ")}" sizes="${sizes}" width="480" height="360" alt="" loading="lazy" decoding="async">`;
+// ---- Sections of the opened row: each heavy layer behind a header that opens and shuts. State survives re-renders;
+// a closed section never builds its body, so the block map's cells and the story chart load only when opened.
+const SEC=matchMedia("(min-width:1024px)").matches?{comps:1,story:1,map:1,nb:1}:{comps:1};
+const SECS=[["comps","Comparable sales"],["story","The story of this house"],["map","The block"],["nb","Neighborhood"],["math","How we got these numbers"]];
+// The line under each header says what is inside; null hides a section whose layer came back empty.
+function secSum(n,d){const id=d.property_id;
+ if(n=="comps"){const g=CG[id];if(g===undefined)return "";return g.comps?.length?`${k(g.comp_value)} from ${plural(g.comps.length,"adjusted sale")}`:null}
+ if(n=="story"){const t=tlOf(id);if(!t)return "";const E=events(d,t);return E.length?`${plural(E.length,"event")} since ${E[0].y}`:""}
+ if(n=="map")return "every lot within 150 m";
+ if(n=="nb"){const x=NB[id];if(x===undefined)return "";if(!x.lines.length)return null;const a=x.lines.filter(l=>l.tone=="amber").length;return `${plural(x.lines.length,"fact")}${a?` · ${a} worth a closer look`:""}`}
+ if(n=="math")return "the arithmetic behind each figure";return ""}
+function secBody(n,d){const id=d.property_id,e=EV[id];
+ if(n=="comps")return `<div class="cg-slot" data-id="${id}">${compsHTML(d)}</div>`;
+ if(n=="story")return storyTL(d);
+ if(n=="map")return `<div class="bm-slot" data-id="${id}"></div>`;
+ if(n=="nb")return `<div class="nb-slot" data-id="${id}">${nbHTML(id)}</div>`;
+ return `<div class="math"><ul>${e?(e[0]||[]).map(x=>`<li>${esc(x)}</li>`).join(""):"<li>Loading…</li>"}</ul></div>`}
+function secHTML(n,label,d){if(n=="map"&&!d.m)return "";const sm=secSum(n,d);if(sm===null)return "";const on=!!SEC[n];
+ return `<section class="sec" data-sec="${n}"><h3 class="sec-t"><button type="button" class="sec-h" aria-expanded="${on}" aria-controls="sb-${n}"><span class="sec-l">${label}</span><span class="sec-s">${sm}</span></button></h3><div class="sec-b" id="sb-${n}"${on?"":" hidden"}>${on?secBody(n,d):""}</div></section>`}
+// Redraw one section in place (after a toggle, or when its layer arrives), leaving the rest of the row alone.
+function updSec(n,d){const el=V.querySelector(`.sec[data-sec="${n}"]`);if(!el)return;const h=secHTML(n,SECS.find(x=>x[0]==n)[1],d);
+ if(h)el.outerHTML=h;else el.remove();
+ if(SEC[n]&&n=="map")placeMap();if(SEC[n]&&n=="story")requestAnimationFrame(drawTL);wireInfo()}
+// The small layers load as soon as the row opens, so each header can say what is inside before it is opened.
+function prefetch(d){const id=d.property_id;
+ if(!(id in CG)){CG[id]=undefined;layer("comps",id).then(x=>{CG[id]=x||{};if(open1==id)updSec("comps",d)})}
+ if(!(id in NB)){NB[id]=undefined;layer("nb",id).then(x=>{NB[id]=x||{lines:[]};if(open1==id)updSec("nb",d);if(BM.id==id)drawMap()})}
+ if(!tlOf(id))loadTL(id)}
 function panel(d){
- const u=under(d),e=EV[d.property_id],tiered=!!d.asis_ratio;
- const ph=e&&e[1]?`<img src="${e[1].replace(/"/g,"&quot;")}" alt="" loading="lazy">`:"";
+ const u=under(d),e=EV[d.property_id],tiered=!!d.asis_ratio;prefetch(d);
+ const ph=e&&e[1]?pic(e[1],"(min-width:1024px) 300px, calc(100vw - 54px)",[320,480,640]):"";
  const tile=(name,v)=>v?`<div><span>${name}</span><b>${k(v)}</b></div>`:"";
  const fx=tiered?" fixed up":"";
- return `<div class="xin">${ph}<div class="xb">
+ const link=e&&e[2]?`<a class="out" href="${e[2].replace(/"/g,"&quot;")}" target="_blank" rel="noopener">See it on Realtor.com →</a>`:"";
+ return `<div class="xin"><div class="xtop">
   <div class="verdict"><b class="${vsCls(u)=="even"?"even":u<0?"neg":"pos"}">${u==null?"–":u==0?"Likely sells at about its ask":u>0?`${k(d.room)} of room to negotiate (${u}%)`:`Expect to pay ${k(-d.room)} over ask (${-u}%)`}</b></div>
   <div class="vals">${tile("Asking",d.ask)}${tile("County says"+fx,d.est_cal)}${tile("Similar homes sold"+(tiered?" (fixed up)":""),d.est_comp)}${tile("Last sale"+(tiered?", brought forward":""),d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}${tiered&&d.repair_est?`<div class="repair"><span>Repair cost</span><b>${k(d.repair_est)}</b><span>permits filed say, ${d.repair_n} flips</span></div>`:""}${d.worth_est?`<div><span>Records say it's worth${tiered?" as-is":""}</span><b>${k(d.worth_est)}</b><span>${tiered?`${k(mid(d))} fixed up × ${d.asis_ratio.toFixed(2)}`:"middle of the estimates"}</span></div>`:""}<div class="worth ${vsCls(u)}"><span>Likely sells for</span><b>${k(worth(d))}</b><span>${u==null?"":u==0?"about the ask":u>0?`${k(d.room)} under the ask`:`${k(-d.room)} over the ask`}${d.unexplained_gap?"; the records gap is probably condition we can't see":""}</span></div></div>
-  <div class="cg-slot" data-id="${d.property_id}">${compsHTML(d)}</div>
   ${chips(d)?`<div>${chips(d)}</div>`:""}
-  ${d.m?`<div class="bm-slot" data-id="${d.property_id}"></div>`:""}
-  <div class="nb-slot" data-id="${d.property_id}">${nbHTML(d.property_id)}</div>
-  ${story(d)}
-  <div class="lbl">The story of this house</div>
-  ${storyTL(d)}
-  ${e&&e[2]?`<a href="${e[2].replace(/"/g,"&quot;")}" target="_blank" rel="noopener">See it on Realtor.com →</a>`:""}
-  <details class="math"><summary>How we got these numbers</summary><ul>${e?(e[0]||[]).map(x=>`<li>${esc(x)}</li>`).join(""):"<li>Loading…</li>"}</ul></details>
- </div></div>`}
+ </div>
+ ${ph||link?`<figure class="xph">${ph}${link}</figure>`:""}
+ <div class="xwhy">${story(d)}</div>
+ <div class="secs">${SECS.map(([n,l])=>secHTML(n,l,d)).join("")}</div>
+ </div>`}
+function wireInfo(){V.querySelectorAll(".info:not([data-w])").forEach(b=>{b.dataset.w=1;b.onclick=e=>{e.stopPropagation();const p=document.getElementById(b.getAttribute("aria-controls")),on=b.getAttribute("aria-expanded")!="true";b.setAttribute("aria-expanded",on);p.classList.toggle("on",on)}})}
+V.addEventListener("click",e=>{const b=e.target.closest(".sec-h");if(!b)return;const n=b.closest(".sec").dataset.sec,d=ROWS.find(r=>r.property_id==open1);if(!d)return;
+ SEC[n]=!SEC[n];window.va("event",{name:"section",data:{s:n,open:!!SEC[n]}});updSec(n,d);V.querySelector(`.sec[data-sec="${n}"] .sec-h`)?.focus({preventScroll:true})});
 function screener(){
+ const box=V.querySelector(".sc-wrap"),st=box?[box.scrollTop,box.scrollLeft]:null;
  const f=COLS.find(c=>c[0]==sk)[2];
  const rows=[...view].sort((a,b)=>{let x=f(a),y=f(b);if(x==null)return 1;if(y==null)return -1;return (x>y?1:x<y?-1:0)*sd});
  const med=a=>{a=a.filter(x=>x!=null).sort((p,q)=>p-q);return a[Math.floor(a.length/2)]};
@@ -520,15 +604,18 @@ function screener(){
  const ph=d=>{const e=EV[d.property_id];return e&&e[1]?`<img src="${esc(e[1])}" alt="" loading="lazy">`:"<span></span>"};
  const ln=d=>{const e=EV[d.property_id];return e&&e[2]?`<a href="${esc(e[2])}" target="_blank" rel="noopener">See the listing on Realtor.com →</a>`:""};
  V.innerHTML=`<div class="sc-wrap"><table class="sc"><thead><tr>${COLS.map(c=>`<th tabindex="0" data-k="${c[0]}" ${c[0]==sk?`aria-sort="${sd<0?"descending":"ascending"}"`:""}>${c[1]}</th>`).join("")}</tr></thead><tbody>
- ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}" tabindex="0">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc":""}"${c[0]=="under"?` style="${vsStyle(v)}"`:""}>${c[0]=="address"||c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
+ ${rows.slice(0,limit).map(d=>`<tr class="row ${open1==d.property_id?"open":""}" data-r="${d.property_id}">${COLS.map(c=>{const v=c[2](d);return `<td class="${c[0]=="under"?"disc":""}"${c[0]=="under"?` style="${vsStyle(v)}"`:""}>${c[0]=="address"?`<button type="button" class="rb" aria-expanded="${open1==d.property_id}">${esc(v)}</button>`:c[0]=="city"?esc(v):(fmt[c[0]]?fmt[c[0]](v):v??"–")}</td>`}).join("")}</tr>
  ${open1==d.property_id?`<tr class="x"><td colspan="${COLS.length}">${panel(d)}</td></tr>`:""}`).join("")}
  ${rows.length>limit?`<tr class="more"><td colspan="${COLS.length}"><button id="more">Show more (${(rows.length-limit).toLocaleString()} left)</button></td></tr>`:""}
  </tbody><tfoot><tr><td></td><td>${rows.length.toLocaleString()} homes · median</td><td></td><td>${k(med(rows.map(r=>r.ask)))}</td><td>${k(med(rows.map(r=>r.est_cal)))}</td><td>${k(med(rows.map(r=>r.est_comp)))}</td><td>${k(med(rows.map(r=>r.est_deed)))}</td><td>${k(med(rows.map(r=>r.block_med)))}</td><td class="disc" style="${vsStyle(med(rows.map(under)))}">${fmt.under(med(rows.map(under)))}</td><td>${rows.filter(r=>TIER[r.tier]).length} need work</td><td></td><td>${med(rows.map(r=>r.dom))??"–"}</td><td>${med(rows.map(r=>r.n_cuts))??"–"}</td><td></td><td></td><td></td></tr></tfoot></table></div>`;
- V.querySelectorAll("th").forEach(th=>{const go=()=>{const kk=th.dataset.k;if(sk==kk)sd=-sd;else{sk=kk;sd=["rank","address","city","ask"].includes(kk)?1:-1}limit=150;window.va("event",{name:"sort",data:{col:kk}});screener()};th.onclick=go;th.onkeydown=e=>{if(e.key=="Enter")go()}});
- V.querySelectorAll("tr.row").forEach(tr=>{const go=()=>{const id=tr.dataset.r;open1=open1==id?null:id;if(open1)window.va("event",{name:"expand",data:{id}});screener()};tr.onclick=go;tr.onkeydown=e=>{if(e.key=="Enter")go()}});
+ V.querySelectorAll("th").forEach(th=>{const go=()=>{const kk=th.dataset.k;if(sk==kk)sd=-sd;else{sk=kk;sd=["rank","address","city","ask"].includes(kk)?1:-1}limit=150;window.va("event",{name:"sort",data:{col:kk}});screener()};th.onclick=go;th.onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();go()}}});
+ V.querySelectorAll("tr.row").forEach(tr=>{const go=()=>{const kb=document.activeElement?.closest?.("tr")==tr,id=tr.dataset.r,y0=tr.getBoundingClientRect().top;open1=open1==id?null:id;if(open1)window.va("event",{name:"expand",data:{id}});screener();
+  // Keep the tapped row under the finger: closing a home above it, or lifting the box's cap, would otherwise move it.
+  const n=V.querySelector(`tr.row[data-r="${id}"]`);if(n){scrollBy(0,n.getBoundingClientRect().top-y0);if(kb)n.querySelector(".rb").focus({preventScroll:true})}};tr.onclick=go});
  V.querySelectorAll("thead tr,tr.row,tfoot tr").forEach(tr=>[...tr.children].forEach((td,i)=>{const r=ROLE[COLS[i]?.[0]];if(r)td.classList.add("r-"+r)}));
  $("#more")?.addEventListener("click",()=>{limit+=150;screener()});
- V.querySelectorAll(".info").forEach(b=>{b.onclick=e=>{e.stopPropagation();const p=document.getElementById(b.getAttribute("aria-controls")),on=b.getAttribute("aria-expanded")!="true";b.setAttribute("aria-expanded",on);p.classList.toggle("on",on)}});
+ wireInfo();
+ const nb=V.querySelector(".sc-wrap");if(st&&nb){nb.scrollTop=st[0];nb.scrollLeft=st[1]}
  placeMap();
  requestAnimationFrame(drawTL);
 }
@@ -538,18 +625,16 @@ function screener(){
 const CG={};
 function compsHTML(d){
  const id=d.property_id;
- if(!(id in CG)){CG[id]=undefined;layer("comps",id).then(x=>{CG[id]=x||{};const sl=V.querySelector(`.cg-slot[data-id="${id}"]`);if(sl)sl.innerHTML=compsHTML(d)});return `<div class="lbl">Comparable sales</div><p class="lbl">Loading…</p>`}
- const g=CG[id];if(g===undefined)return `<div class="lbl">Comparable sales</div><p class="lbl">Loading…</p>`;
+ const g=CG[id];if(g===undefined)return `<p class="lbl">Loading…</p>`;
  if(!g.comps?.length)return "";
  const mo=s=>new Date(s.slice(0,10)+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"});
  const mi=m=>m<160?"same block":(m/1609).toFixed(1)+" mi";
  const sg=n=>(n>=0?"+":"−")+k(Math.abs(n)).replace("−","");
  const lines=c=>c.lines.map(l=>`<li><b>${sg(l.amt)}</b> ${esc(l.why)}</li>`).join("");
  const fl=c=>c.flags?.length?`<div class="cg-f">${c.flags.map(f=>`<span>${esc(f)}</span>`).join("")}</div>`:"";
- const img=c=>c.photo?`<img src="${esc(c.photo)}" alt="" loading="lazy">`:"";
+ const img=c=>c.photo?pic(c.photo,"(min-width:1024px) 120px, min(82vw, 280px)",[240,480]):"";
  const facts=c=>`${c.sqft?.toLocaleString()} sqft · ${c.beds??"–"} bd ${c.baths??"–"} ba · built ${c.year??"–"}`;
- const head=`<div class="lbl">Comparable sales, adjusted like an appraiser</div>
-  <div class="cg-v"><b>${k(g.comp_value)}</b><span>${g.emv_value?`the adjusted sales say ${k(g.value)}; the same sales against their county values say ${k(g.emv_value)}; half of each`:`weighted middle of the adjusted sales`}. Rates measured from ${g.model_n.toLocaleString()} ${esc(g.model)} sales, prices brought to ${mo(g.month+"-01")}.</span></div>`;
+ const head=`<div class="cg-v"><b>${k(g.comp_value)}</b><span>${g.emv_value?`the adjusted sales say ${k(g.value)}; the same sales against their county values say ${k(g.emv_value)}; half of each`:`weighted middle of the adjusted sales`}. Rates measured from ${g.model_n.toLocaleString()} ${esc(g.model)} sales, prices brought to ${mo(g.month+"-01")}.</span></div>`;
  const cards=`<div class="cg-cards">${g.comps.map(c=>`<div class="cg-c">${img(c)}<span class="a">${esc(c.address)}</span><span><span class="p">${k(c.sold_price)}</span> sold ${mo(c.sold_date)} · ${mi(c.dist_m)}</span><span>${facts(c)}</span>${fl(c)}<ul>${lines(c)}</ul><div class="cg-adj"><span>Adjusted · weight ${Math.round(c.weight*100)}%</span><b>${k(c.adjusted)}</b></div></div>`).join("")}</div>`;
  const tab=`<table class="cg-tab"><thead><tr><th></th><th>Sale</th><th>Adjustments</th><th>Adjusted</th><th>Weight</th></tr></thead><tbody>${g.comps.map(c=>`<tr><td>${img(c)}</td><td><b style="color:var(--ink)">${esc(c.address)}</b><br><span class="p">${k(c.sold_price)}</span> ${mo(c.sold_date)} · ${mi(c.dist_m)}<br>${facts(c)}${fl(c)}</td><td><ul>${lines(c)||"<li>none needed</li>"}</ul></td><td class="n g">${k(c.adjusted)}</td><td class="n">${Math.round(c.weight*100)}%</td></tr>`).join("")}</tbody></table>`;
  return head+cards+tab}
@@ -558,11 +643,10 @@ function compsHTML(d){
 // per-listing layer). Crime and demographics are left out on purpose (fair housing; DATA_MODEL.md, Neighborhood).
 const NB={};
 function nbHTML(id){
- if(!(id in NB)){NB[id]=undefined;layer("nb",id).then(x=>{NB[id]=x||{lines:[]};const sl=V.querySelector(`.nb-slot[data-id="${id}"]`);if(sl)sl.innerHTML=nbHTML(id);if(BM.id==id)drawMap()});return `<div class="lbl nb-hd">Neighborhood</div><p class="lbl">Loading…</p>`}
- const x=NB[id];if(x===undefined)return `<div class="lbl nb-hd">Neighborhood</div><p class="lbl">Loading…</p>`;
+  const x=NB[id];if(x===undefined)return `<p class="lbl">Loading…</p>`;
  if(!x.lines.length)return "";
  const src=s=>{const nm=esc(s.name),dt=s.date?`, as of ${new Date(s.date+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}`:"";return `<p>Source: ${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">${nm}</a>`:nm}${dt}</p>`};
- return `<div class="lbl nb-hd">Neighborhood</div><ul class="nb">${x.lines.map(l=>`<li class="${l.tone=="amber"?"amber":"sand"}" data-k="${l.k}"><details><summary><span>${esc(l.text)}</span></summary><div class="nbd"><ul>${l.detail.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>${src(l.src)}</div></details></li>`).join("")}</ul>`}
+ return `<ul class="nb">${x.lines.map(l=>`<li class="${l.tone=="amber"?"amber":"sand"}" data-k="${l.k}"><details><summary><span>${esc(l.text)}</span>${l.tone=="amber"?`<span class="look">Look closer</span>`:""}</summary><div class="nbd"><ul>${l.detail.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>${src(l.src)}</div></details></li>`).join("")}</ul>`}
 // ---- The block map: every lot within ~150 m, drawn as a terminal diagram, filled by what the county appraises it at. ----
 // Lots come from site/map/<cell>.json (scripts/build_map.py); a row carries m = [cells, own cell, own lot].
 // Plain SVG, no map library and no tiles: a static diagram, so a one-finger swipe always scrolls the page. Tap to inspect.
