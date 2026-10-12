@@ -191,3 +191,17 @@ gap between ask and ARV is mostly the rehab, not a bargain. The ideal record add
 actually paid, in 113 recorded transactions, and it carries holding cost, risk and margin.
 Repair cost from permits is under-declared by a factor of 2-3 (the spread check above), so
 subtracting it would overstate the as-is value. It is shown as a card, never subtracted.
+
+## Timeline: the house's story (added 2026-10-11, `scripts/build_timeline.py` → `site/tl/*.json`)
+
+| field | filled | source / note |
+|---|---|---|
+| county value by year | 7,258 of 7,262 | bricks `parcel_snapshot`: MetroGIS 2021-current (MKT_YEAR), Minneapolis assessor files 2017-2025. Hennepin leaves MKT_YEAR blank; MetroGIS release Y matches the Minneapolis assessor's year Y-1 value for value, so it is placed there. Realtor's `tax_history` is **not used**: its recent years are a taxable value that matches no county file |
+| recorded sales | 19,218 | bricks `sale` (every deed any snapshot showed) + Realtor MLS "Sold" events, deduped within 200 days and 2%. A deed at the same price on the same day on other parcels is marked bulk and never read as a price (**outside Hennepin only**: Hennepin deed dates are months, so shared date+price is coincidence) |
+| listing events | 50,105 | Realtor `property_history` (NorthstarMLS) |
+| permits | 4,734 | Saint Paul all trades with value (to 2025-06-30); Minneapolis 2016- with no value |
+| cases, vacant list, complaints | from `site/records.json` | complaints per event via `records.json` `ev` |
+
+Every sentence in the story is a template in `site/index.html` (`events()`) over these
+records; the current listing's sentence uses the same cut count and drop as the Cuts and
+Dropped columns (counted from the last relist).

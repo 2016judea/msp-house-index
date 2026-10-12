@@ -33,9 +33,10 @@ def title(s):
     return s[:1].upper() + s[1:].lower() if s.isupper() else s
 
 out = {}
-def add(pid, date, text, tag=None, means=None, detail=None):
+def add(pid, date, text, tag=None, means=None, detail=None, kind=None):
     r = out.setdefault(pid, {"tags": [], "items": []})
     it = {"date": date, "text": text}
+    if kind: it["kind"] = kind
     if means: it["means"] = means
     if detail: it["detail"] = detail
     r["items"].append(it)
@@ -109,7 +110,7 @@ for (pid, num), ins in insp.items():
             detail.append(f"{d}: {i.get('Inspection_Type_Desc') or 'Inspection'}" + (f", {res}" if res else ""))
     add(pid, dates[-1], head, {"Nuisance case": "Nuisance case", "Vacant building registration": "Registered vacant",
         "Condemned vacant building": "Condemned"}.get(kind, "Rental license" if "Rental" in kind else None),
-        means=MEANS.get(kind), detail=detail)
+        means=MEANS.get(kind), detail=detail, kind="case")
     if stage.startswith("the city did the work"):
         out[pid]["tags"].append("City billed work to taxes") if "City billed work to taxes" not in out[pid]["tags"] else None
 
@@ -132,7 +133,8 @@ for pid, cnt, items in con.execute("""
     add(pid, ms(items[0]["d"]), f"{cnt} complaint{'s' if cnt > 1 else ''} to Minneapolis 311 since 2023: " + ", ".join(k + (f" ×{n}" if n > 1 else "") for k, n in kinds.items()),
         f"{cnt} complaints" if cnt >= 3 else None,
         means="Calls or online reports to the city placed at this lot (the city maps each one to the street, so it is matched to the nearest house). Each is a report, not a finding. Minneapolis publishes the kind of complaint, not what the caller said.",
-        detail=[f"{ms(it['d'])}: {it['t']}" + ("" if it["closed"] else " (still open)") for it in items])
+        detail=[f"{ms(it['d'])}: {it['t']}" + ("" if it["closed"] else " (still open)") for it in items], kind="complaints")
+    out[pid].setdefault("ev", []).extend({"d": ms(it["d"]), "t": it["t"], "src": "Minneapolis 311", "open": not it["closed"]} for it in items)
 
 VB = {"1": "category 1: empty but secure", "2": "category 2: needs a code compliance inspection before anyone lives there",
       "3": "category 3: condemned or a nuisance"}
@@ -143,7 +145,7 @@ for r in rows("stp_vacant_buildings"):
     add(r["pid"], iso, f"On Saint Paul's vacant building list, {VB.get(str(a.get('VB_CATEGORY')), 'category ' + str(a.get('VB_CATEGORY')))}",
         f"Vacant, category {a.get('VB_CATEGORY')}",
         means="Saint Paul tracks every empty building. Category 1 is empty but secure. Category 2 needs a code compliance inspection, and the work it finds, before anyone can live there. Category 3 is condemned or a nuisance.",
-        detail=[f"Dwelling type: {a.get('DWELLING_TYPE')}", f"Vacant as of {d}", f"Ward {a.get('WARD')}"])
+        detail=[f"Dwelling type: {a.get('DWELLING_TYPE')}", f"Vacant as of {d}", f"Ward {a.get('WARD')}"], kind="vacant")
 
 comp = {}
 for r in rows("stp_resident_service_requests", "and r.event_at >= date '2023-01-01'"):
@@ -156,7 +158,8 @@ for pid, c in comp.items():
     add(pid, c[0][0], f"{len(c)} city complaint{'s' if len(c) > 1 else ''} since 2023: " + ", ".join(f"{k}" + (f" ×{n}" if n > 1 else "") for k, n in kinds.items()),
         f"{len(c)} complaints" if len(c) >= 3 else None,
         means="Requests and complaints to Saint Paul about this property. Each is a report, not a finding. Saint Paul publishes the kind of complaint, not its text.",
-        detail=[f"{d}: {k}" for d, k in c])
+        detail=[f"{d}: {k}" for d, k in c], kind="complaints")
+    out[pid].setdefault("ev", []).extend({"d": d, "t": k, "src": "Saint Paul"} for d, k in c)
 
 for r in rows("stp_certificate_of_occupancy___residential"):
     a = json.loads(r["attrs"])
@@ -164,7 +167,7 @@ for r in rows("stp_certificate_of_occupancy___residential"):
     if g in "ABCD" and g:
         add(r["pid"], None, f"Licensed rental, {a.get('UNITS')} unit{'s' if (a.get('UNITS') or 0) != 1 else ''}; Saint Paul inspection grade {g} (A is best, D worst)", f"Rental, grade {g}",
             means="Saint Paul licenses rentals and grades them A to D from what its inspections find. A grade sets how often the city comes back.",
-            detail=[f"Status: {a.get('STATUS')}", f"Type: {a.get('SUB_TYPE')}"] + ([f"Renewal due {ms(a.get('RENEWAL_DUE'))}"] if a.get("RENEWAL_DUE") else []))
+            detail=[f"Status: {a.get('STATUS')}", f"Type: {a.get('SUB_TYPE')}"] + ([f"Renewal due {ms(a.get('RENEWAL_DUE'))}"] if a.get("RENEWAL_DUE") else []), kind="rental")
 
 for layer, what in (("stp_building_permits_", "Permit"), ("stp_permit_tppe_demolition_permit", "Demolition permit")):
     for r in rows(layer, "and r.event_at >= date '2020-01-01'"):
@@ -172,18 +175,18 @@ for layer, what in (("stp_building_permits_", "Permit"), ("stp_permit_tppe_demol
         v = a.get("EST_VALUE_OF_WORK") or a.get("STATE_VALUATION")
         desc = title(a.get("FOLDERDESCRIPTION") or a.get("WORK_TYPE"))
         add(r["pid"], ms(a.get("ISSUEDATE")), f"{what}: {desc}" + (f" ({money(v)})" if v else "") + f", {(a.get('STATUS') or '').lower()}",
-            "Demolition permit" if what.startswith("Demo") else None)
+            "Demolition permit" if what.startswith("Demo") else None, kind="permit")
 
 for r in rows("fema_flood_zones", "and json_extract_string(r.attrs, 'SFHA_TF') = 'T'"):
     a = json.loads(r["attrs"])
     add(r["pid"], None, f"In a FEMA flood zone ({a.get('FLD_ZONE')}); a lender will require flood insurance", "Flood zone",
-            means="FEMA maps this parcel inside a 1%-a-year flood area. Any mortgage on it will require flood insurance.")
+            means="FEMA maps this parcel inside a 1%-a-year flood area. Any mortgage on it will require flood insurance.", kind="flood")
 
 # Minneapolis + Saint Paul permits already on the index row.
 for r in q(f"select property_id pid, unnest(permits) p from '{ROOT / 'data/index.parquet'}' where rank_ok and permits is not null"):
     p = r["p"]
     if p.get("issued"):
-        add(r["pid"], str(p["issued"]), f"Permit: {title(p.get('what') or p.get('work'))}" + (f" ({money(p['value'])})" if p.get("value") else "") + f", {(p.get('status') or '').lower()}")
+        add(r["pid"], str(p["issued"]), f"Permit: {title(p.get('what') or p.get('work'))}" + (f" ({money(p['value'])})" if p.get("value") else "") + f", {(p.get('status') or '').lower()}", kind="permit")
 
 for v in out.values():
     seen, items = set(), []

@@ -126,6 +126,38 @@ details.method{color:var(--mute);font-size:13.5px}
  .xin img{width:280px;height:210px;max-height:none}
 }
 details.method summary{cursor:pointer;color:var(--ink)}
+/* The story: a chart edge to edge, then the years down a thin rule. */
+.tl{margin:2px -10px 0;min-height:40px}
+.tl svg{display:block;overflow:visible}
+.tl .gr{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
+.tl .bl{stroke:var(--mute);stroke-width:1;opacity:.5}
+.tl .ax{font:10.5px var(--mono);fill:var(--mute)}
+.tl .aa{fill:var(--evink);opacity:.09}
+.tl .al{fill:none;stroke:var(--evink);stroke-width:1.5;opacity:.75}
+.tl .ad{fill:var(--evink)}
+.tl .sd{fill:var(--evink);stroke:var(--soft);stroke-width:2.5}
+.tl .ll{fill:none;stroke:var(--accent);stroke-width:1.5}
+.tl .ld{fill:var(--accent);stroke:var(--soft);stroke-width:1.5}
+.tl .wd{fill:var(--good);stroke:var(--soft);stroke-width:2}
+.tl .lp{fill:var(--warn)}.tl .lc{fill:none;stroke:var(--warn);stroke-width:2}.tl .lq{fill:var(--warn);opacity:.45}
+.tl .hit{fill:transparent;cursor:pointer}
+.tl .on{stroke:var(--ink);stroke-width:2}
+.tl .cap{font:12.5px var(--mono);color:var(--ink);padding:4px 10px 0;min-height:1.5em}
+.hist{list-style:none;margin:4px 0 0;padding:0 0 0 2px;position:relative}
+.hist::before{content:"";position:absolute;left:5px;top:10px;bottom:12px;width:1px;background:var(--line)}
+.hist .yr{display:grid;grid-template-columns:62px 1fr;gap:4px;padding:6px 0 10px}
+.hist .y{font:700 22px/1 var(--cond);color:var(--ink);padding-left:18px;position:relative;letter-spacing:.01em}
+.hist .y::before{content:"";position:absolute;left:1px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:1.5px solid var(--mute)}
+.hist .yr > ul{list-style:none;margin:0;padding:3px 0 0 12px;display:flex;flex-direction:column;gap:7px}
+.hist .yr > ul > li{position:relative;font-size:14.5px;line-height:1.45;padding-left:14px}
+.hist .yr > ul > li::before{content:"";position:absolute;left:0;top:.55em;width:7px;height:7px;border-radius:50%;background:var(--evink)}
+.hist li.price::before{background:var(--accent)}.hist li.risk::before{background:var(--warn)}.hist li.val::before{background:var(--good)}
+.hist summary{cursor:pointer;list-style:none}.hist summary::-webkit-details-marker{display:none}
+.hist summary::after{content:" ▸";color:var(--mute);font-size:12px}.hist details[open] summary::after{content:" ▾"}
+.hist details ul{margin:6px 0 2px;padding-left:14px;font:12.5px/1.5 var(--mono);color:var(--mute)}
+.hist .now .y{color:var(--good)}.hist .now .y::before{border-color:var(--good);background:var(--good)}
+.hist b.b{color:var(--accent)}.hist b.g{color:var(--good)}
+@media (min-width:1024px){.hist .yr{grid-template-columns:84px 1fr}.hist .y{font-size:26px}.tl{margin:2px 0 0}}
 </style>
 </head>
 <body>
@@ -186,12 +218,6 @@ const COLS=[["rank","#",d=>d.rank],["address","Address",d=>d.address],["city","C
 // Colour tells the story: blue = their price, sand = what the records say, green = what we think it's worth, amber = worth a closer look.
 const ROLE={ask:"price",est_cal:"ev",est_comp:"ev",est_deed:"ev",block_med:"ev",under:"val",agree:"val",tier:"risk",drop:"risk",n_cuts:"risk"};
 const fmt={ask:k,est_cal:k,est_comp:k,est_deed:k,block_med:k,under:v=>v==null?"–":v+"%",agree:v=>v==null?"–":Math.round(v*100)+"%",drop:v=>v?v+"%":"–",sqft:v=>v?.toLocaleString()??"–"};
-function recs(d){
- const it=(REC[d.property_id]||{}).items||[];if(!it.length)return "";
- const li=i=>{const dt=`<span class="rd">${i.date?new Date(i.date+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"}):""}</span>`;
-  if(!i.means&&!i.detail)return `<li>${dt}<span>${esc(i.text)}</span></li>`;
-  return `<li>${dt}<details class="ri"><summary>${esc(i.text)}</summary>${i.means?`<p class="means">${esc(i.means)}</p>`:""}${i.detail?`<ul class="rdl">${i.detail.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</details></li>`};
- return `<div class="rec"><span class="lbl">On the public record</span><ul>${it.slice(0,4).map(li).join("")}</ul>${it.length>4?`<details><summary>${it.length-4} more</summary><ul>${it.slice(4).map(li).join("")}</ul></details>`:""}</div>`}
 function story(d){
  const pct=x=>(x>0?"+":x<0?"−":"")+Math.abs(Math.round(x*100))+"%";
  const tiered=!!d.asis_ratio,dn=d.discounts_named||[],m=mid(d);
@@ -209,7 +235,132 @@ function story(d){
   <p>${d.tier=="condemned"?"No condemned house in the records was bought and resold, so this uses the heavy-rehab ratio. ":""}${d.repair_est?`Repair cost: flips like this filed permits for a median $${Math.round(d.repair_ppsf)}/sqft (${d.repair_n} homes) × ${d.sqft.toLocaleString()} sqft = ${k(d.repair_est)}. Permits run low: those same flips resold for $${Math.round(d.spread_ppsf)}/sqft more than they cost.`:""}</p></div>`:"";
  const ld=d.list_date?new Date(d.list_date+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):null;
  const lst=`<div class="blk price"><span class="lbl">The listing</span><p>${ld?`Listed ${ld}, ${d.dom} days ago. `:""}${d.original_ask&&d.original_ask!=d.ask?`First asked ${k(d.original_ask)}; ${d.n_cuts} price cut${d.n_cuts==1?"":"s"} to ${k(d.ask)}, down ${Math.abs(drop(d))}%.`:"No price cuts."} ${[d.beds&&d.beds+" bd",d.baths&&d.baths+" ba",d.sqft&&d.sqft.toLocaleString()+" sqft",d.year_built&&"built "+d.year_built].filter(Boolean).join(" · ")}.</p></div>`;
- return `<div class="story">${w}${ag}${cond}${lst}</div>`}
+ return `<div class="story">${w}${ag}${cond}</div>`}
+// ---- The property's story: one chart over time, then the history year by year. ----
+// Every sentence is a template over a record in tl/<shard>.json or records.json; no model writes any of it.
+const TL={},tlLoading={};
+function loadTL(id){const s=id.slice(-2);if(TL[s]||tlLoading[s])return;tlLoading[s]=1;fetch(`tl/${s}.json`).then(r=>r.json()).then(j=>{TL[s]=j;if(open1)screener()}).catch(()=>{})}
+const tlOf=id=>(TL[id.slice(-2)]||{})[id];
+const usd=n=>"$"+Math.round(n).toLocaleString();
+const mon=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"});
+const day=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+const plural=(n,w)=>`${n} ${w}${n==1?"":"s"}`;
+const WORDS=["","one","two","three","four","five","six","seven","eight","nine","ten"];
+const times=n=>n==1?"once":n==2?"twice":(WORDS[n]||n)+" times";
+// Runs of listing events: a removal followed by a relist within 14 days is the same run.
+function runs(list){const out=[];let cur=null;
+ for(const e of list){
+  if(e.e=="Listed"||(e.e=="Relisted"&&!(cur&&cur.off&&(new Date(e.d)-new Date(cur.off))/864e5<=14))){cur={start:e.d,first:e.p,ev:[e],off:null};out.push(cur);continue}
+  if(!cur)continue;cur.ev.push(e);
+  if(e.e=="Listing removed")cur.off=e.d;else if(e.e=="Relisted")cur.off=null}
+ for(const r of out){const ps=r.ev.map(e=>e.p).filter(Boolean);r.last=ps[ps.length-1];r.cuts=ps.slice(1).filter((p,i)=>p<ps[i]).length}
+ return out}
+function events(d,t){
+ const E=[],A=Object.fromEntries((t?.assess)||[]),rec=REC[d.property_id]||{};
+ const ev=(date,cls,html,more,mark)=>E.push({date,y:+String(date).slice(0,4),cls,html,more,mark});
+ if(d.year_built)ev(`${d.year_built}-01-01`,"ev",`Built in ${d.year_built}.${d.sqft?` ${d.sqft.toLocaleString()} square feet`:""}${d.beds?`, ${plural(d.beds,"bedroom")}`:""}${d.baths?`, ${plural(d.baths,"bath")}`:""}.`);
+ let prev=null;
+ for(const s of t?.sales||[]){const y=+s.d.slice(0,4);
+  if(s.bulk){ev(s.d,"ev",`Sold in one deed with ${(s.bulk-1)+" other propert"+(s.bulk==2?"y":"ies")} for ${usd(s.v)} in all. That deed says nothing about this house's own price.`);continue}
+  let x=`Sold for ${usd(s.v)}.`;
+  if(prev){const r=s.v/prev.v,py=prev.d.slice(0,4);x+=r>=1.8?` That is about ${r.toFixed(1).replace(/\.0$/,"")}× the ${py} price.`:r<0.95?` That is ${Math.round((1-r)*100)}% less than in ${py}.`:r<1.05?` About the same as in ${py}.`:` That is ${Math.round((r-1)*100)}% more than in ${py}.`}
+  if(A[y])x+=` The county valued it at ${usd(A[y])}.`;
+  ev(s.d,"ev",x,null,1);prev=s}
+ const ay=Object.keys(A).map(Number).sort();
+ ay.forEach((y,i)=>{if(!i)return;const a=A[ay[i-1]],b=A[y];if(Math.abs(b/a-1)>=.2&&!(t.sales||[]).some(s=>!s.bulk&&+s.d.slice(0,4)==y))
+  ev(`${y}-01-02`,"ev",`The county's value ${b>a?"jumped":"fell"} from ${usd(a)} to ${usd(b)}.`)});
+ const R=runs(t?.list||[]);
+ R.forEach((r,i)=>{const cur=i==R.length-1&&!r.off;
+  let x=cur?`Listed ${day(r.start)} at ${usd(r.first||d.original_ask||d.ask)}.`:`Listed at ${usd(r.first||0)}.`;
+  const rl=cur?[...r.ev].reverse().find(e=>e.e=="Relisted"&&e.d>r.start):null;
+  // The current run matches the Cuts and Dropped columns: counted from the last relist, as the index does.
+  if(rl)x+=` Taken down and put back up on ${day(rl.d)} at ${usd(rl.p||d.original_ask)}.`;
+  if(cur){if(d.n_cuts)x+=` Cut ${times(d.n_cuts)}${rl?" since":""} to ${usd(d.ask)}, ${Math.abs(drop(d))}% off.`}
+  else if(r.cuts)x+=` Cut ${times(r.cuts)} to ${usd(r.last)}.`;
+  if(cur)x+=` On the market ${plural(d.dom,"day")}.`;
+  else if(r.off){const n=Math.round((new Date(r.off)-new Date(r.start))/864e5);const sold=(t.sales||[]).some(s=>s.d>=r.start&&(new Date(s.d)-new Date(r.off))/864e5<120);if(!sold)x+=` Taken off the market after ${plural(n,"day")}.`}
+  ev(r.start,"price",x,{lines:r.ev.map(e=>`${day(e.d)}: ${e.e.toLowerCase()}${e.p?" at "+usd(e.p):""}`)})});
+ const py={};for(const p of t?.permits||[])(py[p.d.slice(0,4)]??=[]).push(p);
+ for(const [y,ps] of Object.entries(py)){const kinds=[...new Set(ps.map(p=>(p.what||"permit").replace(/ Permit$/,"").toLowerCase()))];const v=ps.reduce((s,p)=>s+(p.v||0),0);
+  ev(ps[0].d,"risk",`${ps.length==1?"A permit":plural(ps.length,"permit")} pulled: ${kinds.join(", ")}.${v?` ${usd(v)} of work declared.`:""}`,
+   {lines:ps.map(p=>`${day(p.d)}: ${p.what}${p.work?" · "+p.work:""}${p.desc?" · "+p.desc:""}${p.v?" · "+usd(p.v):""}${p.status?" · "+p.status.toLowerCase():""}`)},1)}
+ // City cases: one line per year, counted by kind; each case and what was cited unfold underneath.
+ const cz={};
+ for(const it of rec.items||[]){if(it.kind=="permit"||it.kind=="complaints")continue;
+  if(it.kind=="case"&&it.date){(cz[it.date.slice(0,4)]??=[]).push(it);continue}
+  ev(it.date||new Date().toISOString().slice(0,10),"risk",esc(it.text)+".",(it.means||it.detail)?{means:it.means,lines:it.detail}:null)}
+ for(const [y,cs] of Object.entries(cz)){
+  if(cs.length==1){const it=cs[0];ev(it.date,"risk",esc(it.text)+".",{means:it.means,lines:it.detail});continue}
+  const n={};cs.forEach(c=>{const kd=(c.text.match(/^(.*?) CE\d+/)||[,"City case"])[1].toLowerCase();n[kd]=(n[kd]||0)+1});
+  const billed=cs.filter(c=>/billed it to the property taxes/.test(c.text)).length,still=cs.filter(c=>(c.detail||[]).some(x=>/Not fixed yet/.test(x))).length;
+  cs.sort((a,b)=>a.date<b.date?-1:1);
+  ev(cs[0].date,"risk",`${plural(cs.length,"city case")}: ${Object.entries(n).map(([k,v])=>v+" "+k+(v>1&&!/s$/.test(k)?"s":"")).join(", ")}.${billed?` ${billed==1?"Once":times(billed)[0].toUpperCase()+times(billed).slice(1)} the city did the work itself and billed the property taxes.`:""}${still?` ${still} still had something not fixed.`:""}`,
+   {lines:cs.flatMap(c=>[`${day(c.date)}: ${c.text}`,...(c.detail||[]).map(x=>"   "+x)])})}
+ const cy={};for(const c of rec.ev||[])if(c.d)(cy[c.d.slice(0,4)]??=[]).push(c);
+ for(const [y,cs] of Object.entries(cy)){const n={};cs.forEach(c=>n[c.t]=(n[c.t]||0)+1);cs.sort((a,b)=>a.d<b.d?-1:1);
+  ev(cs[0].d,"risk",`${cs.length==1?"A complaint":plural(cs.length,"complaint")} to ${cs[0].src}: ${Object.entries(n).map(([k,v])=>k.toLowerCase()+(v>1?" ×"+v:"")).join(", ")}.`,
+   {means:"Each is a report someone made, not a finding. The city publishes the kind of complaint, not what was said.",lines:cs.map(c=>`${day(c.d)}: ${c.t}${c.open?" (still open)":""}`)},3)}
+ E.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+ return E}
+function chartPts(d,t){
+ const P=[],today=new Date().toISOString().slice(0,10);
+ for(const [y,v] of t?.assess||[])P.push({d:`${y}-01-02`,v,k:"a",cap:`${y}: the county valued it at ${usd(v)}`});
+ for(const s of t?.sales||[])if(!s.bulk)P.push({d:s.d,v:s.v,k:"s",cap:`${day(s.d)}: sold for ${usd(s.v)}`});
+ for(const r of runs(t?.list||[]))for(const e of r.ev)if(e.p)P.push({d:e.d,v:e.p,k:"l",run:r.start,cap:`${day(e.d)}: ${e.e=="Price Changed"?"price cut to":e.e.toLowerCase()+" at"} ${usd(e.p)}`});
+ if(worth(d))P.push({d:today,v:worth(d),k:"w",cap:`Today: we think it's worth ${usd(worth(d))}${d.asis_ratio?" as-is":""}`});
+ return P}
+function drawTL(){
+ const box=document.querySelector(".tl[data-id]");if(!box)return;
+ const d=ROWS.find(r=>r.property_id==box.dataset.id),t=tlOf(d.property_id);if(!t)return;
+ const W=Math.max(300,box.clientWidth),H=W<600?190:220,L=8,Rm=46,T=14,B=26,lane=16;
+ const P=chartPts(d,t),lanes=[];
+ for(const p of t.permits||[])lanes.push({d:p.d,k:"p",cap:`${day(p.d)}: ${(p.what||"permit").toLowerCase()} permit${p.v?", "+usd(p.v)+" of work":""}`});
+ for(const it of (REC[d.property_id]||{}).items||[])if(it.date&&it.kind!="permit"&&it.kind!="complaints")lanes.push({d:it.date,k:"c",cap:`${day(it.date)}: ${it.text}`});
+ for(const c of (REC[d.property_id]||{}).ev||[])if(c.d)lanes.push({d:c.d,k:"q",cap:`${day(c.d)}: complaint, ${c.t.toLowerCase()}`});
+ const now=Date.now(),ts=s=>new Date(s+"T12:00").getTime();
+ // Phone: the last 12 years, so the recent story has room; wider screens go back to 2000. Older events stay in the story.
+ let x0=Math.min(...P.map(p=>ts(p.d)),...lanes.map(l=>ts(l.d)));x0=Math.max(x0,W<600?now-12*365.25*864e5:ts("2000-01-01"));
+ const span=now-x0,x1=now+span*.03;x0-=span*.02;
+ const vmax=Math.max(...P.map(p=>p.v))*1.12,ph=H-T-B-lane;
+ const X=s=>L+(ts(s)-x0)/(x1-x0)*(W-L-Rm),Y=v=>T+ph-(v/vmax)*ph;
+ const vis=P.filter(p=>ts(p.d)>=x0);
+ let g="";
+ // y grid: three round levels, labelled at the right edge
+ const step=[25e3,50e3,1e5,2e5,25e4,5e5,1e6].find(s=>vmax/s<=4)||1e6;
+ for(let v=step;v<vmax;v+=step)g+=`<line x1="${L}" x2="${W-Rm+4}" y1="${Y(v)}" y2="${Y(v)}" class="gr"/><text x="${W-Rm+8}" y="${Y(v)+3.5}" class="ax">${k(v)}</text>`;
+ // x axis: years
+ const y0=new Date(x0).getFullYear(),y1=new Date(x1).getFullYear(),ys=y1-y0,ystep=ys>16?5:ys>8?2:1;
+ g+=`<line x1="${L}" x2="${W-Rm+4}" y1="${T+ph}" y2="${T+ph}" class="bl"/>`;
+ for(let y=Math.ceil((y0+1)/ystep)*ystep;y<=y1;y+=ystep){const x=X(`${y}-01-01`);if(x>L+8&&x<W-Rm-4)g+=`<line x1="${x}" x2="${x}" y1="${T+ph}" y2="${T+ph+4}" class="bl"/><text x="${x}" y="${T+ph+15}" class="ax" text-anchor="middle">${y}</text>`}
+ // assessed: soft area + line
+ const A=vis.filter(p=>p.k=="a").sort((a,b)=>a.d<b.d?-1:1);
+ if(A.length>1){const pts=A.map(p=>`${X(p.d).toFixed(1)},${Y(p.v).toFixed(1)}`);g+=`<path d="M${X(A[0].d)},${T+ph}L${pts.join("L")}L${X(A[A.length-1].d)},${T+ph}Z" class="aa"/><path d="M${pts.join("L")}" class="al"/>`}
+ // asking: a thin blue line through each listing run
+ const runsP={};vis.filter(p=>p.k=="l").forEach(p=>(runsP[p.run]??=[]).push(p));
+ for(const r of Object.values(runsP))if(r.length>1)g+=`<path d="M${r.map(p=>`${X(p.d).toFixed(1)},${Y(p.v).toFixed(1)}`).join("L")}" class="ll"/>`;
+ const M=[];
+ for(const p of vis){const x=X(p.d),y=Y(p.v);M.push({x,y,cap:p.cap});const i=M.length-1;
+  g+=p.k=="a"?`<circle cx="${x}" cy="${y}" r="2.5" class="ad" data-m="${i}"/>`:p.k=="s"?`<circle cx="${x}" cy="${y}" r="5.5" class="sd" data-m="${i}"/>`:p.k=="l"?`<circle cx="${x}" cy="${y}" r="3.5" class="ld" data-m="${i}"/>`:`<path d="M${x},${y-7}L${x+7},${y}L${x},${y+7}L${x-7},${y}Z" class="wd" data-m="${i}"/>`}
+ // the lane under the axis: permits, cases, complaints
+ const ly=T+ph+B+lane/2-2;
+ for(const l of lanes){if(ts(l.d)<x0)continue;const x=X(l.d);M.push({x,y:ly,cap:l.cap});const i=M.length-1;
+  g+=l.k=="p"?`<rect x="${x-1.5}" y="${ly-6}" width="3" height="12" rx="1" class="lp" data-m="${i}"/>`:l.k=="c"?`<circle cx="${x}" cy="${ly}" r="4.5" class="lc" data-m="${i}"/>`:`<circle cx="${x}" cy="${ly}" r="2.5" class="lq" data-m="${i}"/>`}
+ // generous invisible hit targets, drawn last so they sit on top
+ g+=M.map((m,i)=>`<circle cx="${m.x}" cy="${m.y}" r="11" class="hit" data-m="${i}"><title>${esc(m.cap)}</title></circle>`).join("");
+ const svgH=H+2;
+ box.innerHTML=`<svg width="${W}" height="${svgH}" viewBox="0 0 ${W} ${svgH}" role="img" aria-label="Price, value and records over time">${g}</svg><div class="cap">Tap a dot to read it.</div>`;
+ const cap=box.querySelector(".cap");
+ box.querySelectorAll(".hit").forEach(h=>{const f=e=>{e.stopPropagation();cap.textContent=M[+h.dataset.m].cap;box.querySelectorAll(".on").forEach(x=>x.classList.remove("on"));box.querySelector(`:not(.hit)[data-m="${h.dataset.m}"]`)?.classList.add("on")};h.addEventListener("click",f);h.addEventListener("mouseenter",f)})}
+function storyTL(d){
+ const t=tlOf(d.property_id);loadTL(d.property_id);
+ if(!t)return `<div class="tl" data-id="${d.property_id}"></div><p class="lbl">Loading the history…</p>`;
+ const E=events(d,t),by=[];
+ for(const e of E){const g=by[by.length-1];if(g&&g.y==e.y)g.e.push(e);else by.push({y:e.y,e:[e]})}
+ const li=e=>e.more?`<li class="${e.cls}"><details><summary>${e.html}</summary>${e.more.means?`<p class="means">${esc(e.more.means)}</p>`:""}${e.more.lines?`<ul>${e.more.lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</details></li>`:`<li class="${e.cls}">${e.html}</li>`;
+ const tw=d.asis_ratio?`we think it's worth <b class="g">${k(worth(d))}</b> as it stands, ${k(d.arv)} fixed up.`:`we think it's worth <b class="g">${k(worth(d))}</b>.`;
+ return `<div class="tl" data-id="${d.property_id}"></div>
+ <ol class="hist">${by.map(g=>`<li class="yr"><span class="y">${g.y}</span><ul>${g.e.map(li).join("")}</ul></li>`).join("")}
+ <li class="yr now"><span class="y">Today</span><ul><li class="price">Asking <b class="b">${k(d.ask)}</b>; ${tw}</li></ul></li></ol>`}
 function panel(d){
  const u=under(d),e=EV[d.property_id],tiered=!!d.asis_ratio;
  const ph=e&&e[1]?`<img src="${e[1].replace(/"/g,"&quot;")}" alt="" loading="lazy">`:"";
@@ -220,7 +371,8 @@ function panel(d){
   <div class="vals">${tile("Asking",d.ask)}${tile("County says"+fx,d.est_cal)}${tile("Similar homes sold"+(tiered?" (fixed up)":""),d.est_comp)}${tile("Last sale"+(tiered?", brought forward":""),d.est_deed)}${d.block_med?`<div><span>${esc(d.block_name)}</span><b>${k(d.block_med)}</b><span>median of ${d.block_n} sale${d.block_n==1?"":"s"} since 2022</span></div>`:""}${tiered&&d.repair_est?`<div class="repair"><span>Repair cost</span><b>${k(d.repair_est)}</b><span>permits filed say, ${d.repair_n} flips</span></div>`:""}<div class="worth"><span>${tiered?"Worth as-is":"Worth about"}</span><b>${k(worth(d))}</b><span>${tiered?`${k(mid(d))} fixed up × ${d.asis_ratio.toFixed(2)}`:"middle of the estimates"}</span></div></div>
   ${chips(d)?`<div>${chips(d)}</div>`:""}
   ${story(d)}
-  ${recs(d)}
+  <div class="lbl">The story of this house</div>
+  ${storyTL(d)}
   ${e&&e[2]?`<a href="${e[2].replace(/"/g,"&quot;")}" target="_blank" rel="noopener">See it on Realtor.com →</a>`:""}
   <details class="math"><summary>How we got these numbers</summary><ul>${e?(e[0]||[]).map(x=>`<li>${esc(x)}</li>`).join(""):"<li>Loading…</li>"}</ul></details>
  </div></div>`}
@@ -240,6 +392,7 @@ function screener(){
  V.querySelectorAll("tr.row").forEach(tr=>{const go=()=>{const id=tr.dataset.r;open1=open1==id?null:id;if(open1)window.va("event",{name:"expand",data:{id}});screener()};tr.onclick=go;tr.onkeydown=e=>{if(e.key=="Enter")go()}});
  V.querySelectorAll("thead tr,tr.row,tfoot tr").forEach(tr=>[...tr.children].forEach((td,i)=>{const r=ROLE[COLS[i]?.[0]];if(r)td.classList.add("r-"+r)}));
  $("#more")?.addEventListener("click",()=>{limit+=150;screener()});
+ requestAnimationFrame(drawTL);
 }
 function apply(){
  const city=$("#city").value,price=+$("#price").value||Infinity,beds=+$("#beds").value||0;

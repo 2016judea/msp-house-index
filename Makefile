@@ -13,5 +13,6 @@ build:
 	$(PY) scripts/build_index.py
 	$(PY) scripts/build_block.py
 	$(PY) scripts/build_records.py
+	$(PY) scripts/build_timeline.py
 deploy:
 	$(PY) scripts/deploy.py
