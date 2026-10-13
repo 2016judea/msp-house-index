@@ -1,5 +1,7 @@
 # Data model: the ideal per-listing record
 
+> **2026-10-13 — the product's vision**, in Aidan's words ([Business Prototypes](https://randomaidan.substack.com/p/business-prototypes), 2026-10-12): *"MSP Residential Sales. I reverse engineered Zillow and RealEstate.com and joined active sales listing with county and city parcel and permit records."* Listings today come from Realtor.com only; Zillow is the open field (README, "Next build").
+
 Written 2026-10-11 from the need alone, before looking at any data we hold
 (`~/.claude/BUSINESS.md` rule 5). The need: *every active home listing in the
 Minneapolis–Saint Paul 7-county metro, ranked by how far its asking price sits

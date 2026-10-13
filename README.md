@@ -1,12 +1,16 @@
-# msp-house-index
+# MSP Residential Sales
 
 **Live:** https://msp-house-index.vercel.app
+
+I reverse engineered Zillow and RealEstate.com and joined active sales listing with county and city parcel and permit records.
+
+*(Aidan, [Business Prototypes](https://randomaidan.substack.com/p/business-prototypes), 2026-10-12.)*
 
 > **2026-10-12:** the index now ranks by **room to negotiate**: the asking price minus what homes like it actually closed at (`SaleListModel`). The three estimates below are kept as evidence ("Records say it's worth"). Method and backtests: `DATA_MODEL.md`, "Valuation" and "Room to negotiate".
 
 Every home for sale in the seven-county Minneapolis–Saint Paul metro, joined to
-its county parcel, valued three independent ways, and ranked by how far the
-asking price sits below what it's worth. The site shows the ten furthest below
+its county parcel, Minneapolis and Saint Paul permits and housing cases, valued
+three independent ways, and ranked by room to negotiate. The site shows the ten furthest below
 value free; the full list is $100, once. Each row says why in one plain line,
 and expands to the arithmetic behind it.
 
@@ -58,6 +62,13 @@ them (Overture Places). `make map` rebuilds `site/map/` (~32 MB, 400 m cells, lo
 only when a row opens).
 
 No number comes from a model. Every figure is a join or arithmetic on one.
+
+## Next build
+
+The vision names Zillow; listings today come from Realtor.com alone
+(`msp/realtor.py`). Joining Zillow's active listings (and its Zestimate as a
+fourth opinion) is the gap. Zillow walls scripted requests, so it is more than
+an hour's work.
 
 ## Run it
 

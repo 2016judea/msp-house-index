@@ -1,7 +1,7 @@
 [project]
 name = "msp-house-index"
 version = "0.1.0"
-description = "Add your description here"
+description = "MSP Residential Sales. I reverse engineered Zillow and RealEstate.com and joined active sales listing with county and city parcel and permit records."
 requires-python = ">=3.12"
 dependencies = [
     "duckdb>=1.5.6",
