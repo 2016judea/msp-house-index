@@ -40,7 +40,22 @@ S = requests.Session()
 S.mount("https://", requests.adapters.HTTPAdapter(pool_maxsize=16))
 assert (BUNDLE / "rows.json.gz").exists(), "run make build: private/bundle/ is what the paywall serves"
 paths = [(p, str(p.relative_to(SITE))) for p in sorted(SITE.rglob("*")) if p.is_file() and not p.name.startswith(".") and "_full" not in p.parts]
-paths += [(p, "api/_full/" + str(p.relative_to(BUNDLE))) for p in sorted(BUNDLE.rglob("*")) if p.is_file()]
+# The paid bundle goes up SEALED (msp/seal.py says why): a fresh key per deploy, set on the
+# project before the deployment is created so the function is built with it.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import tempfile
+from msp.seal import new_key, seal
+KEY = new_key()
+r = requests.post(f"{API}/v10/projects/{PROJECT}/env?teamId={TEAM}&upsert=true", headers=H,
+                  json={"key": "BUNDLE_KEY", "value": KEY.hex(), "type": "encrypted", "target": ["production", "preview"]})
+assert r.ok, f"could not set BUNDLE_KEY: {r.status_code} {r.text[:200]}"
+SEALED = Path(tempfile.mkdtemp(prefix="msp-sealed-"))
+for p in sorted(BUNDLE.rglob("*")):
+    if p.is_file():
+        out = SEALED / p.relative_to(BUNDLE)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(seal(p.read_bytes(), KEY))
+paths += [(p, "api/_full/" + str(p.relative_to(SEALED))) for p in sorted(SEALED.rglob("*")) if p.is_file()]
 with ThreadPoolExecutor(16) as ex:
     files = list(ex.map(upload, paths))
 print(f"uploaded {len(files)} files")

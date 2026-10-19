@@ -54,6 +54,22 @@ AUCTION = re.compile(r"\b(auction|starting bid|opening bid|bid deadline|highest 
 PLURAL = {"house": "houses", "townhome": "townhomes", "condo": "condos", "multi": "multi-family homes"}
 
 
+CENTRAL = __import__("zoneinfo").ZoneInfo("America/Chicago")
+
+
+def local_date(stamp):
+    """Realtor's list_date is a UTC instant ("2026-10-12T01:30:00.000000Z"); the build's TODAY is the
+    Minneapolis date. Slicing [:10] took the UTC date, so an evening listing was dated tomorrow and a
+    same-evening build gave it -1 days on market (which SaleListModel bins as no DOM at all)."""
+    if not stamp:
+        return None
+    s = str(stamp)
+    if len(s) <= 10:
+        return s[:10]
+    t = dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
+    return (t if t.tzinfo else t.replace(tzinfo=dt.timezone.utc)).astimezone(CENTRAL).date().isoformat()
+
+
 def money(x):
     if x is None:
         return "—"
@@ -99,7 +115,7 @@ def load_listings():
         est = (det.get("estimates") or {}).get("current_values") or []
         seller = next((x for x in r.get("advertisers") or [] if x.get("type") == "seller"), {}) or {}
         text = dd.get("text") or ""
-        list_date = (r.get("list_date") or "")[:10] or None
+        list_date = local_date(r.get("list_date"))
         out.append(dict(
             property_id=pid, listing_id=r.get("listing_id"), url=r.get("href"),
             address=a.get("line"), city=a.get("city"), zip=a.get("postal_code"),

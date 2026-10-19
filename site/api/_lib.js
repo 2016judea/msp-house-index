@@ -146,4 +146,18 @@ async function sendPasswordOnce(session, { who }) {
   return { sent: true };
 }
 
-module.exports = { SITE, PRODUCT, stripe, newPassword, checkPassword, nonceIsPaid, sendPasswordOnce, unlocked };
+// The bundle in api/_full/ is sealed at rest (msp/seal.py): MAGIC | nonce(12) | tag(16) | ciphertext,
+// AES-256-GCM under BUNDLE_KEY (hex), which scripts/deploy.py sets on every deploy. Vercel
+// serves uploaded files statically, so the redirect in vercel.json is not a gate on its own.
+const MAGIC = Buffer.from("MSPSEAL1");
+function open(blob) {
+  const k = process.env.BUNDLE_KEY;
+  if (!k) throw new Error("BUNDLE_KEY is not set");
+  if (!blob.subarray(0, 8).equals(MAGIC)) throw new Error("bundle file is not sealed");
+  const d = crypto.createDecipheriv("aes-256-gcm", Buffer.from(k, "hex"), blob.subarray(8, 20));
+  d.setAAD(MAGIC);
+  d.setAuthTag(blob.subarray(20, 36));
+  return Buffer.concat([d.update(blob.subarray(36)), d.final()]);
+}
+
+module.exports = { open, SITE, PRODUCT, stripe, newPassword, checkPassword, nonceIsPaid, sendPasswordOnce, unlocked };
