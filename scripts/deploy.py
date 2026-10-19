@@ -61,7 +61,7 @@ with ThreadPoolExecutor(16) as ex:
 print(f"uploaded {len(files)} files")
 d = requests.post(f"{API}/v13/deployments?teamId={TEAM}&forceNew=1", headers=H, json={
     "name": PROJECT, "project": PROJECT, "target": "production", "files": files,
-    "projectSettings": {"framework": None, "buildCommand": "echo build", "outputDirectory": ".", "installCommand": "echo skip"},
+    "projectSettings": {"framework": None, "buildCommand": "echo build", "outputDirectory": "public", "installCommand": "echo skip"},
 }).json()
 print("deployment", d.get("id"), d.get("readyState"), d.get("error"))
 for _ in range(200):

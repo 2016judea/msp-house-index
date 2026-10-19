@@ -66,3 +66,16 @@ def test_list_date_is_the_minneapolis_date_not_the_utc_date():
     assert bi.local_date("2026-10-11T19:19:23.000000Z") == "2026-10-11"
     assert bi.local_date("2026-10-11") == "2026-10-11"
     assert bi.local_date(None) is None
+
+
+def test_only_site_public_is_served_statically():
+    """outputDirectory "." made every uploaded file a static URL, the paid bundle included,
+    and the redirect rules were exact-path only. The bundle must sit outside the served tree."""
+    import json
+    cfg = json.loads((ROOT / "site/vercel.json").read_text())
+    assert cfg["outputDirectory"] == "public"
+    assert (ROOT / "site/public/index.html").exists()
+    served = ROOT / "site" / cfg["outputDirectory"]
+    assert not (served / "api").exists(), "nothing under api/ may live in the served directory"
+    deploy = (ROOT / "scripts/deploy.py").read_text()
+    assert '"outputDirectory": "public"' in deploy

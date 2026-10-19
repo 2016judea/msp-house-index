@@ -2,7 +2,7 @@
 // $100 one time for the full index. The buyer's password is minted here so it can ride
 // in the invoice footer (Stripe's own invoice email is a second copy of it).
 const { SITE, PRODUCT, stripe, newPassword } = require("./_lib");
-const meta = require("../meta.json");
+const meta = require("../public/meta.json");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });

@@ -21,7 +21,10 @@ import collections, gzip, json, math, os, shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PRIV, SITE = ROOT / "private", Path(os.environ.get("PUBLIC_OUT", ROOT / "site"))
+# site/public/ is the ONLY directory Vercel serves statically (site/vercel.json outputDirectory).
+# site/ as the output once served every uploaded file, api/_full/ (the paid bundle) included,
+# behind redirects that /api/_full/rows.json.gz/ and %2F walked straight past (2026-10-19).
+PRIV, SITE = ROOT / "private", Path(os.environ.get("PUBLIC_OUT", ROOT / "site" / "public"))
 TOP = 10
 dump = lambda o: json.dumps(o, separators=(",", ":"), default=str)
 
