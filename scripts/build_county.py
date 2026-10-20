@@ -33,7 +33,10 @@ def main():
     create table parcels as
     select p.county, p.pin, p.parcel_key, p.geom, p.lon, p.lat, p.area_sqft,
            coalesce(p.is_condo, false) as is_condo,
-           s.emv_land, s.emv_bldg, s.emv_total, s.homestead, s.num_units, s.fin_sq_ft,
+           -- Dakota writes -9999 for "no value" (16,024 parcels): a sentinel read as a
+           -- number makes emv_bldg < 0.15*emv true and tags the house a teardown.
+           nullif(s.emv_land, -9999) as emv_land, nullif(s.emv_bldg, -9999) as emv_bldg,
+           nullif(s.emv_total, -9999) as emv_total, s.homestead, s.num_units, s.fin_sq_ft,
            nullif(s.year_built, 0) as year_built, trim(s.useclass1) as useclass,
            s.anumber, s.street, s.city, s.zip,
            nullif(ltrim(upper(trim(json_extract_string(s.attrs, 'SUB_ID1'))), '0'), '') as unit,
