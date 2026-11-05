@@ -9,7 +9,7 @@
 The password lives in the session's metadata (minted by site/api/checkout.js) and in the
 invoice footer Stripe emailed the buyer. The buyer's email went out from the webhook or
 the confirmation page; `pw_emailed` in the metadata says which, and when.
-Reads STRIPE_SECRET_KEY from ~/Desktop/bricks/.env and ACCESS_SECRET from ./.env.
+Reads STRIPE_SECRET_KEY from ~/Desktop/workspace/bricks/.env and ACCESS_SECRET from ./.env.
 """
 import base64, hashlib, hmac, os, secrets, sys
 from pathlib import Path
@@ -27,7 +27,7 @@ def env(path, key):
     sys.exit(f"{key} missing from {path}")
 
 
-KEY = env("~/Desktop/bricks/.env", "STRIPE_SECRET_KEY")
+KEY = env("~/Desktop/workspace/bricks/.env", "STRIPE_SECRET_KEY")
 S = requests.Session()
 S.auth = (KEY, "")
 

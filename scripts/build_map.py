@@ -26,7 +26,7 @@ import duckdb
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "private/map"
-BRICKS = Path.home() / "Desktop/bricks/data/closed_system.duckdb"
+BRICKS = Path.home() / "Desktop/workspace/bricks/data/closed_system.duckdb"
 R, CELL = 150, 400  # metres: frame half-width around a listing, cell size
 
 c = duckdb.connect()
@@ -84,7 +84,7 @@ lots = c.execute(f"""
   select s.gid, s.cx, s.cy, s.gj, v.n, v.emv, v.sq, v.ppsf, v.yb, v.sd, v.sv, v.an, v.st, v.cls from shape s join v using (gid)""").fetchall()
 # Businesses on non-home lots: Overture Places (CDLA-Permissive-2.0), point in lot. Google ratings and
 # MN SOS bulk data are NOT used: both are in bricks' RIGHTS_WITHHELD class and a file here is redistribution.
-OVT = Path.home() / "Desktop/bricks/data/cache/overture_places_msp.parquet"
+OVT = Path.home() / "Desktop/workspace/bricks/data/cache/overture_places_msp.parquet"
 biz = c.execute(f"""with o as (select name, category, lon, lat,
     ST_Transform(ST_Point(lon, lat), 'EPSG:4326', 'EPSG:26915', always_xy := true) g
     from '{OVT}' where name is not null and confidence >= 0.5),

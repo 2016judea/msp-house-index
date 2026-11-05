@@ -2,7 +2,7 @@
 
 Polite by construction: every response is cached on disk forever under
 cache/realtor/ (delete a file to refetch), and uncached requests are spaced
-DELAY seconds apart. Reverse-engineered in ~/Desktop/house-lookup (REA-NOTES.md).
+DELAY seconds apart. Reverse-engineered in ~/Desktop/workspace/house-lookup (REA-NOTES.md).
 """
 import hashlib, json, os, time
 from pathlib import Path

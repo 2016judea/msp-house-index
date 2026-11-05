@@ -75,14 +75,14 @@ an hour's work.
 ```bash
 uv sync
 make fetch     # ~45 min of polite Realtor.com requests, cached on disk per day
-make county    # reads ~/Desktop/bricks/data/*.duckdb read-only
+make county    # reads ~/Desktop/workspace/bricks/data/*.duckdb read-only
 make build     # seconds: data/index.*, private/ (full set), site/ (top 10)
 python scripts/qa_row.py 1 2 3   # everything behind a ranked row
 VERCEL_TOKEN=… make deploy
 ```
 
 Realtor.com endpoints are the ones its own pages call (`frontdoor/graphql`
-`home_search` and `home`), found in `~/Desktop/house-lookup`. Requests are
+`home_search` and `home`), found in `~/Desktop/workspace/house-lookup`. Requests are
 spaced 1.5 s apart, 20 homes per detail request, everything cached.
 
 ## The paywall

@@ -14,7 +14,7 @@ Sources:
 import duckdb
 from pathlib import Path
 
-BRICKS = Path.home() / "Desktop/bricks/data"
+BRICKS = Path.home() / "Desktop/workspace/bricks/data"
 OUT = Path(__file__).resolve().parent.parent / "data" / "county.duckdb"
 
 # Use classes that are a dwelling a household buys (per county vocabulary, see

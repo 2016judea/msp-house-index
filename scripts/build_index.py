@@ -18,7 +18,7 @@ import duckdb
 
 ROOT = Path(__file__).resolve().parent.parent
 D = ROOT / "data"
-BRICKS = Path.home() / "Desktop/bricks/data"
+BRICKS = Path.home() / "Desktop/workspace/bricks/data"
 TODAY = dt.date.today()
 
 # Assessment valuation dates. Minnesota values every parcel as of Jan 2 of the

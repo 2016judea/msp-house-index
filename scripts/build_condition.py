@@ -32,7 +32,7 @@ from pathlib import Path
 import duckdb
 
 ROOT = Path(__file__).resolve().parent.parent
-BRICKS = Path.home() / "Desktop/bricks/data"
+BRICKS = Path.home() / "Desktop/workspace/bricks/data"
 LIGHT_MAX = 30  # $/sqft of permitted work: below = light, at or above = heavy
 
 c = duckdb.connect()

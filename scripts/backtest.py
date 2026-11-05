@@ -54,7 +54,7 @@ def subject_of(pool, i):
 
 
 PIN_LEN = {"hennepin": 13, "washington": 13, "ramsey": 12, "dakota": 12, "anoka": 12, "scott": 9, "carver": 9}
-BRICKS = Path.home() / "Desktop/bricks/data"
+BRICKS = Path.home() / "Desktop/workspace/bricks/data"
 
 
 def county_opinions(pool, subs):

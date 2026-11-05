@@ -12,7 +12,7 @@ from pathlib import Path
 import duckdb
 
 ROOT = Path(__file__).resolve().parent.parent
-BRICKS = Path.home() / "Desktop/bricks/data"
+BRICKS = Path.home() / "Desktop/workspace/bricks/data"
 con = duckdb.connect()
 con.execute(f"attach '{BRICKS / 'closed_system.duckdb'}' as cs (read_only)")
 con.execute(f"create table L as select property_id, county || ':' || pin as pk from '{ROOT / 'data/index.parquet'}' where rank_ok and pin is not null")

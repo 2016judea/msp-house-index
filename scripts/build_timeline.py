@@ -24,7 +24,7 @@ import duckdb
 
 ROOT = Path(__file__).resolve().parent.parent
 D = ROOT / "data"
-BRICKS = Path.home() / "Desktop/bricks/data"
+BRICKS = Path.home() / "Desktop/workspace/bricks/data"
 c = duckdb.connect()
 c.execute(f"attach '{BRICKS / 'closed_system.duckdb'}' as cs (read_only)")
 c.execute(f"create table L as select property_id, county || ':' || pin as pk, county from '{D / 'index.parquet'}' where rank_ok and pin is not null")
