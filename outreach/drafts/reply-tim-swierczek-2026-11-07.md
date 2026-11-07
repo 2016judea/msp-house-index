@@ -1,3 +1,5 @@
+> **CANCELLED 2026-11-07 by Aidan: "send no replies. cancel all those workstreams." Do not send.**
+
 # DRAFT, reply to Tim Swierczek (tim@timswierczek.com), "Re: Ford Wagner and the houses that sit"
 He wrote 11/02: "This is a confusingly written email, but you've sparked my interest. Let's do a Zoom meeting so I can figure out what you're proposing." Booking his Calendly (calendly.com/timswierczek/15) is Aidan's step.
 
