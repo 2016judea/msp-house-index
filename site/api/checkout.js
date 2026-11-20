@@ -22,6 +22,12 @@ module.exports = async (req, res) => {
         "payment_method_types[1]": "link",
         customer_creation: "always",
         "invoice_creation[enabled]": "true",
+        // The buyer sees MSP Residential Sales, not the Brick & Mortar account's look (Aidan, 2026-11-20).
+        // Embedded Checkout refuses an icon or logo, so the name and colours are what it carries.
+        "branding_settings[display_name]": "MSP Residential Sales",
+        "branding_settings[background_color]": "#f2f3f1",
+        "branding_settings[button_color]": "#245a86",
+        "payment_intent_data[statement_descriptor_suffix]": "MSP SALES",
         "invoice_creation[invoice_data][description]": "Twin Cities Under-Ask Index: full list",
         "invoice_creation[invoice_data][custom_fields][0][name]": "Password",
         "invoice_creation[invoice_data][custom_fields][0][value]": password,
